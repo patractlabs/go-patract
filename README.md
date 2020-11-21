@@ -51,6 +51,31 @@ Therefor, PatractGo will achieve the following support:
 * Basic command line tool support for native interaction with the contract, mainly used to test the security of the contract
 * SDK development examples for ERC20 contract support
 
+## Getting Start
+
+PatractGo based on [GSRPC](https://github.com/centrifuge/go-substrate-rpc-client), So we need install some depends:
+
+First is subkey:
+
+```bash
+cargo install --force subkey --git https://github.com/paritytech/substrate --version 2.0.0
+subkey --version
+```
+
+For Now, the sdk examples will connect to the [canvas](https://github.com/paritytech/canvas-node), and also need cli tools:
+
+```bash
+cargo install canvas-node --git https://github.com/paritytech/canvas-node.git --tag v0.1.3 --force --locked
+cargo install cargo-contract --vers 0.7.1 --force --locked
+canvas -V
+```
+
+For some examples, we can simply run a canvas node:
+
+```bash
+canvas --dev --tmp
+```
+
 ## Thanks
 
 - [Centrifuge's GSRPC](https://github.com/centrifuge/go-substrate-rpc-client)
