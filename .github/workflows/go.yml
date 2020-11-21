@@ -5,7 +5,7 @@ on:
     branches: [ master, features/* ]
 
   pull_request:
-    branches: [ * ]
+    branches: [ master, features/* ]
 
 jobs:
   lint:
