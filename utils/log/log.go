@@ -13,6 +13,8 @@ const (
 // Logger a logger interface
 type Logger interface {
 	Debug(msg string, args ...interface{})
+	Info(msg string, args ...interface{})
+	Warn(msg string, args ...interface{})
 	Error(msg string, args ...interface{})
 }
 
@@ -65,4 +67,42 @@ func (l *loggerByZap) Error(msg string, args ...interface{}) {
 	}
 
 	l.l.Error(msg, fields...)
+}
+
+// Warn imp Warn log
+func (l *loggerByZap) Warn(msg string, args ...interface{}) {
+	if len(args) == 0 {
+		l.l.Warn(msg)
+		return
+	}
+
+	if len(args)%kvLen != 0 {
+		args = append(args, "missing key-value")
+	}
+
+	fields := make([]zap.Field, 0, len(args)/kvLen)
+	for i := 0; i < len(args); i += kvLen {
+		fields = append(fields, zap.Any(fmt.Sprintf("%s", args[i]), args[i+1]))
+	}
+
+	l.l.Warn(msg, fields...)
+}
+
+// Info imp Info log
+func (l *loggerByZap) Info(msg string, args ...interface{}) {
+	if len(args) == 0 {
+		l.l.Info(msg)
+		return
+	}
+
+	if len(args)%kvLen != 0 {
+		args = append(args, "missing key-value")
+	}
+
+	fields := make([]zap.Field, 0, len(args)/kvLen)
+	for i := 0; i < len(args); i += kvLen {
+		fields = append(fields, zap.Any(fmt.Sprintf("%s", args[i]), args[i+1]))
+	}
+
+	l.l.Info(msg, fields...)
 }
