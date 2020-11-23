@@ -11,7 +11,7 @@ import (
 func TestCanvas(t *testing.T) {
 	env := canvas.NewCanvasEnv(log.NewLogger())
 
-	time.Sleep(55 * time.Second)
+	time.Sleep(1 * time.Second)
 
 	env.Stop()
 	env.Wait()
