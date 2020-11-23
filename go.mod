@@ -7,9 +7,11 @@ require (
 	github.com/deckarep/golang-set v1.7.1 // indirect
 	github.com/ethereum/go-ethereum v1.9.24 // indirect
 	github.com/gorilla/websocket v1.4.2 // indirect
+	github.com/jesselucas/executil v0.0.0-20151120044647-dde271ce6a5c
 	github.com/pierrec/xxHash v0.1.5 // indirect
 	github.com/pkg/errors v0.8.1
 	github.com/rs/cors v1.7.0 // indirect
 	github.com/stretchr/testify v1.6.1 // indirect
+	go.uber.org/zap v1.16.0
 	golang.org/x/crypto v0.0.0-20201117144127-c1f2f97bffc9 // indirect
 )
