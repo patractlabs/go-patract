@@ -3,11 +3,10 @@ package main
 import (
 	"fmt"
 
-	"github.com/pkg/errors"
-
 	gsrpc "github.com/centrifuge/go-substrate-rpc-client"
 	"github.com/centrifuge/go-substrate-rpc-client/signature"
 	"github.com/centrifuge/go-substrate-rpc-client/types"
+	"github.com/pkg/errors"
 )
 
 func pushTransfer(api *gsrpc.SubstrateAPI, authKey signature.KeyringPair, to types.Address, amount uint64) error {
@@ -70,13 +69,20 @@ func pushExtrinsic(api *gsrpc.SubstrateAPI, authKey signature.KeyringPair, meta 
 	}
 
 	// Send the extrinsic
-	hash, err := api.RPC.Author.SubmitExtrinsic(ext)
+	sub, err := api.RPC.Author.SubmitAndWatchExtrinsic(ext)
 	if err != nil {
 		return errors.Wrap(err, "submit error")
 	}
 
-	// TODO: use log
-	fmt.Printf("commit hash %x\n", hash)
+	defer sub.Unsubscribe()
 
-	return nil
+	for {
+		status := <-sub.Chan()
+		fmt.Printf("Transaction status: %#v\n", status)
+
+		if status.IsInBlock {
+			fmt.Printf("Completed at block hash: %#x\n", status.AsInBlock)
+			return nil
+		}
+	}
 }
