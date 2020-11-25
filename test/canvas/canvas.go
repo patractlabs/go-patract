@@ -10,6 +10,11 @@ import (
 	"github.com/pkg/errors"
 )
 
+const (
+	portWs         = "29944"
+	portPrometheus = "29615"
+)
+
 // Env a canvas environment for testing
 type Env struct {
 	wg sync.WaitGroup
@@ -33,8 +38,7 @@ func NewCanvasEnv(log log.Logger) *Env {
 
 // URL get the url to the canvas
 func (c *Env) URL() string {
-	// TODO: use not default port
-	return "ws://127.0.0.1:9944"
+	return fmt.Sprintf("ws://127.0.0.1:%s", portWs)
 }
 
 // PID get canvas process id
@@ -58,7 +62,10 @@ func (c *Env) Start() error {
 
 	outputChan := make(chan string)
 
-	cmd := executil.Command("canvas", "--tmp", "--dev")
+	cmd := executil.Command("canvas", "--tmp", "--dev",
+		"--ws-port", portWs,
+		"--prometheus-port", portPrometheus,
+	)
 	cmd.OutputChan = outputChan
 
 	c.wg.Add(1)
