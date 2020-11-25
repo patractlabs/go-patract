@@ -17,6 +17,6 @@ func ByCanvasEnv(t *testing.T, c func(log.Logger, *canvas.Env)) {
 		env.Wait()
 	}()
 
-	time.Sleep(1 * time.Second) // wait chain boot
+	time.Sleep(300 * time.Millisecond) // wait chain boot
 	c(logger, env)
 }
