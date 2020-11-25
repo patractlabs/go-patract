@@ -31,6 +31,12 @@ func NewCanvasEnv(log log.Logger) *Env {
 	return res
 }
 
+// URL get the url to the canvas
+func (c *Env) URL() string {
+	// TODO: use not default port
+	return "ws://127.0.0.1:9944"
+}
+
 // PID get canvas process id
 func (c *Env) PID() int {
 	c.mutex.RLock()
