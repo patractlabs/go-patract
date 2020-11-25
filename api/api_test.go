@@ -28,7 +28,7 @@ func TestSubmitAndWaitExtrinsic(t *testing.T) {
 
 		_, err = cli.SubmitAndWaitExtrinsic(
 			context.Background(),
-			authKey, "Balances.transfer", bob, types.NewUCompactFromUInt(12345))
+			authKey, "Balances.transfer", bob, types.NewUCompactFromUInt(1000))
 		assert.Nil(err)
 	})
 }

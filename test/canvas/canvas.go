@@ -11,24 +11,50 @@ import (
 )
 
 const (
-	portWs         = "39944"
-	portPrometheus = "39615"
+	portRPC        = 39500
+	portWs         = 39600
+	portPrometheus = 39700
 )
+
+var (
+	mutexForPort = sync.Mutex{}
+	portIdx      = 0
+)
+
+func getPorts() (string, string, string) {
+	mutexForPort.Lock()
+	defer mutexForPort.Unlock()
+
+	portIdx++
+
+	return fmt.Sprintf("%d", portRPC+portIdx),
+		fmt.Sprintf("%d", portWs+portIdx),
+		fmt.Sprintf("%d", portPrometheus+portIdx)
+}
 
 // Env a canvas environment for testing
 type Env struct {
 	wg sync.WaitGroup
 
-	log   log.Logger
-	mutex sync.RWMutex
-	pID   int
+	log            log.Logger
+	mutex          sync.RWMutex
+	pID            int
+	portRPC        string
+	portWs         string
+	portPrometheus string
 }
 
 // NewCanvasEnv create a canvas chain to test
 func NewCanvasEnv(log log.Logger) *Env {
+	portRPC, portWs, portPrometheus := getPorts()
+
 	res := &Env{
-		log: log,
+		log:            log,
+		portRPC:        portRPC,
+		portWs:         portWs,
+		portPrometheus: portPrometheus,
 	}
+
 	if err := res.Start(); err != nil {
 		panic(err)
 	}
@@ -38,7 +64,7 @@ func NewCanvasEnv(log log.Logger) *Env {
 
 // URL get the url to the canvas
 func (c *Env) URL() string {
-	return fmt.Sprintf("ws://localhost:%s", portWs)
+	return fmt.Sprintf("ws://localhost:%s", c.portWs)
 }
 
 // PID get canvas process id
@@ -63,8 +89,9 @@ func (c *Env) Start() error {
 	outputChan := make(chan string)
 
 	cmd := executil.Command("canvas", "--tmp", "--dev",
-		"--ws-port", portWs,
-		"--prometheus-port", portPrometheus,
+		"--port", c.portRPC,
+		"--ws-port", c.portWs,
+		"--prometheus-port", c.portPrometheus,
 	)
 	cmd.OutputChan = outputChan
 
