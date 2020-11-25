@@ -11,8 +11,8 @@ import (
 )
 
 const (
-	portWs         = "29944"
-	portPrometheus = "29615"
+	portWs         = "49944"
+	portPrometheus = "49615"
 )
 
 // Env a canvas environment for testing
