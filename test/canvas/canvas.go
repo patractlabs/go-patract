@@ -11,8 +11,8 @@ import (
 )
 
 const (
-	portWs         = "49944"
-	portPrometheus = "49615"
+	portWs         = "8944"
+	portPrometheus = "8615"
 )
 
 // Env a canvas environment for testing
@@ -38,7 +38,7 @@ func NewCanvasEnv(log log.Logger) *Env {
 
 // URL get the url to the canvas
 func (c *Env) URL() string {
-	return fmt.Sprintf("ws://127.0.0.1:%s", portWs)
+	return fmt.Sprintf("ws://localhost:%s", portWs)
 }
 
 // PID get canvas process id
