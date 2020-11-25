@@ -30,7 +30,9 @@ func NewClient(logger log.Logger, url string) (*Client, error) {
 }
 
 // SubmitAndWaitExtrinsic submit and wait extrinsic into chain
-func (c *Client) SubmitAndWaitExtrinsic(ctx context.Context, authKey signature.KeyringPair, call string, args ...interface{}) (string, error) {
+func (c *Client) SubmitAndWaitExtrinsic(
+	ctx context.Context,
+	authKey signature.KeyringPair, call string, args ...interface{}) (string, error) {
 	c.logger.Debug("submitAndWatchExtrinsic", "call", call)
 
 	meta, err := c.rpcAPI.RPC.State.GetMetadataLatest()

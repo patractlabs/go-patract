@@ -8,6 +8,10 @@ import (
 	"github.com/patractlabs/go-patract/utils/log"
 )
 
+const (
+	waitTimesForChainStarted = 300 * time.Millisecond
+)
+
 // ByCanvasEnv test with canvas env
 func ByCanvasEnv(t *testing.T, c func(log.Logger, *canvas.Env)) {
 	logger := log.NewLogger()
@@ -17,6 +21,6 @@ func ByCanvasEnv(t *testing.T, c func(log.Logger, *canvas.Env)) {
 		env.Wait()
 	}()
 
-	time.Sleep(300 * time.Millisecond) // wait chain boot
+	time.Sleep(waitTimesForChainStarted) // wait chain boot
 	c(logger, env)
 }
