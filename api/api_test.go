@@ -27,8 +27,8 @@ func TestSubmitAndWaitExtrinsic(t *testing.T) {
 		assert.Nil(err)
 
 		_, err = cli.SubmitAndWaitExtrinsic(
-			context.Background(),
-			authKey, "Balances.transfer", bob, types.NewUCompactFromUInt(1000))
+			api.NewCtx(context.Background()).WithFrom(authKey),
+			"Balances.transfer", bob, types.NewUCompactFromUInt(1000))
 		assert.Nil(err)
 	})
 }
@@ -47,8 +47,8 @@ func TestSubmitAndWaitExtrinsicCancel(t *testing.T) {
 		}()
 
 		_, err = cli.SubmitAndWaitExtrinsic(
-			ctx,
-			authKey, "Balances.transfer", bob, types.NewUCompactFromUInt(12345))
+			api.NewCtx(ctx).WithFrom(authKey),
+			"Balances.transfer", bob, types.NewUCompactFromUInt(12345))
 		assert.Equal(err, context.Canceled)
 	})
 }
