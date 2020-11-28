@@ -55,7 +55,7 @@ func TestDeployAndCallERC20(t *testing.T) {
 	codeBytes, err := ioutil.ReadFile("../../test/contracts/ink/erc20.wasm")
 	assert.Nil(err)
 
-	test.ByExternCanvasEnv(t, func(logger log.Logger, env test.Env) {
+	test.ByCanvasEnv(t, func(logger log.Logger, env test.Env) {
 		cli, err := api.NewClient(logger, env.URL())
 		assert.Nil(err)
 
