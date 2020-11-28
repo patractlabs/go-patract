@@ -1,10 +1,7 @@
 package api
 
 import (
-	"context"
-
 	gsrpc "github.com/centrifuge/go-substrate-rpc-client"
-	"github.com/centrifuge/go-substrate-rpc-client/signature"
 	"github.com/centrifuge/go-substrate-rpc-client/types"
 	"github.com/patractlabs/go-patract/utils/log"
 	"github.com/pkg/errors"
@@ -29,10 +26,13 @@ func NewClient(logger log.Logger, url string) (*Client, error) {
 	}, nil
 }
 
+// API returns the rpcAPI for client
+func (c Client) API() *gsrpc.SubstrateAPI {
+	return c.rpcAPI
+}
+
 // SubmitAndWaitExtrinsic submit and wait extrinsic into chain
-func (c *Client) SubmitAndWaitExtrinsic(
-	ctx context.Context,
-	authKey signature.KeyringPair, call string, args ...interface{}) (string, error) {
+func (c *Client) SubmitAndWaitExtrinsic(ctx Context, call string, args ...interface{}) (string, error) {
 	c.logger.Debug("submitAndWatchExtrinsic", "call", call)
 
 	meta, err := c.rpcAPI.RPC.State.GetMetadataLatest()
@@ -57,6 +57,8 @@ func (c *Client) SubmitAndWaitExtrinsic(
 	if err != nil {
 		return "", errors.Wrap(err, "get runtime version lastest error")
 	}
+
+	authKey := ctx.From()
 
 	key, err := types.CreateStorageKey(meta, "System", "Account", authKey.PublicKey, nil)
 	if err != nil {

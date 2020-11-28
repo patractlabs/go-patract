@@ -2,14 +2,13 @@ name: ActionsForGo
 
 on:
   push:
-    branches: [ master, features/* ]
+    branches: [ master ]
 
   pull_request:
     branches: [ master, features/* ]
 
 jobs:
-  lint:
-    name: go-lint-check
+  go-lint-check:
     runs-on: self-hosted
     steps:
     - uses: actions/checkout@v2
@@ -18,9 +17,9 @@ jobs:
       with:
         version: v1.32
 
-  coverage:
-    name: go-coverage-check
+  go-coverage-check:
     runs-on: self-hosted
+    needs: go-test-check
     steps:
       - uses: actions/setup-go@v2
         with:
@@ -28,14 +27,13 @@ jobs:
       - uses: actions/checkout@v2
       - name: test & coverage report
         run: |
-          go test -p 1 ./... -mod=readonly -race -coverprofile=coverage.txt -covermode=atomic -tags='ledger test_ledger_mock'
+          go test -v -p 1 ./... -mod=readonly -race -coverprofile=coverage.txt -covermode=atomic
       - uses: codecov/codecov-action@v1
         with:
           file: ./coverage.txt
           fail_ci_if_error: true
 
-  test:
-    name: go-test-check
+  go-test-check:
     runs-on: self-hosted
     steps:
     - uses: actions/setup-go@v2
