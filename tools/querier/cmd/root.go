@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 
+	storagecmd "github.com/patractlabs/go-patract/tools/querier/cmd/storage"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -20,6 +21,8 @@ func init() {
 	if err := viper.BindPFlag("url", rootCmd.PersistentFlags().Lookup("url")); err != nil {
 		panic(err)
 	}
+
+	storagecmd.AppendCmds(rootCmd)
 }
 
 // Execute executes the root command.
