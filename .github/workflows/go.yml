@@ -8,8 +8,7 @@ on:
     branches: [ master, features/* ]
 
 jobs:
-  lint:
-    name: go-lint-check
+  go-lint-check:
     runs-on: self-hosted
     steps:
     - uses: actions/checkout@v2
@@ -18,9 +17,9 @@ jobs:
       with:
         version: v1.32
 
-  coverage:
-    name: go-coverage-check
+  go-coverage-check:
     runs-on: self-hosted
+    needs: go-test-check
     steps:
       - uses: actions/setup-go@v2
         with:
@@ -34,8 +33,7 @@ jobs:
           file: ./coverage.txt
           fail_ci_if_error: true
 
-  test:
-    name: go-test-check
+  go-test-check:
     runs-on: self-hosted
     steps:
     - uses: actions/setup-go@v2
