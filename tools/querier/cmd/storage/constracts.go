@@ -76,8 +76,8 @@ func codeByHashCmd(contractsCmd *cobra.Command) {
 			if toFilePath == "" {
 				bz, _ := json.Marshal(codeBz)
 				fmt.Println(string(bz))
-			} else {
-				ioutil.WriteFile(toFilePath, codeBz, 0644)
+			} else if err := ioutil.WriteFile(toFilePath, codeBz, 0600); err != nil {
+				return errors.Wrap(err, "write storage latest failed")
 			}
 
 			return nil
