@@ -12,8 +12,21 @@ const (
 	waitTimesForChainStarted = 300 * time.Millisecond
 )
 
+// Env env interface for test
+type Env interface {
+	URL() string
+}
+
+type envExtern struct {
+	url string
+}
+
+func (e envExtern) URL() string {
+	return e.url
+}
+
 // ByCanvasEnv test with canvas env
-func ByCanvasEnv(t *testing.T, c func(log.Logger, *canvas.Env)) {
+func ByCanvasEnv(t *testing.T, c func(log.Logger, Env)) {
 	logger := log.NewLogger()
 	env := canvas.NewCanvasEnv(logger)
 	defer func() {
@@ -23,4 +36,9 @@ func ByCanvasEnv(t *testing.T, c func(log.Logger, *canvas.Env)) {
 
 	time.Sleep(waitTimesForChainStarted) // wait chain boot
 	c(logger, env)
+}
+
+// ByExternCanvasEnv test with canvas env other
+func ByExternCanvasEnv(t *testing.T, c func(log.Logger, Env)) {
+	c(log.NewLogger(), &envExtern{url: "ws://localhost:9944"})
 }
