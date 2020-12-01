@@ -1,13 +1,13 @@
 {
   "metadataVersion": "0.1.0",
   "source": {
-    "hash": "0x939d1823be952b4d7114448bb1a27fa13bafb8c4b33149efc24e826d8e54035e",
-    "language": "ink! 3.0.0-rc1",
-    "compiler": "rustc 1.48.0-nightly"
+    "hash": "0x7119d064b5aaf5b2781f69eedb30e4529213f0a56f5b9ebbc72496b99a2a7331",
+    "language": "ink! 3.0.0-rc2",
+    "compiler": "rustc 1.49.0-nightly"
   },
   "contract": {
     "name": "delegator",
-    "version": "3.0.0-rc1",
+    "version": "3.0.0-rc2",
     "authors": [
       "Parity Technologies <admin@parity.io>"
     ]

@@ -1,13 +1,13 @@
 {
   "metadataVersion": "0.1.0",
   "source": {
-    "hash": "0x568432b99f4ebd39ec03c2caaf69992b248999cc857326174b220b5587c3515f",
-    "language": "ink! 3.0.0-rc1",
-    "compiler": "rustc 1.48.0-nightly"
+    "hash": "0xdc14c58ac958891408637773e045dc325162058b6ce4e2828d9666ca530f7e86",
+    "language": "ink! 3.0.0-rc2",
+    "compiler": "rustc 1.49.0-nightly"
   },
   "contract": {
     "name": "flipper",
-    "version": "3.0.0-rc1",
+    "version": "3.0.0-rc2",
     "authors": [
       "Parity Technologies <admin@parity.io>"
     ]
