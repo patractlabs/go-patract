@@ -111,3 +111,7 @@ func NewTypeDef(raw *rawTypeDef) *TypeDef {
 func (t *TypeDef) Encode(e *scale.Encoder, v interface{}) error {
 	return t.def.Encode(e, v)
 }
+
+func (t *TypeDef) Decode(e *scale.Decoder, v interface{}) error {
+	return t.def.Decode(e, v)
+}

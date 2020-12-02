@@ -2,6 +2,7 @@ package metadata
 
 import (
 	"encoding/json"
+	"fmt"
 	"math/big"
 	"reflect"
 
@@ -29,6 +30,7 @@ const (
 
 type DefCodec interface {
 	Encode(encoder *scale.Encoder, value interface{}) error
+	Decode(decoder *scale.Decoder, target interface{}) error
 }
 
 type defPrimitive struct {
@@ -57,6 +59,27 @@ func (d defPrimitive) Encode(encoder *scale.Encoder, value interface{}) error {
 	}
 
 	return encoder.Encode(value)
+}
+
+func (d defPrimitive) Decode(decoder *scale.Decoder, target interface{}) error {
+	// for primitive, just can encode base types, check types
+	t := reflect.TypeOf(target)
+	if t.Kind() != reflect.Ptr {
+		return errors.Errorf("Target must be a pointer, but was %s", fmt.Sprint(t))
+	}
+
+	val := reflect.ValueOf(target)
+	if val.IsNil() {
+		return errors.New("Target is a nil pointer")
+	}
+
+	tk := val.Elem().Kind()
+
+	if tk != d.typ {
+		return errors.Errorf("type not equal, expect %v, got %v", d.typ, tk)
+	}
+
+	return decoder.Decode(target)
 }
 
 func getKindFromTypeString(typ string) reflect.Kind {
