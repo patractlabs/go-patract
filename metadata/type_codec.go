@@ -27,7 +27,7 @@ const (
 	DefTypTuple = "tuple"
 )
 
-type defCodec interface {
+type DefCodec interface {
 	Encode(encoder *scale.Encoder, value interface{}) error
 }
 

@@ -79,19 +79,19 @@ type rawTypeDef struct {
 	Path   []string                   `json:"path"`
 }
 
-// typeDef type definition
-type typeDef struct {
-	def    defCodec
+// TypeDef type definition
+type TypeDef struct {
+	def    DefCodec
 	Params []int
 	Path   []string
 }
 
-func NewTypeDef(raw *rawTypeDef) *typeDef {
+func NewTypeDef(raw *rawTypeDef) *TypeDef {
 	if len(raw.Def) != 1 {
 		panic(errors.Errorf("type def raw error by not key %v", raw.Def))
 	}
 
-	res := &typeDef{
+	res := &TypeDef{
 		Params: raw.Params,
 		Path:   raw.Path,
 	}
@@ -108,6 +108,6 @@ func NewTypeDef(raw *rawTypeDef) *typeDef {
 	return res
 }
 
-func (t *typeDef) Encode(e *scale.Encoder, v interface{}) error {
+func (t *TypeDef) Encode(e *scale.Encoder, v interface{}) error {
 	return t.def.Encode(e, v)
 }
