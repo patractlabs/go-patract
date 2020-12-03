@@ -3,7 +3,6 @@ package metadata
 import (
 	"encoding/json"
 
-	"github.com/centrifuge/go-substrate-rpc-client/scale"
 	"github.com/pkg/errors"
 )
 
@@ -100,6 +99,8 @@ func NewTypeDef(raw *rawTypeDef) *TypeDef {
 		switch k {
 		case "primitive":
 			res.def = newDefPrimitive(jsonRaw)
+		case "composite":
+			res.def = newDefComposite(jsonRaw)
 		default:
 			panic(errors.Errorf("type def raw error by key %v not expect", k))
 		}
@@ -108,10 +109,10 @@ func NewTypeDef(raw *rawTypeDef) *TypeDef {
 	return res
 }
 
-func (t *TypeDef) Encode(e *scale.Encoder, v interface{}) error {
-	return t.def.Encode(e, v)
+func (t *TypeDef) Encode(ctx CodecContext, v interface{}) error {
+	return t.def.Encode(ctx, v)
 }
 
-func (t *TypeDef) Decode(e *scale.Decoder, v interface{}) error {
-	return t.def.Decode(e, v)
+func (t *TypeDef) Decode(ctx CodecContext, v interface{}) error {
+	return t.def.Decode(ctx, v)
 }

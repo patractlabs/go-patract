@@ -33,15 +33,17 @@ func TestPrimitiveEncode(t *testing.T) {
 	toData := types.MustHexDecodeString("0x00000000109f4bb31507c97bce97c000")
 
 	encoder := scale.NewEncoder(bz)
+	ctx := metadata.NewCtxForEncoder(nil, encoder)
 
-	err := def.Encode(encoder, types.NewU128(*v))
+	err := def.Encode(ctx, types.NewU128(*v))
 	assert.Nil(t, err)
 	assert.Equal(t, bz.Bytes(), toData)
 
 	decoder := scale.NewDecoder(bytes.NewReader(toData))
 	i128 := types.NewU128(*big.NewInt(0))
+	ctx = metadata.NewCtxForDecoder(nil, decoder)
 
-	err = def.Decode(decoder, &i128)
+	err = def.Decode(ctx, &i128)
 	assert.Nil(t, err)
 	assert.Equal(t, i128, types.NewU128(*v))
 
