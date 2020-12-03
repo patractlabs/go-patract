@@ -12,12 +12,6 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-type testCompos struct {
-	I1 types.U128 `scale:"i1"`
-	I2 types.U128 `scale:"i2"`
-	B1 types.Bool `scale:"b1"`
-}
-
 func TestCompositeEncodeDecode(t *testing.T) {
 	raw := loadMetaData4Test(`
 {

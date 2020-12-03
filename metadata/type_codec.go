@@ -253,18 +253,84 @@ func (d *defComposite) Decode(ctx CodecContext, value interface{}) error {
 }
 
 type defArray struct {
+	TypeIndex int `json:"type"`
+	Len       int `json:"len"`
 }
 
 func newDefArray(raw json.RawMessage) *defArray {
 	res := &defArray{}
+
+	if err := json.Unmarshal(raw, res); err != nil {
+		panic(err)
+	}
+
 	return res
 }
 
 func (d *defArray) Encode(ctx CodecContext, value interface{}) error {
+	// if value not len enough, append nil value
+	t := reflect.ValueOf(value)
+	tk := t.Kind()
+
+	if tk != reflect.Array && tk != reflect.Slice {
+		return errors.Errorf("def array need value is array type by %v %v", tk, value)
+	}
+
+	defCodec := ctx.GetDefCodecByIndex(d.TypeIndex)
+
+	l := t.Len()
+	if l > d.Len {
+		return errors.Errorf("value len larger than def by %d > %d", l, d.Len)
+	}
+
+	ctx.logger.Debug("encode array", "val", value, "tk", tk)
+
+	for i := 0; i < l && i < d.Len; i++ {
+		if err := defCodec.Encode(ctx, t.Index(i).Interface()); err != nil {
+			return errors.Wrapf(err, "failed encode %d", i)
+		}
+	}
+
+	tNil := reflect.New(reflect.TypeOf(value))
+	for i := l; i < d.Len; i++ {
+		if err := defCodec.Encode(ctx, tNil.Interface()); err != nil {
+			return errors.Wrapf(err, "failed encode with nil %d", i)
+		}
+	}
+
 	return nil
 }
 
 func (d *defArray) Decode(ctx CodecContext, value interface{}) error {
+	t0 := reflect.TypeOf(value)
+	if t0.Kind() != reflect.Ptr {
+		return errors.New("Target must be a pointer, but was " + fmt.Sprint(t0))
+	}
+
+	val := reflect.ValueOf(value)
+	if val.IsNil() {
+		return errors.New("Target is a nil pointer")
+	}
+
+	target := val.Elem()
+
+	t := target.Type()
+	if !target.CanSet() {
+		return fmt.Errorf("Unsettable value %v", t)
+	}
+
+	defCodec := ctx.GetDefCodecByIndex(d.TypeIndex)
+
+	ctx.logger.Debug("decode target", "val", value, "target", target)
+
+	targetLen := target.Len()
+	for i := 0; i < targetLen; i++ {
+		fi := target.Index(i).Addr().Interface()
+		if err := defCodec.Decode(ctx, fi); err != nil {
+			return errors.Wrapf(err, "failed decode %d", i)
+		}
+	}
+
 	return nil
 }
 
