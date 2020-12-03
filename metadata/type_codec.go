@@ -73,6 +73,12 @@ type DefCodec interface {
 	Decode(ctx CodecContext, target interface{}) error
 }
 
+var _, _, _, _, _ DefCodec = &defPrimitive{},
+	&defComposite{},
+	&defArray{},
+	&defVariant{},
+	&defTuple{}
+
 type defPrimitive struct {
 	typ reflect.Kind
 }
@@ -215,7 +221,7 @@ func (d *defComposite) Decode(ctx CodecContext, value interface{}) error {
 
 	t := target.Type()
 	if !target.CanSet() {
-		return fmt.Errorf("Unsettable value %v", t)
+		return errors.Errorf("Unsettable value %v", t)
 	}
 
 	for idx, field := range d.Fields {
@@ -243,5 +249,53 @@ func (d *defComposite) Decode(ctx CodecContext, value interface{}) error {
 			}
 		}
 	}
+	return nil
+}
+
+type defArray struct {
+}
+
+func newDefArray(raw json.RawMessage) *defArray {
+	res := &defArray{}
+	return res
+}
+
+func (d *defArray) Encode(ctx CodecContext, value interface{}) error {
+	return nil
+}
+
+func (d *defArray) Decode(ctx CodecContext, value interface{}) error {
+	return nil
+}
+
+type defTuple struct {
+}
+
+func newDefTuple(raw json.RawMessage) *defTuple {
+	res := &defTuple{}
+	return res
+}
+
+func (d *defTuple) Encode(ctx CodecContext, value interface{}) error {
+	return nil
+}
+
+func (d *defTuple) Decode(ctx CodecContext, value interface{}) error {
+	return nil
+}
+
+type defVariant struct {
+}
+
+func newDefVariant(raw json.RawMessage) *defVariant {
+	res := &defVariant{}
+	return res
+}
+
+func (d *defVariant) Encode(ctx CodecContext, value interface{}) error {
+	return nil
+}
+
+func (d *defVariant) Decode(ctx CodecContext, value interface{}) error {
 	return nil
 }

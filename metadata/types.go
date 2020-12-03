@@ -101,6 +101,12 @@ func NewTypeDef(raw *rawTypeDef) *TypeDef {
 			res.def = newDefPrimitive(jsonRaw)
 		case "composite":
 			res.def = newDefComposite(jsonRaw)
+		case "array":
+			res.def = newDefArray(jsonRaw)
+		case "variant":
+			res.def = newDefVariant(jsonRaw)
+		case "tuple":
+			res.def = newDefTuple(jsonRaw)
 		default:
 			panic(errors.Errorf("type def raw error by key %v not expect", k))
 		}
