@@ -316,7 +316,7 @@ func (d *defArray) Decode(ctx CodecContext, value interface{}) error {
 
 	t := target.Type()
 	if !target.CanSet() {
-		return fmt.Errorf("Unsettable value %v", t)
+		return errors.Errorf("Unsettable value %v", t)
 	}
 
 	defCodec := ctx.GetDefCodecByIndex(d.TypeIndex)
