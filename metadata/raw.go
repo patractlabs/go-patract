@@ -1,8 +1,7 @@
 package metadata
 
 import (
-	"encoding/json"
-
+	"github.com/patractlabs/go-patract/utils"
 	"github.com/pkg/errors"
 )
 
@@ -66,59 +65,19 @@ type ConstructorRaw struct {
 		Name string    `json:"name"`
 		Type TypeIndex `json:"type"`
 	} `json:"args"`
-	Docs     []string `json:"docs"`
-	Name     []string `json:"name"`
-	Selector string   `json:"selector"`
+	Docs         []string `json:"docs"`
+	Name         []string `json:"name"`
+	Selector     string   `json:"selector"`
+	SelectorData []byte   `json:"-"`
 }
 
-// rawTypeDef type definition
-type rawTypeDef struct {
-	Def    map[string]json.RawMessage `json:"def"`
-	Params []int                      `json:"params"`
-	Path   []string                   `json:"path"`
-}
-
-// TypeDef type definition
-type TypeDef struct {
-	def    DefCodec
-	Params []int
-	Path   []string
-}
-
-func NewTypeDef(raw *rawTypeDef) *TypeDef {
-	if len(raw.Def) != 1 {
-		panic(errors.Errorf("type def raw error by not key %v", raw.Def))
-	}
-
-	res := &TypeDef{
-		Params: raw.Params,
-		Path:   raw.Path,
-	}
-
-	for k, jsonRaw := range raw.Def {
-		switch k {
-		case "primitive":
-			res.def = newDefPrimitive(jsonRaw)
-		case "composite":
-			res.def = newDefComposite(jsonRaw)
-		case "array":
-			res.def = newDefArray(jsonRaw)
-		case "variant":
-			res.def = newDefVariant(jsonRaw)
-		case "tuple":
-			res.def = newDefTuple(jsonRaw)
-		default:
-			panic(errors.Errorf("type def raw error by key %v not expect", k))
+// GetConstructor get constructor by name
+func (r *Raw) GetConstructor(name []string) (ConstructorRaw, error) {
+	for _, c := range r.Spec.Constructors {
+		if utils.IsNameEqual(c.Name, name) {
+			return c, nil
 		}
 	}
 
-	return res
-}
-
-func (t *TypeDef) Encode(ctx CodecContext, v interface{}) error {
-	return t.def.Encode(ctx, v)
-}
-
-func (t *TypeDef) Decode(ctx CodecContext, v interface{}) error {
-	return t.def.Decode(ctx, v)
+	return ConstructorRaw{}, errors.Errorf("no found constructor for %s", name)
 }

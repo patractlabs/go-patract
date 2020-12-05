@@ -31,6 +31,11 @@ func (c Client) API() *gsrpc.SubstrateAPI {
 	return c.rpcAPI
 }
 
+// WithLogger set logger
+func (c *Client) WithLogger(logger log.Logger) {
+	c.logger = logger
+}
+
 // SubmitAndWaitExtrinsic submit and wait extrinsic into chain
 func (c *Client) SubmitAndWaitExtrinsic(ctx Context, call string, args ...interface{}) (string, error) {
 	c.logger.Debug("submitAndWatchExtrinsic", "call", call)

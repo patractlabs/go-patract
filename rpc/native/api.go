@@ -3,6 +3,7 @@ package native
 import (
 	"github.com/patractlabs/go-patract/api"
 	"github.com/patractlabs/go-patract/types"
+	"github.com/patractlabs/go-patract/utils/log"
 )
 
 // ContractAPI the api for contract
@@ -15,6 +16,11 @@ func NewContractAPI(cli *api.Client) *ContractAPI {
 	return &ContractAPI{
 		Cli: cli,
 	}
+}
+
+// WithLogger set logger
+func (c *ContractAPI) WithLogger(logger log.Logger) {
+	c.Cli.WithLogger(logger)
 }
 
 // UpdateSchedule Updates the schedule for metering contracts.
