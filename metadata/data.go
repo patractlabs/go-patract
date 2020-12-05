@@ -1,9 +1,12 @@
 package metadata
 
 import (
+	"bytes"
 	"encoding/json"
 
+	"github.com/centrifuge/go-substrate-rpc-client/scale"
 	"github.com/centrifuge/go-substrate-rpc-client/types"
+	"github.com/patractlabs/go-patract/utils/log"
 	"github.com/pkg/errors"
 )
 
@@ -39,6 +42,17 @@ func New(bz []byte) (*Data, error) {
 		res.Raw.Spec.Constructors[i].SelectorData = bz
 	}
 
+	for i := 0; i < len(res.Raw.Spec.Messages); i++ {
+		selectorStr := res.Raw.Spec.Messages[i].Selector
+
+		bz, err := types.HexDecodeString(selectorStr)
+		if err != nil {
+			return nil, errors.Wrapf(err, "decode str selector from %s", selectorStr)
+		}
+
+		res.Raw.Spec.Messages[i].SelectorData = bz
+	}
+
 	return res, nil
 }
 
@@ -49,4 +63,25 @@ func (d *Data) GetCodecByTypeIdx(i TypeIndex) (DefCodec, error) {
 	}
 
 	return d.Codecs[i.Type-1], nil
+}
+
+// NewCtxForDecode new ctx for decoder
+func (d *Data) NewCtxForDecode(bz []byte) CodecContext {
+	decoder := scale.NewDecoder(bytes.NewReader(bz))
+	return CodecContext{
+		logger:  log.NewNopLogger(),
+		typs:    d.Codecs,
+		decoder: decoder,
+	}
+}
+
+func (d *Data) Decode(res interface{}, typ TypeIndex, bz []byte) error {
+	ctx := d.NewCtxForDecode(bz)
+
+	codec, err := d.GetCodecByTypeIdx(typ)
+	if err != nil {
+		return err
+	}
+
+	return codec.Decode(ctx, res)
 }

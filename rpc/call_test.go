@@ -7,13 +7,13 @@ import (
 
 	"github.com/patractlabs/go-patract/rpc"
 	"github.com/patractlabs/go-patract/test"
-	"github.com/patractlabs/go-patract/test/contracts"
 	"github.com/patractlabs/go-patract/types"
+	"github.com/patractlabs/go-patract/utils"
 	"github.com/patractlabs/go-patract/utils/log"
 	"github.com/stretchr/testify/require"
 )
 
-func TestDeployAndCallERC20(t *testing.T) {
+func TestCallERC20(t *testing.T) {
 	test.ByExternCanvasEnv(t, func(logger log.Logger, env test.Env) {
 		require := require.New(t)
 
@@ -31,17 +31,24 @@ func TestDeployAndCallERC20(t *testing.T) {
 
 		ctx := rpc.NewCtx(context.Background()).WithFrom(authKey)
 
+		req := struct {
+			Address types.AccountID
+		}{
+			Address: utils.MustAccountIDFromSS58(authKey.Address),
+		}
+		var res types.U128
+
 		// Instantiate
-		hash, err := api.Instantiate(ctx,
-			types.NewCompactBalance(10000000000000000),
-			types.NewCompactGas(test.DefaultGas),
-			contracts.CodeHashERC20,
-			types.NewU128(totalSupply),
+		err = api.Call(ctx,
+			&res,
+			"5HKinTRKW9THEJxbQb22Nfyq9FPWNVZ9DQ2GEQ4Vg1LqTPuk",
+			[]string{"balance_of"},
+			req,
 		)
 
 		require.Nil(err)
-		t.Logf("instantiate hash %v", hash)
-
+		t.Logf("call hash %v", res)
+		t.Logf("res %v", res)
 		// transfer
 	})
 }

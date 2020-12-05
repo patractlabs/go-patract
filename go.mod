@@ -3,6 +3,7 @@ module github.com/patractlabs/go-patract
 go 1.15
 
 require (
+	github.com/btcsuite/btcutil v1.0.2
 	github.com/centrifuge/go-substrate-rpc-client v2.0.0+incompatible
 	github.com/deckarep/golang-set v1.7.1 // indirect
 	github.com/ethereum/go-ethereum v1.9.24 // indirect
