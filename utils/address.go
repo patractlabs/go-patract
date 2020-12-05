@@ -60,19 +60,18 @@ func DecodeAccountIDFromSS58(address string) (types.AccountID, error) {
 
 			if (a[addressLength-2] == h[0]) && (a[addressLength-1] == h[1]) {
 				return types.NewAccountID(a[1:]), nil
-			} else {
-				return types.AccountID{},
-					errors.Errorf("invalid checksum %x%x, expected %x%x",
-						a[addressLength-2], a[addressLength-1],
-						h[0], h[1])
 			}
 
-		} else {
-			return types.AccountID{}, errors.New("invalid length")
+			return types.AccountID{},
+				errors.Errorf("invalid checksum %x%x, expected %x%x",
+					a[addressLength-2], a[addressLength-1],
+					h[0], h[1])
 		}
-	} else {
-		return types.AccountID{}, errors.New("invalid version")
+
+		return types.AccountID{}, errors.New("invalid length")
 	}
+
+	return types.AccountID{}, errors.New("invalid version")
 }
 
 // EncodeAccountIDToSS58 encode accountID to ss58 format

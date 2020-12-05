@@ -26,8 +26,8 @@ func New(bz []byte) (*Data, error) {
 	}
 
 	res.Codecs = make([]DefCodec, 0, len(res.Raw.Types))
-	for _, ty := range res.Raw.Types {
-		res.Codecs = append(res.Codecs, NewTypeDef(&ty))
+	for idx := range res.Raw.Types {
+		res.Codecs = append(res.Codecs, NewTypeDef(&res.Raw.Types[idx]))
 	}
 
 	// parse datas

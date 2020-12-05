@@ -10,6 +10,11 @@ import (
 	"github.com/pkg/errors"
 )
 
+const (
+	// DefaultGasLimitForCall just default gas
+	DefaultGasLimitForCall = 5000000000000
+)
+
 func (c *Contract) encodeDataFromArgs(argsToEncode []metadata.ArgRaw, args ...interface{}) ([]byte, error) {
 	if len(argsToEncode) != len(args) {
 		return nil, errors.Errorf(
@@ -59,7 +64,6 @@ func (c *Contract) getMessagesData(name []string, args ...interface{}) ([]byte, 
 	}
 
 	return buf.Bytes(), nil
-
 }
 
 func (c *Contract) getConstructorsData(name []string, args ...interface{}) ([]byte, error) {
@@ -94,7 +98,7 @@ func (c *Contract) getConstructorsData(name []string, args ...interface{}) ([]by
 	return buf.Bytes(), nil
 }
 
-// Call constracts call
+// Call contract call
 func (c *Contract) Call(ctx api.Context, result interface{},
 	contractHash string,
 	call []string,
@@ -108,7 +112,7 @@ func (c *Contract) Call(ctx api.Context, result interface{},
 	}{
 		Origin:   ctx.From().Address,
 		Dest:     contractHash,
-		GasLimit: 5000000000000,
+		GasLimit: DefaultGasLimitForCall,
 	}
 
 	data, err := c.getMessagesData(call, args...)
@@ -129,6 +133,9 @@ func (c *Contract) Call(ctx api.Context, result interface{},
 	}{}
 
 	err = c.native.Cli.Call(&res, "contracts_call", params)
+	if err != nil {
+		return errors.Wrap(err, "call")
+	}
 
 	c.logger.Debug("contracts call", "call", call, "res", res)
 
