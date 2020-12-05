@@ -335,18 +335,74 @@ func (d *defArray) Decode(ctx CodecContext, value interface{}) error {
 }
 
 type defTuple struct {
+	TypeIndexs []int
 }
 
 func newDefTuple(raw json.RawMessage) *defTuple {
 	res := &defTuple{}
+
+	if err := json.Unmarshal(raw, &res.TypeIndexs); err != nil {
+		panic(err)
+	}
+
 	return res
 }
 
 func (d *defTuple) Encode(ctx CodecContext, value interface{}) error {
+	if len(d.TypeIndexs) == 0 {
+		return nil
+	}
+
+	// if value not len enough, append nil value
+	t := reflect.ValueOf(value)
+
+	if len(d.TypeIndexs) != t.NumField() {
+		return errors.Errorf("tuple fields count not equal by %d, expect %d",
+			t.NumField(), len(d.TypeIndexs))
+	}
+
+	for i, typ := range d.TypeIndexs {
+		defCodec := ctx.GetDefCodecByIndex(typ)
+		f := t.Field(i).Interface()
+		if err := defCodec.Encode(ctx, f); err != nil {
+			return errors.Wrapf(err, "failed encode %d", i)
+		}
+	}
+
 	return nil
 }
 
 func (d *defTuple) Decode(ctx CodecContext, value interface{}) error {
+	t0 := reflect.TypeOf(value)
+	if t0.Kind() != reflect.Ptr {
+		return errors.New("Target must be a pointer, but was " + fmt.Sprint(t0))
+	}
+
+	val := reflect.ValueOf(value)
+	if val.IsNil() {
+		return errors.New("Target is a nil pointer")
+	}
+
+	target := val.Elem()
+
+	t := target.Type()
+	if !target.CanSet() {
+		return errors.Errorf("Unsettable value %v", t)
+	}
+
+	if len(d.TypeIndexs) != target.NumField() {
+		return errors.Errorf("tuple field count not equal by %d, expect %d",
+			target.NumField(), len(d.TypeIndexs))
+	}
+
+	for i, typ := range d.TypeIndexs {
+		defCodec := ctx.GetDefCodecByIndex(typ)
+		fi := target.Field(i).Addr().Interface()
+		if err := defCodec.Decode(ctx, fi); err != nil {
+			return errors.Wrapf(err, "failed decode %d", i)
+		}
+	}
+
 	return nil
 }
 
