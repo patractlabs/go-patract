@@ -406,11 +406,25 @@ func (d *defTuple) Decode(ctx CodecContext, value interface{}) error {
 	return nil
 }
 
+type variantType struct {
+	Name   string `json:"name"`
+	Fields []struct {
+		Typ int `json:"type"`
+	}
+	Discriminant int `json:"discriminant"`
+}
+
 type defVariant struct {
+	Variants []variantType `json:"variants"`
 }
 
 func newDefVariant(raw json.RawMessage) *defVariant {
 	res := &defVariant{}
+
+	if err := json.Unmarshal(raw, &res); err != nil {
+		panic(err)
+	}
+
 	return res
 }
 
