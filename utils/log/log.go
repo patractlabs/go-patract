@@ -31,6 +31,13 @@ func NewLogger() Logger {
 	}
 }
 
+// NewNopLogger create a nop logger
+func NewNopLogger() Logger {
+	return &loggerByZap{
+		l: zap.NewNop(),
+	}
+}
+
 // Debug imp debug log
 func (l *loggerByZap) Debug(msg string, args ...interface{}) {
 	if len(args) == 0 {

@@ -1,0 +1,437 @@
+package metadata
+
+import (
+	"encoding/json"
+	"fmt"
+	"math/big"
+	"reflect"
+
+	"github.com/centrifuge/go-substrate-rpc-client/scale"
+	"github.com/centrifuge/go-substrate-rpc-client/types"
+	"github.com/patractlabs/go-patract/utils/log"
+	"github.com/pkg/errors"
+)
+
+const (
+	// DefTypComposite composite type def
+	DefTypComposite = "composite"
+
+	// DefTypPrimitive primitive type def
+	DefTypPrimitive = "primitive"
+
+	// DefTypVariant variant type def
+	DefTypVariant = "variant"
+
+	// DefTypArray array type def
+	DefTypArray = "array"
+
+	// DefTypTuple tuple type def
+	DefTypTuple = "tuple"
+)
+
+// CodecContext context for codec by type def
+type CodecContext struct {
+	logger log.Logger
+
+	encoder *scale.Encoder
+	decoder *scale.Decoder
+	typs    []DefCodec
+}
+
+// NewCtxForEncoder new ctx for encoder
+func NewCtxForEncoder(typs []DefCodec, encoder *scale.Encoder) CodecContext {
+	return CodecContext{
+		logger:  log.NewNopLogger(),
+		typs:    typs,
+		encoder: encoder,
+	}
+}
+
+// NewCtxForDecoder new ctx for decoder
+func NewCtxForDecoder(typs []DefCodec, decoder *scale.Decoder) CodecContext {
+	return CodecContext{
+		logger:  log.NewNopLogger(),
+		typs:    typs,
+		decoder: decoder,
+	}
+}
+
+// WithLogger with logger for ctx
+func (c CodecContext) WithLogger(logger log.Logger) CodecContext {
+	c.logger = logger
+	return c
+}
+
+// GetDefCodecByIndex get def codec by index
+func (c CodecContext) GetDefCodecByIndex(i int) DefCodec {
+	return c.typs[i-1]
+}
+
+// DefCodec interface to def codec
+type DefCodec interface {
+	Encode(ctx CodecContext, value interface{}) error
+	Decode(ctx CodecContext, target interface{}) error
+}
+
+var _, _, _, _, _ DefCodec = &defPrimitive{},
+	&defComposite{},
+	&defArray{},
+	&defVariant{},
+	&defTuple{}
+
+type defPrimitive struct {
+	typ reflect.Kind
+}
+
+func newDefPrimitive(raw json.RawMessage) *defPrimitive {
+	var typ string
+
+	if err := json.Unmarshal(raw, &typ); err != nil {
+		panic(errors.Wrapf(err, "failed to unmarshal primitive %s", string(raw)))
+	}
+
+	return &defPrimitive{
+		typ: getKindFromTypeString(typ),
+	}
+}
+
+func (d *defPrimitive) Encode(ctx CodecContext, value interface{}) error {
+	// for primitive, just can encode base types, check types
+	t := reflect.TypeOf(value)
+	tk := t.Kind()
+
+	if tk != d.typ {
+		return errors.Errorf("type not equal, expect %v, got %v", d.typ, tk)
+	}
+
+	return ctx.encoder.Encode(value)
+}
+
+func (d *defPrimitive) Decode(ctx CodecContext, target interface{}) error {
+	// for primitive, just can encode base types, check types
+	t := reflect.TypeOf(target)
+	if t.Kind() != reflect.Ptr {
+		return errors.Errorf("Target must be a pointer, but was %s", fmt.Sprint(t))
+	}
+
+	val := reflect.ValueOf(target)
+	if val.IsNil() {
+		return errors.New("Target is a nil pointer")
+	}
+
+	tk := val.Elem().Kind()
+
+	if tk != d.typ {
+		return errors.Errorf("type not equal, expect %v, got %v", d.typ, tk)
+	}
+
+	return ctx.decoder.Decode(target)
+}
+
+func getKindFromTypeString(typ string) reflect.Kind {
+	switch typ {
+	case "bool":
+		return reflect.TypeOf(types.NewBool(false)).Kind()
+	case "u8":
+		return reflect.TypeOf(types.NewU8(0)).Kind()
+	case "u16":
+		return reflect.TypeOf(types.NewU16(0)).Kind()
+	case "u32":
+		return reflect.TypeOf(types.NewU32(0)).Kind()
+	case "u64":
+		return reflect.TypeOf(types.NewU64(0)).Kind()
+	case "u128":
+		return reflect.TypeOf(types.NewU128(big.Int{})).Kind()
+	case "i8":
+		return reflect.TypeOf(types.NewI8(0)).Kind()
+	case "i16":
+		return reflect.TypeOf(types.NewI16(0)).Kind()
+	case "i32":
+		return reflect.TypeOf(types.NewI32(0)).Kind()
+	case "i64":
+		return reflect.TypeOf(types.NewI64(0)).Kind()
+	case "i128":
+		return reflect.TypeOf(types.NewI128(big.Int{})).Kind()
+	default:
+		panic(errors.Errorf("unknown type by %s", typ))
+	}
+}
+
+type compositeField struct {
+	Name      string `json:"name"`
+	TypeIndex int    `json:"type"`
+}
+
+type defComposite struct {
+	Fields []compositeField `json:"fields"`
+}
+
+func newDefComposite(raw json.RawMessage) *defComposite {
+	res := &defComposite{}
+
+	if err := json.Unmarshal(raw, res); err != nil {
+		panic(err)
+	}
+
+	return res
+}
+
+func (d *defComposite) Encode(ctx CodecContext, value interface{}) error {
+	target := reflect.ValueOf(value)
+
+	for idx, field := range d.Fields {
+		ctx.logger.Debug("defComposite encode", "idx", idx, "field", field)
+
+		// find field to value
+		for i := 0; i < target.NumField(); i++ {
+			ft := target.Type().Field(i)
+			tv, ok := ft.Tag.Lookup("scale")
+			if ok && tv == "-" {
+				continue
+			}
+
+			if tv == field.Name {
+				ctx.logger.Debug("target", "field", tv, "v", target.Field(i))
+
+				def := ctx.GetDefCodecByIndex(field.TypeIndex)
+				if err := def.Encode(ctx, target.Field(i).Interface()); err != nil {
+					return errors.Wrapf(err,
+						"encode composite field %s %d", field.Name, i)
+				}
+				break
+			}
+		}
+	}
+
+	return nil
+}
+
+func (d *defComposite) Decode(ctx CodecContext, value interface{}) error {
+	t0 := reflect.TypeOf(value)
+	if t0.Kind() != reflect.Ptr {
+		return errors.New("Target must be a pointer, but was " + fmt.Sprint(t0))
+	}
+
+	val := reflect.ValueOf(value)
+	if val.IsNil() {
+		return errors.New("Target is a nil pointer")
+	}
+
+	target := val.Elem()
+
+	t := target.Type()
+	if !target.CanSet() {
+		return errors.Errorf("Unsettable value %v", t)
+	}
+
+	for idx, field := range d.Fields {
+		ctx.logger.Debug("defComposite decode", "idx", idx, "field", field)
+
+		// find field to value
+		for i := 0; i < target.NumField(); i++ {
+			ft := target.Type().Field(i)
+			tv, ok := ft.Tag.Lookup("scale")
+			if ok && tv == "-" {
+				continue
+			}
+
+			if tv == field.Name {
+				ctx.logger.Debug("target", "field", tv, "v", target.Field(i))
+				def := ctx.GetDefCodecByIndex(field.TypeIndex)
+
+				fi := target.Field(i).Addr().Interface()
+
+				if err := def.Decode(ctx, fi); err != nil {
+					return errors.Wrapf(err,
+						"decode composite field %s %d", field.Name, i)
+				}
+				break
+			}
+		}
+	}
+	return nil
+}
+
+type defArray struct {
+	TypeIndex int `json:"type"`
+	Len       int `json:"len"`
+}
+
+func newDefArray(raw json.RawMessage) *defArray {
+	res := &defArray{}
+
+	if err := json.Unmarshal(raw, res); err != nil {
+		panic(err)
+	}
+
+	return res
+}
+
+func (d *defArray) Encode(ctx CodecContext, value interface{}) error {
+	// if value not len enough, append nil value
+	t := reflect.ValueOf(value)
+	tk := t.Kind()
+
+	if tk != reflect.Array && tk != reflect.Slice {
+		return errors.Errorf("def array need value is array type by %v %v", tk, value)
+	}
+
+	defCodec := ctx.GetDefCodecByIndex(d.TypeIndex)
+
+	l := t.Len()
+	if l > d.Len {
+		return errors.Errorf("value len larger than def by %d > %d", l, d.Len)
+	}
+
+	ctx.logger.Debug("encode array", "val", value, "tk", tk)
+
+	for i := 0; i < l && i < d.Len; i++ {
+		if err := defCodec.Encode(ctx, t.Index(i).Interface()); err != nil {
+			return errors.Wrapf(err, "failed encode %d", i)
+		}
+	}
+
+	tNil := reflect.New(reflect.TypeOf(value))
+	for i := l; i < d.Len; i++ {
+		if err := defCodec.Encode(ctx, tNil.Interface()); err != nil {
+			return errors.Wrapf(err, "failed encode with nil %d", i)
+		}
+	}
+
+	return nil
+}
+
+func (d *defArray) Decode(ctx CodecContext, value interface{}) error {
+	t0 := reflect.TypeOf(value)
+	if t0.Kind() != reflect.Ptr {
+		return errors.New("Target must be a pointer, but was " + fmt.Sprint(t0))
+	}
+
+	val := reflect.ValueOf(value)
+	if val.IsNil() {
+		return errors.New("Target is a nil pointer")
+	}
+
+	target := val.Elem()
+
+	t := target.Type()
+	if !target.CanSet() {
+		return errors.Errorf("Unsettable value %v", t)
+	}
+
+	defCodec := ctx.GetDefCodecByIndex(d.TypeIndex)
+
+	ctx.logger.Debug("decode target", "val", value, "target", target)
+
+	targetLen := target.Len()
+	for i := 0; i < targetLen; i++ {
+		fi := target.Index(i).Addr().Interface()
+		if err := defCodec.Decode(ctx, fi); err != nil {
+			return errors.Wrapf(err, "failed decode %d", i)
+		}
+	}
+
+	return nil
+}
+
+type defTuple struct {
+	TypeIndexs []int
+}
+
+func newDefTuple(raw json.RawMessage) *defTuple {
+	res := &defTuple{}
+
+	if err := json.Unmarshal(raw, &res.TypeIndexs); err != nil {
+		panic(err)
+	}
+
+	return res
+}
+
+func (d *defTuple) Encode(ctx CodecContext, value interface{}) error {
+	if len(d.TypeIndexs) == 0 {
+		return nil
+	}
+
+	// if value not len enough, append nil value
+	t := reflect.ValueOf(value)
+
+	if len(d.TypeIndexs) != t.NumField() {
+		return errors.Errorf("tuple fields count not equal by %d, expect %d",
+			t.NumField(), len(d.TypeIndexs))
+	}
+
+	for i, typ := range d.TypeIndexs {
+		defCodec := ctx.GetDefCodecByIndex(typ)
+		f := t.Field(i).Interface()
+		if err := defCodec.Encode(ctx, f); err != nil {
+			return errors.Wrapf(err, "failed encode %d", i)
+		}
+	}
+
+	return nil
+}
+
+func (d *defTuple) Decode(ctx CodecContext, value interface{}) error {
+	t0 := reflect.TypeOf(value)
+	if t0.Kind() != reflect.Ptr {
+		return errors.New("Target must be a pointer, but was " + fmt.Sprint(t0))
+	}
+
+	val := reflect.ValueOf(value)
+	if val.IsNil() {
+		return errors.New("Target is a nil pointer")
+	}
+
+	target := val.Elem()
+
+	t := target.Type()
+	if !target.CanSet() {
+		return errors.Errorf("Unsettable value %v", t)
+	}
+
+	if len(d.TypeIndexs) != target.NumField() {
+		return errors.Errorf("tuple field count not equal by %d, expect %d",
+			target.NumField(), len(d.TypeIndexs))
+	}
+
+	for i, typ := range d.TypeIndexs {
+		defCodec := ctx.GetDefCodecByIndex(typ)
+		fi := target.Field(i).Addr().Interface()
+		if err := defCodec.Decode(ctx, fi); err != nil {
+			return errors.Wrapf(err, "failed decode %d", i)
+		}
+	}
+
+	return nil
+}
+
+type variantType struct {
+	Name   string `json:"name"`
+	Fields []struct {
+		Typ int `json:"type"`
+	}
+	Discriminant int `json:"discriminant"`
+}
+
+type defVariant struct {
+	Variants []variantType `json:"variants"`
+}
+
+func newDefVariant(raw json.RawMessage) *defVariant {
+	res := &defVariant{}
+
+	if err := json.Unmarshal(raw, &res); err != nil {
+		panic(err)
+	}
+
+	return res
+}
+
+func (d *defVariant) Encode(ctx CodecContext, value interface{}) error {
+	return nil
+}
+
+func (d *defVariant) Decode(ctx CodecContext, value interface{}) error {
+	return nil
+}

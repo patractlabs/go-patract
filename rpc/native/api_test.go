@@ -13,7 +13,7 @@ import (
 	"github.com/patractlabs/go-patract/test/contracts"
 	"github.com/patractlabs/go-patract/types"
 	"github.com/patractlabs/go-patract/utils/log"
-	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 var (
@@ -23,54 +23,54 @@ var (
 )
 
 func TestPutCode(t *testing.T) {
-	assert := assert.New(t)
+	require := require.New(t)
 
 	codeBytes, err := ioutil.ReadFile("../../test/contracts/ink/erc20.wasm")
-	assert.Nil(err)
+	require.Nil(err)
 
 	test.ByCanvasEnv(t, func(logger log.Logger, env test.Env) {
 		cli, err := api.NewClient(logger, env.URL())
-		assert.Nil(err)
+		require.Nil(err)
 
 		contractCli := native.NewContractAPI(cli)
 
 		_, err = contractCli.PutCode(api.NewCtx(context.Background()).WithFrom(authKey), codeBytes)
-		assert.Nil(err)
+		require.Nil(err)
 
 		// check code
 		var codeBz []byte
 		if err := cli.GetStorageLatest(&codeBz,
 			"Contracts", "PristineCode",
 			[]byte(contracts.CodeHashERC20[:]), nil); err != nil {
-			assert.Nil(err)
+			require.Nil(err)
 		}
 
-		assert.True(bytes.Equal(codeBytes, codeBz), "code should be equal")
+		require.True(bytes.Equal(codeBytes, codeBz), "code should be equal")
 	})
 }
 
 func TestDeployAndCallERC20(t *testing.T) {
-	assert := assert.New(t)
+	require := require.New(t)
 
 	codeBytes, err := ioutil.ReadFile("../../test/contracts/ink/erc20.wasm")
-	assert.Nil(err)
+	require.Nil(err)
 
 	test.ByCanvasEnv(t, func(logger log.Logger, env test.Env) {
 		cli, err := api.NewClient(logger, env.URL())
-		assert.Nil(err)
+		require.Nil(err)
 
 		contractCli := native.NewContractAPI(cli)
 		ctx := api.NewCtx(context.Background()).WithFrom(authKey)
 
 		_, err = contractCli.PutCode(ctx, codeBytes)
-		assert.Nil(err)
+		require.Nil(err)
 
 		// check code
 		var codeBz []byte
 		if err := cli.GetStorageLatest(&codeBz,
 			"Contracts", "PristineCode",
 			[]byte(contracts.CodeHashERC20[:]), nil); err != nil {
-			assert.Nil(err)
+			require.Nil(err)
 		}
 
 		instantiate4ERC20 := types.MustHexDecodeString("0xd183512b00000000109f4bb31507c97bce97c000")
@@ -82,6 +82,6 @@ func TestDeployAndCallERC20(t *testing.T) {
 			contracts.CodeHashERC20,
 			instantiate4ERC20,
 		)
-		assert.Nil(err)
+		require.Nil(err)
 	})
 }

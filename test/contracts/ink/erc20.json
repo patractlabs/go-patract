@@ -1,13 +1,13 @@
 {
   "metadataVersion": "0.1.0",
   "source": {
-    "hash": "0xe9c60864c76c770865b66c79aa304bc22d2d08cc799d36310df4256db107b8fc",
-    "language": "ink! 3.0.0-rc1",
-    "compiler": "rustc 1.48.0-nightly"
+    "hash": "0x57f26a48169e57f118f6a0bca610a09b85cac7892f73c48f0c409cc8971817e7",
+    "language": "ink! 3.0.0-rc2",
+    "compiler": "rustc 1.49.0-nightly"
   },
   "contract": {
     "name": "erc20",
-    "version": "3.0.0-rc1",
+    "version": "3.0.0-rc2",
     "authors": [
       "Parity Technologies <admin@parity.io>"
     ]
@@ -26,7 +26,9 @@
             }
           }
         ],
-        "docs": [],
+        "docs": [
+          " Creates a new ERC-20 contract with the specified initial supply."
+        ],
         "name": [
           "new"
         ],
@@ -45,7 +47,7 @@
               "displayName": [
                 "Option"
               ],
-              "type": 13
+              "type": 15
             }
           },
           {
@@ -56,7 +58,7 @@
               "displayName": [
                 "Option"
               ],
-              "type": 13
+              "type": 15
             }
           },
           {
@@ -71,7 +73,9 @@
             }
           }
         ],
-        "docs": [],
+        "docs": [
+          " Event emitted when a token transfer occurs."
+        ],
         "name": "Transfer"
       },
       {
@@ -110,14 +114,19 @@
             }
           }
         ],
-        "docs": [],
+        "docs": [
+          " Event emitted when an approval occurs that `spender` is allowed to withdraw",
+          " up to the amount of `value` tokens from `owner`."
+        ],
         "name": "Approval"
       }
     ],
     "messages": [
       {
         "args": [],
-        "docs": [],
+        "docs": [
+          " Returns the total token supply."
+        ],
         "mutates": false,
         "name": [
           "total_supply"
@@ -143,7 +152,11 @@
             }
           }
         ],
-        "docs": [],
+        "docs": [
+          " Returns the account balance for the specified `owner`.",
+          "",
+          " Returns `0` if the account is non-existent."
+        ],
         "mutates": false,
         "name": [
           "balance_of"
@@ -178,7 +191,11 @@
             }
           }
         ],
-        "docs": [],
+        "docs": [
+          " Returns the amount which `spender` is still allowed to withdraw from `owner`.",
+          "",
+          " Returns `0` if no allowance has been set `0`."
+        ],
         "mutates": false,
         "name": [
           "allowance"
@@ -213,7 +230,16 @@
             }
           }
         ],
-        "docs": [],
+        "docs": [
+          " Transfers `value` amount of tokens from the caller's account to account `to`.",
+          "",
+          " On success a `Transfer` event is emitted.",
+          "",
+          " # Errors",
+          "",
+          " Returns `InsufficientBalance` error if there are not enough tokens on",
+          " the caller's account balance."
+        ],
         "mutates": true,
         "name": [
           "transfer"
@@ -221,7 +247,7 @@
         "payable": false,
         "returnType": {
           "displayName": [
-            "bool"
+            "Result"
           ],
           "type": 12
         },
@@ -248,7 +274,14 @@
             }
           }
         ],
-        "docs": [],
+        "docs": [
+          " Allows `spender` to withdraw from the caller's account multiple times, up to",
+          " the `value` amount.",
+          "",
+          " If this function is called again it overwrites the current allowance with `value`.",
+          "",
+          " An `Approval` event is emitted."
+        ],
         "mutates": true,
         "name": [
           "approve"
@@ -256,7 +289,7 @@
         "payable": false,
         "returnType": {
           "displayName": [
-            "bool"
+            "Result"
           ],
           "type": 12
         },
@@ -292,7 +325,22 @@
             }
           }
         ],
-        "docs": [],
+        "docs": [
+          " Transfers `value` tokens on the behalf of `from` to the account `to`.",
+          "",
+          " This can be used to allow a contract to transfer tokens on ones behalf and/or",
+          " to charge fees in sub-currencies, for example.",
+          "",
+          " On success a `Transfer` event is emitted.",
+          "",
+          " # Errors",
+          "",
+          " Returns `InsufficientAllowance` error if there are not enough tokens allowed",
+          " for the caller to withdraw from `from`.",
+          "",
+          " Returns `InsufficientBalance` error if there are not enough tokens on",
+          " the the account balance of `from`."
+        ],
         "mutates": true,
         "name": [
           "transfer_from"
@@ -300,7 +348,7 @@
         "payable": false,
         "returnType": {
           "displayName": [
-            "bool"
+            "Result"
           ],
           "type": 12
         },
@@ -672,8 +720,60 @@
     },
     {
       "def": {
-        "primitive": "bool"
+        "variant": {
+          "variants": [
+            {
+              "fields": [
+                {
+                  "type": 13
+                }
+              ],
+              "name": "Ok"
+            },
+            {
+              "fields": [
+                {
+                  "type": 14
+                }
+              ],
+              "name": "Err"
+            }
+          ]
+        }
+      },
+      "params": [
+        13,
+        14
+      ],
+      "path": [
+        "Result"
+      ]
+    },
+    {
+      "def": {
+        "tuple": []
       }
+    },
+    {
+      "def": {
+        "variant": {
+          "variants": [
+            {
+              "discriminant": 0,
+              "name": "InsufficientBalance"
+            },
+            {
+              "discriminant": 1,
+              "name": "InsufficientAllowance"
+            }
+          ]
+        }
+      },
+      "path": [
+        "erc20",
+        "erc20",
+        "Error"
+      ]
     },
     {
       "def": {

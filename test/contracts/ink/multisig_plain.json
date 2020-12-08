@@ -1,13 +1,13 @@
 {
   "metadataVersion": "0.1.0",
   "source": {
-    "hash": "0xfc0f0e88e25c5857c49f089ab8fb6a0ecdc37a69e10b9317ae71924c916cda12",
-    "language": "ink! 3.0.0-rc1",
-    "compiler": "rustc 1.48.0-nightly"
+    "hash": "0x46cd79bb3280da809473961c82b3efae5ab8d62edee31ee4534791c6889a7ef5",
+    "language": "ink! 3.0.0-rc2",
+    "compiler": "rustc 1.49.0-nightly"
   },
   "contract": {
     "name": "multisig_plain",
-    "version": "3.0.0-rc1",
+    "version": "3.0.0-rc2",
     "authors": [
       "Parity Technologies <admin@parity.io>"
     ]
@@ -203,7 +203,7 @@
               "displayName": [
                 "Result"
               ],
-              "type": 25
+              "type": 26
             }
           }
         ],
@@ -610,7 +610,7 @@
           " Evaluate a confirmed execution and return its output as bytes.",
           "",
           " Its return value indicates whether the called transaction was successful and contains",
-          " its output when sucesful.",
+          " its output when successful.",
           " This can be called by anyone."
         ],
         "mutates": true,
@@ -622,7 +622,7 @@
           "displayName": [
             "Result"
           ],
-          "type": 24
+          "type": 25
         },
         "selector": "0xe667c7ac"
       }
@@ -1359,7 +1359,7 @@
             {
               "fields": [
                 {
-                  "type": 10
+                  "type": 24
                 }
               ],
               "name": "Err"
@@ -1369,10 +1369,27 @@
       },
       "params": [
         10,
-        10
+        24
       ],
       "path": [
         "Result"
+      ]
+    },
+    {
+      "def": {
+        "variant": {
+          "variants": [
+            {
+              "discriminant": 0,
+              "name": "TransactionFailed"
+            }
+          ]
+        }
+      },
+      "path": [
+        "multisig_plain",
+        "multisig_plain",
+        "Error"
       ]
     },
     {
@@ -1390,7 +1407,7 @@
             {
               "fields": [
                 {
-                  "type": 10
+                  "type": 24
                 }
               ],
               "name": "Err"
@@ -1400,7 +1417,7 @@
       },
       "params": [
         16,
-        10
+        24
       ],
       "path": [
         "Result"
@@ -1413,7 +1430,7 @@
             {
               "fields": [
                 {
-                  "type": 26
+                  "type": 27
                 }
               ],
               "name": "Ok"
@@ -1421,7 +1438,7 @@
             {
               "fields": [
                 {
-                  "type": 10
+                  "type": 24
                 }
               ],
               "name": "Err"
@@ -1430,8 +1447,8 @@
         }
       },
       "params": [
-        26,
-        10
+        27,
+        24
       ],
       "path": [
         "Result"

@@ -1,13 +1,13 @@
 {
   "metadataVersion": "0.1.0",
   "source": {
-    "hash": "0xf7dac8dd8a2d9c7419c766facfa29d91823625305be8a1e7a9e6d750b894782b",
-    "language": "ink! 3.0.0-rc1",
-    "compiler": "rustc 1.48.0-nightly"
+    "hash": "0xa23b73f71bebc9ebea0b2bf4eeaf1fbd6298ee2604a8da532739e41f3329003e",
+    "language": "ink! 3.0.0-rc2",
+    "compiler": "rustc 1.49.0-nightly"
   },
   "contract": {
     "name": "erc721",
-    "version": "3.0.0-rc1",
+    "version": "3.0.0-rc2",
     "authors": [
       "Parity Technologies <admin@parity.io>"
     ]
@@ -105,7 +105,7 @@
           }
         ],
         "docs": [
-          " Event emited when a token approve occurs."
+          " Event emitted when a token approve occurs."
         ],
         "name": "Approval"
       },
