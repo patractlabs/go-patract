@@ -14,7 +14,7 @@ func main() {
 		panic(err)
 	}
 
-	hash, err := api.RPC.Chain.GetFinalizedHead()
+	hash, err := api.RPC.Chain.GetBlockHash(320)
 	if err != nil {
 		panic(err)
 	}
@@ -25,6 +25,9 @@ func main() {
 	}
 
 	fmt.Printf("blk %v\n", blk)
+
+	queryEventByBlock(hash)
+
 	for _, h := range blk.Block.Extrinsics {
 		fmt.Printf("e %v\n", h)
 	}
