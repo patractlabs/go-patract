@@ -24,12 +24,12 @@ func (c *ContractAPI) WithLogger(logger log.Logger) {
 }
 
 // UpdateSchedule Updates the schedule for metering contracts.
-func (c *ContractAPI) UpdateSchedule(ctx api.Context, schedule types.Schedule) (string, error) {
+func (c *ContractAPI) UpdateSchedule(ctx api.Context, schedule types.Schedule) (types.Hash, error) {
 	return c.Cli.SubmitAndWaitExtrinsic(ctx, "Contracts.update_schedule", schedule)
 }
 
 // PutCode submit put_code to chain
-func (c *ContractAPI) PutCode(ctx api.Context, code []byte) (string, error) {
+func (c *ContractAPI) PutCode(ctx api.Context, code []byte) (types.Hash, error) {
 	return c.Cli.SubmitAndWaitExtrinsic(ctx, "Contracts.put_code", code)
 }
 
@@ -40,7 +40,7 @@ func (c *ContractAPI) Instantiate(
 	endowment types.CompactBalance,
 	gasLimit types.CompactGas,
 	codeHash types.CodeHash,
-	data []byte) (string, error) {
+	data []byte) (types.Hash, error) {
 	return c.Cli.SubmitAndWaitExtrinsic(
 		ctx, "Contracts.instantiate", endowment, gasLimit, codeHash, data)
 }
@@ -52,7 +52,7 @@ func (c *ContractAPI) Call(
 	value types.Balance,
 	gasLimit types.Gas,
 	data []byte,
-) (string, error) {
+) (types.Hash, error) {
 	return c.Cli.SubmitAndWaitExtrinsic(
 		ctx, "Contracts.call", dest, value, gasLimit, data)
 }
@@ -63,7 +63,7 @@ func (c *ContractAPI) ClaimSurcharge(
 	ctx api.Context,
 	dest types.AccountID,
 	auxSender types.AccountID,
-) (string, error) {
+) (types.Hash, error) {
 	return c.Cli.SubmitAndWaitExtrinsic(
 		ctx, "Contracts.claim_surcharge", dest, auxSender)
 }

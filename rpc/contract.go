@@ -15,10 +15,10 @@ func (c *Contract) Instantiate(
 	endowment types.CompactBalance,
 	gasLimit types.CompactGas,
 	codeHash types.CodeHash,
-	args ...interface{}) (string, error) {
+	args ...interface{}) (types.Hash, error) {
 	data, err := c.getConstructorsData([]string{"new"}, args...)
 	if err != nil {
-		return "", err
+		return types.Hash{}, err
 	}
 
 	return c.native.Cli.SubmitAndWaitExtrinsic(
