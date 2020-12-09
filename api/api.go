@@ -43,17 +43,17 @@ func (c *Client) Call(result interface{}, method string, args ...interface{}) er
 }
 
 // SubmitAndWaitExtrinsic submit and wait extrinsic into chain
-func (c *Client) SubmitAndWaitExtrinsic(ctx Context, call string, args ...interface{}) (string, error) {
+func (c *Client) SubmitAndWaitExtrinsic(ctx Context, call string, args ...interface{}) (types.Hash, error) {
 	c.logger.Debug("submitAndWatchExtrinsic", "call", call)
 
 	meta, err := c.rpcAPI.RPC.State.GetMetadataLatest()
 	if err != nil {
-		return "", errors.Wrap(err, "get metadata lastest error")
+		return types.Hash{}, errors.Wrap(err, "get metadata lastest error")
 	}
 
 	cc, err := types.NewCall(meta, call, args...)
 	if err != nil {
-		return "", errors.Wrap(err, "new call error")
+		return types.Hash{}, errors.Wrap(err, "new call error")
 	}
 
 	// Create the extrinsic
@@ -61,27 +61,27 @@ func (c *Client) SubmitAndWaitExtrinsic(ctx Context, call string, args ...interf
 
 	genesisHash, err := c.rpcAPI.RPC.Chain.GetBlockHash(0)
 	if err != nil {
-		return "", errors.Wrap(err, "get block hash error")
+		return types.Hash{}, errors.Wrap(err, "get block hash error")
 	}
 
 	rv, err := c.rpcAPI.RPC.State.GetRuntimeVersionLatest()
 	if err != nil {
-		return "", errors.Wrap(err, "get runtime version lastest error")
+		return types.Hash{}, errors.Wrap(err, "get runtime version lastest error")
 	}
 
 	authKey := ctx.From()
 
 	key, err := types.CreateStorageKey(meta, "System", "Account", authKey.PublicKey, nil)
 	if err != nil {
-		return "", errors.Wrap(err, "create storage key error")
+		return types.Hash{}, errors.Wrap(err, "create storage key error")
 	}
 
 	var accountInfo types.AccountInfo
 	ok, err := c.rpcAPI.RPC.State.GetStorageLatest(key, &accountInfo)
 	if err != nil {
-		return "", errors.Wrapf(err, "create storage key error by %s", authKey.Address)
+		return types.Hash{}, errors.Wrapf(err, "create storage key error by %s", authKey.Address)
 	} else if !ok {
-		return "", errors.Errorf("no accountInfo found by %s", authKey.Address)
+		return types.Hash{}, errors.Errorf("no accountInfo found by %s", authKey.Address)
 	}
 
 	nonce := uint32(accountInfo.Nonce)
@@ -98,13 +98,13 @@ func (c *Client) SubmitAndWaitExtrinsic(ctx Context, call string, args ...interf
 
 	// Sign the transaction using Alice's default account
 	if err := ext.Sign(authKey, o); err != nil {
-		return "", errors.Wrap(err, "sign extrinsic error")
+		return types.Hash{}, errors.Wrap(err, "sign extrinsic error")
 	}
 
 	// Send the extrinsic
 	sub, err := c.rpcAPI.RPC.Author.SubmitAndWatchExtrinsic(ext)
 	if err != nil {
-		return "", errors.Wrap(err, "submit error")
+		return types.Hash{}, errors.Wrap(err, "submit error")
 	}
 	defer sub.Unsubscribe()
 
@@ -118,12 +118,12 @@ func (c *Client) SubmitAndWaitExtrinsic(ctx Context, call string, args ...interf
 			if status.IsInBlock {
 				c.logger.Debug("Completed at block", "hash", status.AsInBlock.Hex())
 				// if is in block, should return
-				return status.AsInBlock.Hex(), nil
+				return status.AsInBlock, nil
 			}
 		case err := <-sub.Err():
-			return "", errors.Wrap(err, "subscribe error")
+			return types.Hash{}, errors.Wrap(err, "subscribe error")
 		case <-ctx.Done():
-			return "", ctx.Err()
+			return types.Hash{}, ctx.Err()
 		}
 	}
 }

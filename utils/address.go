@@ -74,6 +74,16 @@ func DecodeAccountIDFromSS58(address string) (types.AccountID, error) {
 	return types.AccountID{}, errors.New("invalid version")
 }
 
+// MustDecodeAccountIDFromSS58 if error panic
+func MustDecodeAccountIDFromSS58(address string) types.AccountID {
+	res, err := DecodeAccountIDFromSS58(address)
+	if err != nil {
+		panic(err)
+	}
+
+	return res
+}
+
 // EncodeAccountIDToSS58 encode accountID to ss58 format
 func EncodeAccountIDToSS58(account types.AccountID) (string, error) {
 	bz := make([]byte, 0, len(account)+1)
@@ -101,4 +111,23 @@ func EncodeAccountIDToSS58(account types.AccountID) (string, error) {
 	complete = append(complete, h[0], h[1])
 
 	return base58.Encode(complete), nil
+}
+
+func Hash256(buf []byte) []byte {
+	hash, err := blake2b.New256([]byte{})
+	if err != nil {
+		panic(errors.Wrap(err, "invalid blake2b"))
+	}
+
+	_, err = hash.Write(buf)
+	if err != nil {
+		panic(errors.Wrap(err, "invalid blake2b write"))
+	}
+
+	h := hash.Sum(nil)
+	return h
+}
+
+func Sum256(buf []byte) [32]byte {
+	return blake2b.Sum256(buf)
 }
