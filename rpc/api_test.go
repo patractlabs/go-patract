@@ -14,7 +14,7 @@ import (
 )
 
 func TestDeployAndCallERC20(t *testing.T) {
-	test.ByExternCanvasEnv(t, func(logger log.Logger, env test.Env) {
+	test.ByCanvasEnv(t, func(logger log.Logger, env test.Env) {
 		require := require.New(t)
 
 		initERC20(t, logger, env)
@@ -32,7 +32,7 @@ func TestDeployAndCallERC20(t *testing.T) {
 		ctx := rpc.NewCtx(context.Background()).WithFrom(authKey)
 
 		// Instantiate
-		hash, err := api.Instantiate(ctx,
+		hash, contractAccount, err := api.Instantiate(ctx,
 			types.NewCompactBalance(10000000000000000),
 			types.NewCompactGas(test.DefaultGas),
 			contracts.CodeHashERC20,
@@ -40,8 +40,6 @@ func TestDeployAndCallERC20(t *testing.T) {
 		)
 
 		require.Nil(err)
-		t.Logf("instantiate hash %v", hash)
-
-		// transfer
+		t.Logf("instantiate hash %v %v", hash, contractAccount)
 	})
 }

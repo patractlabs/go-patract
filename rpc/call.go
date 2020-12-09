@@ -7,6 +7,7 @@ import (
 	"github.com/centrifuge/go-substrate-rpc-client/types"
 	"github.com/patractlabs/go-patract/api"
 	"github.com/patractlabs/go-patract/metadata"
+	"github.com/patractlabs/go-patract/utils"
 	"github.com/pkg/errors"
 )
 
@@ -66,6 +67,11 @@ func (c *Contract) getMessagesData(name []string, args ...interface{}) ([]byte, 
 	return buf.Bytes(), nil
 }
 
+// GenConstructorsData gen input data for constructor
+func (c *Contract) GenConstructorsData(name []string, args ...interface{}) ([]byte, error) {
+	return c.getConstructorsData(name, args...)
+}
+
 func (c *Contract) getConstructorsData(name []string, args ...interface{}) ([]byte, error) {
 	constructor, err := c.metaData.Raw.GetConstructor(name)
 	if err != nil {
@@ -100,9 +106,14 @@ func (c *Contract) getConstructorsData(name []string, args ...interface{}) ([]by
 
 // Call contract call
 func (c *Contract) Call(ctx api.Context, result interface{},
-	contractHash string,
+	contractID types.AccountID,
 	call []string,
 	args ...interface{}) error {
+	contractIDStr, err := utils.EncodeAccountIDToSS58(contractID)
+	if err != nil {
+		return errors.Wrapf(err, "encode accountid for contract %v", contractID)
+	}
+
 	params := struct {
 		Origin    string `json:"origin"`
 		Dest      string `json:"dest"`
@@ -111,7 +122,7 @@ func (c *Contract) Call(ctx api.Context, result interface{},
 		Value     int    `json:"value"`
 	}{
 		Origin:   ctx.From().Address,
-		Dest:     contractHash,
+		Dest:     contractIDStr,
 		GasLimit: DefaultGasLimitForCall,
 	}
 
@@ -122,14 +133,17 @@ func (c *Contract) Call(ctx api.Context, result interface{},
 
 	params.InputData = types.HexEncodeToString(data)
 
-	c.logger.Debug("contracts call", "call", call, "hash", contractHash, "params", params)
+	c.logger.Debug("contracts call", "call", call, "hash", contractIDStr, "params", params)
 
 	res := struct {
-		Success struct {
-			Data        string `json:"data"`
-			Flags       int    `json:"flags"`
-			GasConsumed int    `json:"gas_consumed"`
-		} `json:"success"`
+		DebugMessage string `json:"debugMessage"`
+		GasConsumed  int    `json:"gasConsumed"`
+		Result       struct {
+			Ok struct {
+				Data  string `json:"data"`
+				Flags int    `json:"flags"`
+			} `json:"Ok"`
+		} `json:"result"`
 	}{}
 
 	err = c.native.Cli.Call(&res, "contracts_call", params)
@@ -144,11 +158,11 @@ func (c *Contract) Call(ctx api.Context, result interface{},
 		return err
 	}
 
-	bz, err := types.HexDecodeString(res.Success.Data)
+	bz, err := types.HexDecodeString(res.Result.Ok.Data)
 	if err != nil {
 		return errors.Wrap(err, "hex from string error")
 	}
 
 	err = c.metaData.Decode(result, message.ReturnType, bz)
-	return errors.Wrap(err, "decode error")
+	return errors.Wrapf(err, "decode error %s.", res.Result.Ok.Data)
 }
