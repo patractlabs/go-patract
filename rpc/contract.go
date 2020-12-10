@@ -50,3 +50,13 @@ func GetContractAccountID(deployer types.AccountID, codeHash types.CodeHash, inp
 
 	return types.NewAccountID(utils.Hash256(contractHashs.Bytes()))
 }
+
+// UpdateSchedule update schedule for contract
+func (c *Contract) UpdateSchedule(ctx api.Context, schedule types.Schedule) (types.Hash, error) {
+	return c.native.Cli.SubmitAndWaitExtrinsic(ctx, "Contracts.update_schedule", schedule)
+}
+
+// ClaimSurcharge claim surcharge
+func (c *Contract) ClaimSurcharge(ctx api.Context, dest types.AccountID, auxSender types.OptionAccountID) (types.Hash, error) {
+	return c.native.Cli.SubmitAndWaitExtrinsic(ctx, "Contracts.claim_surcharge", dest, auxSender)
+}
