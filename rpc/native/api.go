@@ -49,12 +49,12 @@ func (c *ContractAPI) Instantiate(
 func (c *ContractAPI) Call(
 	ctx api.Context,
 	dest types.AccountID,
-	value types.Balance,
-	gasLimit types.Gas,
+	value types.CompactBalance,
+	gasLimit types.CompactGas,
 	data []byte,
 ) (types.Hash, error) {
 	return c.Cli.SubmitAndWaitExtrinsic(
-		ctx, "Contracts.call", dest, value, gasLimit, data)
+		ctx, "Contracts.call", types.NewAddressFromAccountID(dest[:]), value, gasLimit, data)
 }
 
 // ClaimSurcharge Allows block producers to claim a small reward for evicting a contract.
