@@ -31,6 +31,9 @@ type Address = types.Address
 var (
 	// NewAddressFromHexAccountID creates an Address from the given hex string that contains an AccountID (public key)
 	NewAddressFromHexAccountID = types.NewAddressFromHexAccountID
+
+	// NewAddressFromAccountID creates an Address from the given AccountID (public key)
+	NewAddressFromAccountID = types.NewAddressFromAccountID
 )
 
 // MustAddressFromHexAccount address from hex account, panic if invalid
@@ -64,4 +67,8 @@ var (
 
 	// MustHexDecodeString panics if str cannot be decoded
 	MustHexDecodeString = types.MustHexDecodeString
+
+	// HexEncode encodes bytes to a hex string. Contrary to hex.EncodeToString, this function prefixes the hex string
+	// with "0x"
+	HexEncodeToString = types.HexEncodeToString
 )

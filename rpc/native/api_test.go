@@ -77,7 +77,7 @@ func TestDeployAndCallERC20(t *testing.T) {
 
 		// Instantiate
 		_, err = contractCli.Instantiate(ctx,
-			types.NewCompactBalance(10000000000000000),
+			types.NewCompactBalance(1000000000000000),
 			types.NewCompactGas(test.DefaultGas),
 			contracts.CodeHashERC20,
 			instantiate4ERC20,

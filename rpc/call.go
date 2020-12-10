@@ -4,9 +4,9 @@ import (
 	"bytes"
 
 	"github.com/centrifuge/go-substrate-rpc-client/scale"
-	"github.com/centrifuge/go-substrate-rpc-client/types"
 	"github.com/patractlabs/go-patract/api"
 	"github.com/patractlabs/go-patract/metadata"
+	"github.com/patractlabs/go-patract/types"
 	"github.com/patractlabs/go-patract/utils"
 	"github.com/pkg/errors"
 )
@@ -104,8 +104,10 @@ func (c *Contract) getConstructorsData(name []string, args ...interface{}) ([]by
 	return buf.Bytes(), nil
 }
 
-// Call contract call
-func (c *Contract) Call(ctx api.Context, result interface{},
+// CallToRead contract call to read state from chain
+func (c *Contract) CallToRead(
+	ctx api.Context,
+	result interface{},
 	contractID types.AccountID,
 	call []string,
 	args ...interface{}) error {
@@ -163,6 +165,29 @@ func (c *Contract) Call(ctx api.Context, result interface{},
 		return errors.Wrap(err, "hex from string error")
 	}
 
+	if len(bz) == 0 {
+		return errors.Errorf("no data got")
+	}
+
 	err = c.metaData.Decode(result, message.ReturnType, bz)
 	return errors.Wrapf(err, "decode error %s.", res.Result.Ok.Data)
+}
+
+// CallToExec contract call to exec state from chain
+func (c *Contract) CallToExec(
+	ctx api.Context,
+	contractID types.AccountID,
+	value types.CompactBalance,
+	gasLimit types.CompactGas,
+	call []string,
+	args ...interface{}) (types.Hash, error) {
+
+	data, err := c.getMessagesData(call, args...)
+	if err != nil {
+		return types.Hash{}, errors.Wrap(err, "getMessagesData")
+	}
+
+	c.logger.Debug("call to exec", "data", types.HexEncodeToString(data))
+
+	return c.native.Call(ctx, contractID, value, gasLimit, data)
 }

@@ -12,12 +12,13 @@ import (
 	"github.com/patractlabs/go-patract/test"
 	"github.com/patractlabs/go-patract/test/contracts"
 	"github.com/patractlabs/go-patract/types"
+	"github.com/patractlabs/go-patract/utils"
 	"github.com/patractlabs/go-patract/utils/log"
 	"github.com/stretchr/testify/require"
 )
 
 var (
-	bob     = types.MustAddressFromHexAccount("0x8eaf04151687736326c9fea17e25fc5287613693c912909cb226aa4794f26a48")
+	bob     = utils.MustAccountIDFromSS58("5FHneW46xGXgs5mUiveU4sbTyGBzmstUspZC92UhjJM694ty")
 	tester  = types.MustAddressFromHexAccount("")
 	authKey = signature.TestKeyringPairAlice
 

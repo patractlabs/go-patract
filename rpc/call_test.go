@@ -15,10 +15,19 @@ import (
 )
 
 func TestCallERC20(t *testing.T) {
-	test.ByCanvasEnv(t, func(logger log.Logger, env test.Env) {
+	isUseExt := false
+
+	funcEnv := test.ByCanvasEnv
+	if isUseExt {
+		funcEnv = test.ByExternCanvasEnv
+	}
+
+	funcEnv(t, func(logger log.Logger, env test.Env) {
 		require := require.New(t)
 
-		initERC20(t, logger, env)
+		if !isUseExt {
+			initERC20(t, logger, env)
+		}
 
 		metaBz, err := ioutil.ReadFile(erc20MetaPath)
 		require.Nil(err)
@@ -34,16 +43,22 @@ func TestCallERC20(t *testing.T) {
 
 		var initSupply uint64 = 100000000000000
 
-		// Instantiate
-		_, contractAccount, err := api.Instantiate(ctx,
-			types.NewCompactBalance(initSupply),
-			types.NewCompactGas(test.DefaultGas),
-			contracts.CodeHashERC20,
-			types.NewU128(totalSupply),
-		)
-		require.Nil(err)
+		var contractAccount types.AccountID
 
-		t.Logf("constract %s", contractAccount)
+		if !isUseExt {
+			// Instantiate
+			_, contractAccount, err = api.Instantiate(ctx,
+				types.NewCompactBalance(initSupply),
+				types.NewCompactGas(test.DefaultGas),
+				contracts.CodeHashERC20,
+				types.NewU128(totalSupply),
+			)
+			require.Nil(err)
+
+			t.Logf("constract %s", contractAccount)
+		} else {
+			contractAccount = utils.MustDecodeAccountIDFromSS58("5HKinTRKW9THEJxbQb22Nfyq9FPWNVZ9DQ2GEQ4Vg1LqTPuk")
+		}
 
 		req := struct {
 			Address types.AccountID
@@ -53,16 +68,56 @@ func TestCallERC20(t *testing.T) {
 		var res types.U128
 
 		// Instantiate
-		err = api.Call(ctx,
+		err = api.CallToRead(ctx,
 			&res,
 			contractAccount,
 			[]string{"balance_of"},
 			req,
 		)
-
 		require.Nil(err)
 		t.Logf("res %v", res)
 
 		// transfer
+		to := struct {
+			Address types.AccountID
+		}{
+			Address: bob,
+		}
+
+		value := struct {
+			Value types.U128
+		}{
+			Value: types.NewBalanceByU64(1),
+		}
+
+		hash, err := api.CallToExec(ctx,
+			contractAccount,
+			types.NewCompactBalance(0),
+			types.NewCompactGas(test.DefaultGas),
+			[]string{"transfer"},
+			to, value,
+		)
+		require.Nil(err)
+		t.Logf("transfer hash %v", hash)
+
+		{
+			req := struct {
+				Address types.AccountID
+			}{
+				Address: bob,
+			}
+			var res types.U128
+
+			err = api.CallToRead(ctx,
+				&res,
+				contractAccount,
+				[]string{"balance_of"},
+				req,
+			)
+			require.Nil(err)
+			t.Logf("res %v", res)
+
+			require.Equal(res.Int.Int64(), value.Value.Int.Int64())
+		}
 	})
 }
