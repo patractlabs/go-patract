@@ -1,6 +1,10 @@
 package types
 
-import "github.com/centrifuge/go-substrate-rpc-client/types"
+import (
+	"math/big"
+
+	"github.com/centrifuge/go-substrate-rpc-client/types"
+)
 
 // Some type by Compact
 
@@ -26,4 +30,9 @@ func NewCompactGas(gas Gas) types.UCompact {
 // NewCompactBalance create a new CompactBalance
 func NewCompactBalance(amount uint64) types.UCompact {
 	return types.NewUCompactFromUInt(amount)
+}
+
+// NewCompactBalanceByInt create a new CompactBalance
+func NewCompactBalanceByInt(amount *big.Int) types.UCompact {
+	return types.NewUCompact(amount)
 }

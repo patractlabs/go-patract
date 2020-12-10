@@ -45,6 +45,12 @@ func (c *Contract) WithMetaData(bz []byte) error {
 	return nil
 }
 
+// Native get native api for contract
 func (c Contract) Native() *native.ContractAPI {
 	return c.native
+}
+
+// Logger get logger for contract api
+func (c Contract) Logger() log.Logger {
+	return c.logger
 }
