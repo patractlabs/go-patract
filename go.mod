@@ -7,6 +7,7 @@ require (
 	github.com/centrifuge/go-substrate-rpc-client v2.0.0+incompatible
 	github.com/deckarep/golang-set v1.7.1 // indirect
 	github.com/ethereum/go-ethereum v1.9.24 // indirect
+	github.com/gin-gonic/gin v1.6.3
 	github.com/jesselucas/executil v0.0.0-20151120044647-dde271ce6a5c
 	github.com/pierrec/xxHash v0.1.5 // indirect
 	github.com/pkg/errors v0.8.1
