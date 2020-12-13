@@ -3,12 +3,14 @@ package rest
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/patractlabs/go-patract/metadata"
+	"github.com/patractlabs/go-patract/rpc"
 	"github.com/pkg/errors"
 )
 
 type Router struct {
 	*gin.Engine
 
+	cli       *rpc.Contract
 	metadatas map[string]*metadata.Data
 }
 
@@ -24,6 +26,10 @@ func (r *Router) WithMetaData(data *metadata.Data) {
 		panic(errors.Errorf("has with metadata by %s", data.Contract.Name))
 	}
 	r.metadatas[data.Contract.Name] = data
+}
+
+func (r *Router) WithCli(cli *rpc.Contract) {
+	r.cli = cli
 }
 
 func (r *Router) Init() {
