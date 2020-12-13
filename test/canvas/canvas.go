@@ -11,9 +11,9 @@ import (
 )
 
 const (
-	portRPC        = 39500
-	portWs         = 39600
-	portPrometheus = 39700
+	portRPC        = 39700
+	portWs         = 39800
+	portPrometheus = 39900
 )
 
 var (
