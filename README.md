@@ -8,6 +8,8 @@ PatractGo is a Golang contract SDK. In addition to supporting the basic interact
 
 PatractGo will be based on [Centrifuge's GSRPC](https://github.com/centrifuge/go-substrate-rpc-client), which is a Go sdk for Substrate.
 
+Element Group for disscusion: https://app.element.io/#/room/#PatractLabsDev:matrix.org
+
 ### Intruduction
 
 Most contract behaviors are highly related to context. In addition to interacting with the chain, user-oriented contract applications also need to provide users with current relevant context status information:
