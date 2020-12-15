@@ -2,7 +2,7 @@ package api
 
 import (
 	gsrpc "github.com/centrifuge/go-substrate-rpc-client"
-	"github.com/centrifuge/go-substrate-rpc-client/types"
+	"github.com/patractlabs/go-patract/types"
 	"github.com/patractlabs/go-patract/utils/log"
 	"github.com/pkg/errors"
 )
@@ -40,6 +40,40 @@ func (c *Client) WithLogger(logger log.Logger) {
 func (c *Client) Call(result interface{}, method string, args ...interface{}) error {
 	c.logger.Debug("Call", "method", method)
 	return c.rpcAPI.Client.Call(result, method, args...)
+}
+
+func MakeExtrinisic(
+	nonce uint64, meta *types.Metadata, cs *types.ChainStatus,
+	call string, args ...interface{}) ([]byte, error) {
+	cc, err := types.NewCall(meta, call, args...)
+	if err != nil {
+		return []byte{}, errors.Wrap(err, "new call error")
+	}
+
+	// Create the extrinsic
+	ext := types.NewExtrinsic(cc)
+
+	blkHash, err := types.NewHashFromHexString(cs.BlockHash)
+	if err != nil {
+		return []byte{}, errors.Wrap(err, "block hash hex error")
+	}
+
+	genHash, err := types.NewHashFromHexString(cs.GenesisHash)
+	if err != nil {
+		return []byte{}, errors.Wrap(err, "genesis hash hex error")
+	}
+
+	o := types.SignatureOptions{
+		BlockHash:          blkHash,
+		Era:                types.ExtrinsicEra{IsMortalEra: false},
+		GenesisHash:        genHash,
+		Nonce:              types.NewUCompactFromUInt(nonce),
+		SpecVersion:        types.NewU32(cs.SpecVersion),
+		Tip:                types.NewUCompactFromUInt(0),
+		TransactionVersion: types.NewU32(cs.TransactionVersion),
+	}
+
+	return GenSignBytes(ext, o)
 }
 
 // SubmitAndWaitExtrinsic submit and wait extrinsic into chain
@@ -95,6 +129,8 @@ func (c *Client) SubmitAndWaitExtrinsic(ctx Context, call string, args ...interf
 		Tip:                types.NewUCompactFromUInt(0),
 		TransactionVersion: rv.TransactionVersion,
 	}
+
+	ctx.logger.Info("genesisHash", "raw", types.HexEncodeToString(genesisHash[:]))
 
 	// Sign the transaction using Alice's default account
 	if err := ext.Sign(authKey, o); err != nil {
