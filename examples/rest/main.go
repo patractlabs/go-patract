@@ -6,6 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/patractlabs/go-patract/metadata"
 	"github.com/patractlabs/go-patract/rest"
+	"github.com/patractlabs/go-patract/utils"
 )
 
 var (
@@ -18,6 +19,8 @@ func main() {
 
 	router := gin.Default()
 	r := rest.NewRouter(router)
+
+	r.WithRuntimeMetadata(utils.LoadRuntimeMetadata("./test/metadata.json"))
 
 	erc20, err := metadata.NewFromFile("./test/contracts/ink/erc20.json")
 	if err != nil {

@@ -2,29 +2,26 @@ package rest
 
 import (
 	"encoding/json"
-	"fmt"
+	"math/big"
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
+	"github.com/patractlabs/go-patract/api"
 	"github.com/patractlabs/go-patract/metadata"
+	"github.com/patractlabs/go-patract/types"
 	"github.com/patractlabs/go-patract/utils"
+	"github.com/pkg/errors"
 )
 
-type ChainStatus struct {
-	SpecVersion        uint32 `json:"spec_version"`
-	TransactionVersion uint32 `json:"tx_version"`
-	BlockHash          string `json:"block_hash"`
-	GenesisHash        string `json:"genesis_hash"`
-}
-
 type ExecCommonParams struct {
-	Nonce       *uint64         `json:"nonce"`
-	ChainStatus *ChainStatus    `json:"chain_status"`
-	Contract    string          `json:"contract"`
-	Origin      string          `json:"origin"`
-	Value       string          `json:"value"`
-	GasLimit    string          `json:"gas_limit"`
-	Args        json.RawMessage `json:"args"`
+	Nonce       *uint64            `json:"nonce"`
+	ChainStatus *types.ChainStatus `json:"chain_status"`
+	Contract    string             `json:"contract"`
+	Origin      string             `json:"origin"`
+	Value       string             `json:"value"`
+	GasLimit    string             `json:"gas_limit"`
+	Args        json.RawMessage    `json:"args"`
 }
 
 func (r *Router) messageHandler(message *metadata.MessageRaw) func(*gin.Context) {
@@ -61,8 +58,48 @@ func (r *Router) messageHandler(message *metadata.MessageRaw) func(*gin.Context)
 			return
 		}
 
-		fmt.Printf("contract: %v\n", contractID)
-		fmt.Printf("params: %s\n", params)
+		var (
+			value *big.Int = big.NewInt(0)
+			ok    bool
+		)
+
+		if params.Value != "" {
+			value, ok = big.NewInt(0).SetString(params.Value, 10)
+			if !ok {
+				ctx.JSON(http.StatusBadRequest, gin.H{"error": "parse value param failed"})
+				return
+			}
+		}
+
+		gasLimit, err := strconv.ParseUint(params.GasLimit, 10, 64)
+		if err != nil {
+			ctx.JSON(http.StatusBadRequest, gin.H{"error": errors.Wrap(err, "parse gasLimit param failed").Error()})
+			return
+		}
+
+		var nonce uint64
+		if params.Nonce != nil {
+			nonce = *params.Nonce
+		}
+
+		//	data, err := r.cli.GetMessageData()
+
+		bz, err := api.MakeExtrinisic(
+			nonce, r.runtimeMetadata,
+			params.ChainStatus, "Contracts.call",
+			contractID,
+			types.NewCompactBalanceByInt(value),
+			types.NewCompactGas(types.Gas(gasLimit)),
+			[]byte{})
+
+		if err != nil {
+			ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+
+		raw := types.HexEncodeToString(bz)
+
+		ctx.JSON(http.StatusOK, gin.H{"raw": raw})
 	}
 }
 

@@ -41,6 +41,10 @@ func (c *Contract) encodeDataFromArgs(argsToEncode []metadata.ArgRaw, args ...in
 	return bz.Bytes(), nil
 }
 
+func (c *Contract) GetMessageData(name []string, args ...interface{}) ([]byte, error) {
+	return c.getMessagesData(name, args...)
+}
+
 func (c *Contract) getMessagesData(name []string, args ...interface{}) ([]byte, error) {
 	message, err := c.metaData.Raw.GetMessage(name)
 	if err != nil {
