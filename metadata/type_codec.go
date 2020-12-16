@@ -71,6 +71,7 @@ func (c CodecContext) GetDefCodecByIndex(i int) DefCodec {
 type DefCodec interface {
 	Encode(ctx CodecContext, value interface{}) error
 	Decode(ctx CodecContext, target interface{}) error
+	EncodeJSON(ctx CodecContext, value json.RawMessage) error
 }
 
 var _, _, _, _, _ DefCodec = &defPrimitive{},
@@ -80,7 +81,7 @@ var _, _, _, _, _ DefCodec = &defPrimitive{},
 	&defTuple{}
 
 type defPrimitive struct {
-	typ reflect.Kind
+	typ reflect.Type
 }
 
 func newDefPrimitive(raw json.RawMessage) *defPrimitive {
@@ -100,11 +101,16 @@ func (d *defPrimitive) Encode(ctx CodecContext, value interface{}) error {
 	t := reflect.TypeOf(value)
 	tk := t.Kind()
 
-	if tk != d.typ {
+	if tk != d.typ.Kind() {
 		return errors.Errorf("type not equal, expect %v, got %v", d.typ, tk)
 	}
 
 	return ctx.encoder.Encode(value)
+}
+
+func (d *defPrimitive) EncodeJSON(ctx CodecContext, value json.RawMessage) error {
+	val := reflect.New(d.typ).Interface()
+	return d.Encode(ctx, val)
 }
 
 func (d *defPrimitive) Decode(ctx CodecContext, target interface{}) error {
@@ -121,37 +127,37 @@ func (d *defPrimitive) Decode(ctx CodecContext, target interface{}) error {
 
 	tk := val.Elem().Kind()
 
-	if tk != d.typ {
+	if tk != d.typ.Kind() {
 		return errors.Errorf("type not equal, expect %v, got %v", d.typ, tk)
 	}
 
 	return ctx.decoder.Decode(target)
 }
 
-func getKindFromTypeString(typ string) reflect.Kind {
+func getKindFromTypeString(typ string) reflect.Type {
 	switch typ {
 	case "bool":
-		return reflect.TypeOf(types.NewBool(false)).Kind()
+		return reflect.TypeOf(types.NewBool(false))
 	case "u8":
-		return reflect.TypeOf(types.NewU8(0)).Kind()
+		return reflect.TypeOf(types.NewU8(0))
 	case "u16":
-		return reflect.TypeOf(types.NewU16(0)).Kind()
+		return reflect.TypeOf(types.NewU16(0))
 	case "u32":
-		return reflect.TypeOf(types.NewU32(0)).Kind()
+		return reflect.TypeOf(types.NewU32(0))
 	case "u64":
-		return reflect.TypeOf(types.NewU64(0)).Kind()
+		return reflect.TypeOf(types.NewU64(0))
 	case "u128":
-		return reflect.TypeOf(types.NewU128(big.Int{})).Kind()
+		return reflect.TypeOf(types.NewU128(big.Int{}))
 	case "i8":
-		return reflect.TypeOf(types.NewI8(0)).Kind()
+		return reflect.TypeOf(types.NewI8(0))
 	case "i16":
-		return reflect.TypeOf(types.NewI16(0)).Kind()
+		return reflect.TypeOf(types.NewI16(0))
 	case "i32":
-		return reflect.TypeOf(types.NewI32(0)).Kind()
+		return reflect.TypeOf(types.NewI32(0))
 	case "i64":
-		return reflect.TypeOf(types.NewI64(0)).Kind()
+		return reflect.TypeOf(types.NewI64(0))
 	case "i128":
-		return reflect.TypeOf(types.NewI128(big.Int{})).Kind()
+		return reflect.TypeOf(types.NewI128(big.Int{}))
 	default:
 		panic(errors.Errorf("unknown type by %s", typ))
 	}
@@ -200,6 +206,35 @@ func (d *defComposite) Encode(ctx CodecContext, value interface{}) error {
 				}
 				break
 			}
+		}
+	}
+
+	return nil
+}
+
+func (d *defComposite) EncodeJSON(ctx CodecContext, value json.RawMessage) error {
+	jsonMap := make(map[string]json.RawMessage)
+
+	if err := json.Unmarshal(value, &jsonMap); err != nil {
+		return errors.Wrap(err, "failed to unmarshal to map")
+	}
+
+	for idx, field := range d.Fields {
+		ctx.logger.Debug("defComposite encode", "idx", idx, "field", field)
+
+		def := ctx.GetDefCodecByIndex(field.TypeIndex)
+
+		// find field to value
+		raw, ok := jsonMap[field.Name]
+		if !ok {
+			// nil value
+			return errors.Errorf("no found field to %s", field.Name)
+		}
+
+		ctx.logger.Debug("target", "field", field.Name, "v", raw)
+		if err := def.EncodeJSON(ctx, raw); err != nil {
+			return errors.Wrapf(err,
+				"encode composite field %s %s", field.Name, raw)
 		}
 	}
 
@@ -301,6 +336,51 @@ func (d *defArray) Encode(ctx CodecContext, value interface{}) error {
 	return nil
 }
 
+func (d *defArray) encodeByteJSON(ctx CodecContext, value json.RawMessage) error {
+	ctx.logger.Debug("encode bytes", "v", value)
+
+	bytes, err := types.HexDecodeString(string(value))
+	if err != nil {
+		return errors.Wrap(err, "failed to decode hex")
+	}
+
+	if d.Len != len(bytes) {
+		return errors.Wrapf(err, "bytes len not equal export %d to %d", d.Len, len(bytes))
+	}
+
+	return ctx.encoder.Encode(bytes)
+}
+
+func (d *defArray) EncodeJSON(ctx CodecContext, value json.RawMessage) error {
+	defCodec := ctx.GetDefCodecByIndex(d.TypeIndex)
+	// for bytes
+	if pCodec, ok := defCodec.(*defPrimitive); ok {
+		if pCodec.typ.String() == reflect.TypeOf(types.NewU8(0)).String() {
+			return d.encodeByteJSON(ctx, value)
+		}
+	}
+
+	arr := make([]json.RawMessage, 0, 32)
+	if err := json.Unmarshal(value, &arr); err != nil {
+		return errors.Wrap(err, "json unmarshal error")
+	}
+
+	l := len(arr)
+	if l != d.Len {
+		return errors.Errorf("value len larger than def by %d > %d", l, d.Len)
+	}
+
+	ctx.logger.Debug("encode array", "val", value)
+
+	for i := 0; i < l && i < d.Len; i++ {
+		if err := defCodec.EncodeJSON(ctx, arr[i]); err != nil {
+			return errors.Wrapf(err, "failed encode %d", i)
+		}
+	}
+
+	return nil
+}
+
 func (d *defArray) Decode(ctx CodecContext, value interface{}) error {
 	t0 := reflect.TypeOf(value)
 	if t0.Kind() != reflect.Ptr {
@@ -372,6 +452,32 @@ func (d *defTuple) Encode(ctx CodecContext, value interface{}) error {
 	return nil
 }
 
+func (d *defTuple) EncodeJSON(ctx CodecContext, value json.RawMessage) error {
+	if len(d.TypeIndexs) == 0 {
+		return nil
+	}
+
+	arr := make([]json.RawMessage, 0, 32)
+	if err := json.Unmarshal(value, &arr); err != nil {
+		return errors.Wrap(err, "json unmarshal error")
+	}
+
+	if len(d.TypeIndexs) != len(arr) {
+		return errors.Errorf("tuple fields count not equal by %d, expect %d",
+			len(arr), len(d.TypeIndexs))
+	}
+
+	for i, typ := range d.TypeIndexs {
+		defCodec := ctx.GetDefCodecByIndex(typ)
+		f := arr[i]
+		if err := defCodec.EncodeJSON(ctx, f); err != nil {
+			return errors.Wrapf(err, "failed encode %d", i)
+		}
+	}
+
+	return nil
+}
+
 func (d *defTuple) Decode(ctx CodecContext, value interface{}) error {
 	t0 := reflect.TypeOf(value)
 	if t0.Kind() != reflect.Ptr {
@@ -429,6 +535,10 @@ func newDefVariant(raw json.RawMessage) *defVariant {
 }
 
 func (d *defVariant) Encode(ctx CodecContext, value interface{}) error {
+	return nil
+}
+
+func (d *defVariant) EncodeJSON(ctx CodecContext, value json.RawMessage) error {
 	return nil
 }
 

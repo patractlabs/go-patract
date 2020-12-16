@@ -54,6 +54,10 @@ func (t *TypeDef) Encode(ctx CodecContext, v interface{}) error {
 	return t.def.Encode(ctx, v)
 }
 
+func (t *TypeDef) EncodeJSON(ctx CodecContext, v json.RawMessage) error {
+	return t.def.EncodeJSON(ctx, v)
+}
+
 func (t *TypeDef) Decode(ctx CodecContext, v interface{}) error {
 	return t.def.Decode(ctx, v)
 }
