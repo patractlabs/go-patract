@@ -80,8 +80,8 @@ var (
 	// MustHexDecodeString panics if str cannot be decoded
 	MustHexDecodeString = types.MustHexDecodeString
 
-	// HexEncodeToString HexEncode encodes bytes to a hex string. Contrary to hex.EncodeToString, this function prefixes the hex string
-	// with "0x"
+	// HexEncodeToString HexEncode encodes bytes to a hex string.
+	// Contrary to hex.EncodeToString, this function prefixes the hex string with "0x"
 	HexEncodeToString = types.HexEncodeToString
 )
 

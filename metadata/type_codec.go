@@ -182,7 +182,7 @@ func getKindFromTypeString(typ string) reflect.Type {
 func newFromKind(typ reflect.Type, str string) (interface{}, error) {
 	switch typ {
 	case reflect.TypeOf(types.NewBool(false)):
-		return types.NewBool("true" == strings.ToLower(str)), nil
+		return types.NewBool(strings.ToLower(str) == "true"), nil
 
 	case reflect.TypeOf(types.NewU8(0)):
 		i, err := strconv.ParseUint(str, 10, 8)

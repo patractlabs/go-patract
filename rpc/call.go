@@ -43,7 +43,10 @@ func (c *Contract) encodeDataFromArgs(argsToEncode []metadata.ArgRaw, args ...in
 	return bz.Bytes(), nil
 }
 
-func encodeDataFromArgJSONs(metaData *metadata.Data, argsToEncode []metadata.ArgRaw, args ...json.RawMessage) ([]byte, error) {
+func encodeDataFromArgJSONs(
+	metaData *metadata.Data,
+	argsToEncode []metadata.ArgRaw,
+	args ...json.RawMessage) ([]byte, error) {
 	if len(argsToEncode) != len(args) {
 		return nil, errors.Errorf(
 			"constructor args count error, expected %d, got %d",
@@ -257,9 +260,7 @@ func (c *Contract) CallToExec(
 	contractID types.AccountID,
 	value types.CompactBalance,
 	gasLimit types.CompactGas,
-	call []string,
-	args ...interface{}) (types.Hash, error) {
-
+	call []string, args ...interface{}) (types.Hash, error) {
 	data, err := c.getMessagesData(call, args...)
 	if err != nil {
 		return types.Hash{}, errors.Wrap(err, "getMessagesData")
