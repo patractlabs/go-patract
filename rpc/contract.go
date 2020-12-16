@@ -57,6 +57,9 @@ func (c *Contract) UpdateSchedule(ctx api.Context, schedule types.Schedule) (typ
 }
 
 // ClaimSurcharge claim surcharge
-func (c *Contract) ClaimSurcharge(ctx api.Context, dest types.AccountID, auxSender types.OptionAccountID) (types.Hash, error) {
+func (c *Contract) ClaimSurcharge(
+	ctx api.Context,
+	dest types.AccountID,
+	auxSender types.OptionAccountID) (types.Hash, error) {
 	return c.native.Cli.SubmitAndWaitExtrinsic(ctx, "Contracts.claim_surcharge", dest, auxSender)
 }

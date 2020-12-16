@@ -18,6 +18,9 @@ func (c *Client) QueryEventByBlockHash(hash types.Hash) (*types.EventRecords, er
 	}
 
 	raw, err := c.API().RPC.State.GetStorageRaw(key, hash)
+	if err != nil {
+		return nil, errors.Wrap(err, "get storage raw")
+	}
 
 	res := &types.EventRecords{}
 	err = types.EventRecordsRaw(*raw).DecodeEventRecords(meta, res)

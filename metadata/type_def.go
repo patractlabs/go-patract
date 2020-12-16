@@ -35,7 +35,7 @@ func NewTypeDef(raw *rawTypeDef) *TypeDef {
 		case "primitive":
 			res.def = newDefPrimitive(jsonRaw)
 		case "composite":
-			res.def = newDefComposite(jsonRaw)
+			res.def = newDefComposite(jsonRaw, raw.Path)
 		case "array":
 			res.def = newDefArray(jsonRaw)
 		case "variant":
@@ -52,6 +52,10 @@ func NewTypeDef(raw *rawTypeDef) *TypeDef {
 
 func (t *TypeDef) Encode(ctx CodecContext, v interface{}) error {
 	return t.def.Encode(ctx, v)
+}
+
+func (t *TypeDef) EncodeJSON(ctx CodecContext, v json.RawMessage) error {
+	return t.def.EncodeJSON(ctx, v)
 }
 
 func (t *TypeDef) Decode(ctx CodecContext, v interface{}) error {

@@ -3,6 +3,7 @@ package metadata
 import (
 	"bytes"
 	"encoding/json"
+	"io/ioutil"
 
 	"github.com/centrifuge/go-substrate-rpc-client/scale"
 	"github.com/centrifuge/go-substrate-rpc-client/types"
@@ -54,6 +55,16 @@ func New(bz []byte) (*Data, error) {
 	}
 
 	return res, nil
+}
+
+// NewFromFile creates a new metadata data from read metadata.json
+func NewFromFile(path string) (*Data, error) {
+	bz, err := ioutil.ReadFile(path)
+	if err != nil {
+		return nil, errors.Wrapf(err, "read file %s", path)
+	}
+
+	return New(bz)
 }
 
 func (d *Data) GetCodecByTypeIdx(i TypeIndex) (DefCodec, error) {

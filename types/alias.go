@@ -2,12 +2,24 @@ package types
 
 import "github.com/centrifuge/go-substrate-rpc-client/types"
 
+const (
+	ExtrinsicVersion4 = types.ExtrinsicVersion4
+)
+
+var (
+	EncodeToBytes = types.EncodeToBytes
+)
+
 type (
+	U32 = types.U32
+	U64 = types.U64
 	// U128 is an unsigned 128-bit integer, it is represented as a big.Int in Go.
 	U128 = types.U128
 )
 
 var (
+	NewU32 = types.NewU32
+	NewU64 = types.NewU64
 	// NewU128 creates a new U128 type
 	NewU128 = types.NewU128
 )
@@ -68,7 +80,20 @@ var (
 	// MustHexDecodeString panics if str cannot be decoded
 	MustHexDecodeString = types.MustHexDecodeString
 
-	// HexEncode encodes bytes to a hex string. Contrary to hex.EncodeToString, this function prefixes the hex string
-	// with "0x"
+	// HexEncodeToString HexEncode encodes bytes to a hex string.
+	// Contrary to hex.EncodeToString, this function prefixes the hex string with "0x"
 	HexEncodeToString = types.HexEncodeToString
+)
+
+type (
+	AccountInfo      = types.AccountInfo
+	SignatureOptions = types.SignatureOptions
+	ExtrinsicEra     = types.ExtrinsicEra
+	Metadata         = types.Metadata
+	Extrinsic        = types.Extrinsic
+)
+
+var (
+	NewExtrinsic = types.NewExtrinsic
+	NewCall      = types.NewCall
 )
