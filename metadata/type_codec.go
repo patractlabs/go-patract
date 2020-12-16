@@ -5,9 +5,12 @@ import (
 	"fmt"
 	"math/big"
 	"reflect"
+	"strconv"
+	"strings"
 
 	"github.com/centrifuge/go-substrate-rpc-client/scale"
 	"github.com/centrifuge/go-substrate-rpc-client/types"
+	"github.com/patractlabs/go-patract/utils"
 	"github.com/patractlabs/go-patract/utils/log"
 	"github.com/pkg/errors"
 )
@@ -109,7 +112,20 @@ func (d *defPrimitive) Encode(ctx CodecContext, value interface{}) error {
 }
 
 func (d *defPrimitive) EncodeJSON(ctx CodecContext, value json.RawMessage) error {
-	val := reflect.New(d.typ).Interface()
+	var str string
+	if err := json.Unmarshal(value, &str); err != nil {
+		return err
+	}
+
+	str = strings.ToLower(str)
+
+	val, err := newFromKind(d.typ, str)
+	if err != nil {
+		return errors.Wrapf(err, "new from type by %s to %s", str, d.typ.String())
+	}
+
+	ctx.logger.Debug("EncodeJSON", "value", string(value), "val", val)
+
 	return d.Encode(ctx, val)
 }
 
@@ -163,6 +179,88 @@ func getKindFromTypeString(typ string) reflect.Type {
 	}
 }
 
+func newFromKind(typ reflect.Type, str string) (interface{}, error) {
+	switch typ {
+	case reflect.TypeOf(types.NewBool(false)):
+		return types.NewBool("true" == strings.ToLower(str)), nil
+
+	case reflect.TypeOf(types.NewU8(0)):
+		i, err := strconv.ParseUint(str, 10, 8)
+		if err != nil {
+			return nil, errors.Wrapf(err, "parse u8 error")
+		}
+		return types.NewU8(uint8(i)), nil
+
+	case reflect.TypeOf(types.NewU16(0)):
+		i, err := strconv.ParseUint(str, 10, 16)
+		if err != nil {
+			return nil, errors.Wrapf(err, "parse u16 error")
+		}
+		return types.NewU16(uint16(i)), nil
+
+	case reflect.TypeOf(types.NewU32(0)):
+		i, err := strconv.ParseUint(str, 10, 32)
+		if err != nil {
+			return nil, errors.Wrapf(err, "parse u32 error")
+		}
+		return types.NewU32(uint32(i)), nil
+
+	case reflect.TypeOf(types.NewU64(0)):
+		i, err := strconv.ParseUint(str, 10, 64)
+		if err != nil {
+			return nil, errors.Wrapf(err, "parse u64 error")
+		}
+		return types.NewU64(i), nil
+
+	case reflect.TypeOf(types.NewU128(big.Int{})):
+		i := big.NewInt(0)
+		i, ok := i.SetString(str, 10)
+		if !ok {
+			return nil, errors.Errorf("big int set string error %s", str)
+		}
+		return types.NewU128(*i), nil
+
+	case reflect.TypeOf(types.NewI8(0)):
+		i, err := strconv.ParseInt(str, 10, 8)
+		if err != nil {
+			return nil, errors.Wrapf(err, "parse i8 error")
+		}
+		return types.NewI8(int8(i)), nil
+
+	case reflect.TypeOf(types.NewI16(0)):
+		i, err := strconv.ParseInt(str, 10, 16)
+		if err != nil {
+			return nil, errors.Wrapf(err, "parse i16 error")
+		}
+		return types.NewI16(int16(i)), nil
+
+	case reflect.TypeOf(types.NewI32(0)):
+		i, err := strconv.ParseInt(str, 10, 32)
+		if err != nil {
+			return nil, errors.Wrapf(err, "parse i32 error")
+		}
+		return types.NewI32(int32(i)), nil
+
+	case reflect.TypeOf(types.NewI64(0)):
+		i, err := strconv.ParseInt(str, 10, 64)
+		if err != nil {
+			return nil, errors.Wrapf(err, "parse i64 error")
+		}
+		return types.NewI64(i), nil
+
+	case reflect.TypeOf(types.NewI128(big.Int{})):
+		i := big.NewInt(0)
+		i, ok := i.SetString(str, 10)
+		if !ok {
+			return nil, errors.Errorf("big int set string error %s", str)
+		}
+		return types.NewI128(*i), nil
+
+	default:
+		panic(errors.Errorf("unknown type by %s", typ))
+	}
+}
+
 type compositeField struct {
 	Name      string `json:"name"`
 	TypeIndex int    `json:"type"`
@@ -170,15 +268,17 @@ type compositeField struct {
 
 type defComposite struct {
 	Fields []compositeField `json:"fields"`
+	Path   []string
 }
 
-func newDefComposite(raw json.RawMessage) *defComposite {
+func newDefComposite(raw json.RawMessage, path []string) *defComposite {
 	res := &defComposite{}
 
 	if err := json.Unmarshal(raw, res); err != nil {
 		panic(err)
 	}
 
+	res.Path = path
 	return res
 }
 
@@ -212,9 +312,42 @@ func (d *defComposite) Encode(ctx CodecContext, value interface{}) error {
 	return nil
 }
 
-func (d *defComposite) EncodeJSON(ctx CodecContext, value json.RawMessage) error {
-	jsonMap := make(map[string]json.RawMessage)
+func (d *defComposite) encodeAccountIDJSON(ctx CodecContext, value json.RawMessage) error {
+	var str string
+	if err := json.Unmarshal(value, &str); err != nil {
+		return errors.Wrap(err, "failed to unmarshal string")
+	}
 
+	ctx.logger.Debug("encode accountID", "v", str)
+
+	acc, err := utils.NewAccountIDFromSS58(str)
+	if err != nil {
+		return errors.Wrap(err, "failed to decode accountID SS58")
+	}
+
+	return ctx.encoder.Encode(acc)
+}
+
+func (d *defComposite) EncodeJSON(ctx CodecContext, value json.RawMessage) error {
+	if utils.IsNameEqual(d.Path, []string{"ink_env", "types", "AccountId"}) {
+		return d.encodeAccountIDJSON(ctx, value)
+	}
+
+	// for just one sub elem
+	if len(d.Fields) == 1 {
+		field := d.Fields[0]
+
+		def := ctx.GetDefCodecByIndex(field.TypeIndex)
+		ctx.logger.Debug("target", "field", field.Name, "v", value)
+		if err := def.EncodeJSON(ctx, value); err != nil {
+			return errors.Wrapf(err,
+				"encode composite field %s %s", field.Name, value)
+		}
+
+		return nil
+	}
+
+	jsonMap := make(map[string]json.RawMessage)
 	if err := json.Unmarshal(value, &jsonMap); err != nil {
 		return errors.Wrap(err, "failed to unmarshal to map")
 	}

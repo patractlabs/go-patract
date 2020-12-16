@@ -35,7 +35,7 @@ func NewTypeDef(raw *rawTypeDef) *TypeDef {
 		case "primitive":
 			res.def = newDefPrimitive(jsonRaw)
 		case "composite":
-			res.def = newDefComposite(jsonRaw)
+			res.def = newDefComposite(jsonRaw, raw.Path)
 		case "array":
 			res.def = newDefArray(jsonRaw)
 		case "variant":

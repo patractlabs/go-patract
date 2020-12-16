@@ -9,6 +9,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/patractlabs/go-patract/api"
 	"github.com/patractlabs/go-patract/metadata"
+	"github.com/patractlabs/go-patract/rpc"
 	"github.com/patractlabs/go-patract/types"
 	"github.com/patractlabs/go-patract/utils"
 	"github.com/pkg/errors"
@@ -24,7 +25,7 @@ type ExecCommonParams struct {
 	Args        json.RawMessage    `json:"args"`
 }
 
-func (r *Router) messageHandler(message *metadata.MessageRaw) func(*gin.Context) {
+func (r *Router) messageHandler(metaDate metadata.Data, message metadata.MessageRaw) func(*gin.Context) {
 	return func(ctx *gin.Context) {
 		var params ExecCommonParams
 		if err := ctx.ShouldBindJSON(&params); err != nil {
@@ -82,7 +83,11 @@ func (r *Router) messageHandler(message *metadata.MessageRaw) func(*gin.Context)
 			nonce = *params.Nonce
 		}
 
-		//	data, err := r.cli.GetMessageData()
+		data, err := rpc.GetMessagesDataFromJSON(&metaDate, message.Name, params.Args)
+		if err != nil {
+			ctx.JSON(http.StatusBadRequest, gin.H{"error": errors.Wrap(err, "gen msg data").Error()})
+			return
+		}
 
 		bz, err := api.MakeExtrinisic(
 			nonce, r.runtimeMetadata,
@@ -90,7 +95,7 @@ func (r *Router) messageHandler(message *metadata.MessageRaw) func(*gin.Context)
 			contractID,
 			types.NewCompactBalanceByInt(value),
 			types.NewCompactGas(types.Gas(gasLimit)),
-			[]byte{})
+			data)
 
 		if err != nil {
 			ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -117,7 +122,7 @@ func (r *Router) messages(path string) {
 				path4Message = path4Message + n + "/"
 			}
 
-			r.POST(path4Message[:len(path4Message)-1], r.messageHandler(&message))
+			r.POST(path4Message[:len(path4Message)-1], r.messageHandler(*metadate, message))
 		}
 	}
 }
