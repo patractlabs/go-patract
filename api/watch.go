@@ -103,10 +103,6 @@ func (w *watcher) Watch(ctx context.Context, fromHeight uint64, h EventHandler) 
 	// first scanner all old blocks
 	w.scanner.Scan(scannerCtx, fromHeight,
 		func(logger log.Logger, height uint64, records *types.EventRecords) error {
-			if height%100 == 0 {
-				logger.Debug("handler block events", "height", height)
-			}
-
 			w.eventChann <- evtMsgInChann{
 				height:  height,
 				records: records,
