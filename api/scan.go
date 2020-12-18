@@ -9,16 +9,21 @@ import (
 	"github.com/pkg/errors"
 )
 
+type evtMsgInChann struct {
+	height  uint64
+	records *types.EventRecords
+}
+
 type scanner struct {
 	wg                sync.WaitGroup
 	cli               *Client
 	logger            log.Logger
-	eventChann        chan *types.EventRecords
+	eventChann        chan evtMsgInChann
 	mutex             sync.RWMutex
 	latestBlockHeight uint64
 }
 
-type EventHandler func(logger log.Logger, evt *types.EventRecords) error
+type EventHandler func(logger log.Logger, height uint64, evt *types.EventRecords) error
 
 func NewScanner(logger log.Logger, url string) *scanner {
 	cli, err := NewClient(logger, url)
@@ -29,8 +34,12 @@ func NewScanner(logger log.Logger, url string) *scanner {
 	return &scanner{
 		cli:        cli,
 		logger:     logger,
-		eventChann: make(chan *types.EventRecords, 4096),
+		eventChann: make(chan evtMsgInChann, 4096),
 	}
+}
+
+func (s *scanner) Cli() *Client {
+	return s.cli
 }
 
 func (s *scanner) LastestBlockHeight() uint64 {
@@ -60,7 +69,7 @@ func (s *scanner) Scan(ctx context.Context, fromHeight uint64, h EventHandler) {
 				return
 			}
 
-			if err := h(s.logger, evts); err != nil {
+			if err := h(s.logger, evts.height, evts.records); err != nil {
 				s.logger.Error("handler error", "err", err.Error())
 			}
 		}
@@ -120,13 +129,16 @@ func (s *scanner) scanBlocksImp(ctx context.Context, fromHeight uint64) error {
 				return errors.Wrapf(err, "query block %d", curr)
 			}
 
-			evts, err := s.cli.QueryEventByBlockHash(blockHash)
+			records, err := s.cli.QueryEventByBlockHash(blockHash)
 			if err != nil {
 				return errors.Wrapf(err, "query events by block %d", curr)
 			}
 
 			// to handler loop
-			s.eventChann <- evts
+			s.eventChann <- evtMsgInChann{
+				height:  curr,
+				records: records,
+			}
 
 			currentBlockHeight = curr + 1
 		}

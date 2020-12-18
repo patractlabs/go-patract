@@ -17,7 +17,9 @@ func TestScanEventByBlock(t *testing.T) {
 
 		scanner := api.NewScanner(logger, env.URL())
 
-		scanner.Scan(context.Background(), 1, func(l log.Logger, evt *types.EventRecords) error {
+		scanner.Scan(context.Background(), 1, func(l log.Logger, height uint64, evt *types.EventRecords) error {
+			l.Info("scan block event %d", height)
+
 			for _, e := range evt.System_ExtrinsicSuccess {
 				l.Info("System_ExtrinsicSuccess:: (phase=%#v) : %v, %v, %v", e.Phase, e.DispatchInfo, e.Topics)
 			}
@@ -35,5 +37,4 @@ func TestScanEventByBlock(t *testing.T) {
 
 		scanner.Wait()
 	})
-
 }
