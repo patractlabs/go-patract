@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"reflect"
 
+	"github.com/patractlabs/go-patract/types"
 	"github.com/patractlabs/go-patract/utils"
 	"github.com/pkg/errors"
 )
@@ -122,6 +123,15 @@ func (d *defComposite) EncodeJSON(ctx CodecContext, value json.RawMessage) error
 	return nil
 }
 
+func (d *defComposite) decodeAccountID(ctx CodecContext, value interface{}) error {
+	pID, ok := value.(*types.AccountID)
+	if !ok {
+		return errors.Errorf("decodeAccountID value err")
+	}
+
+	return ctx.decoder.Decode(pID)
+}
+
 func (d *defComposite) Decode(ctx CodecContext, value interface{}) error {
 	t0 := reflect.TypeOf(value)
 	if t0.Kind() != reflect.Ptr {
@@ -138,6 +148,10 @@ func (d *defComposite) Decode(ctx CodecContext, value interface{}) error {
 	t := target.Type()
 	if !target.CanSet() {
 		return errors.Errorf("Unsettable value %v", t)
+	}
+
+	if utils.IsNameEqual(d.Path, []string{"ink_env", "types", "AccountId"}) {
+		return d.decodeAccountID(ctx, value)
 	}
 
 	for idx, field := range d.Fields {

@@ -53,35 +53,33 @@ func (w *ContractObserver) WithMetaData(codeHash types.Hash, data *metadata.Data
 	return w
 }
 
-func (w *ContractObserver) WatchEvent(ctx context.Context) error {
+func (w *ContractObserver) MetaData(codeHash types.Hash) *metadata.Data {
+	return w.metaDatas[codeHash]
+}
+
+func (w *ContractObserver) WatchEvent(ctx context.Context, handler *EvtHandler) error {
 	watcher := api.NewWatcher(w.logger, w.url)
 
 	return watcher.Watch(ctx, w.fromHeight,
 		func(l log.Logger, height uint64, evt *types.EventRecords) error {
-			return w.processEvent(height, evt)
+
+			if len(evt.Contracts_Instantiated)+
+				len(evt.Contracts_Evicted)+
+				len(evt.Contracts_Restored)+
+				len(evt.Contracts_CodeStored)+
+				len(evt.Contracts_ScheduleUpdated)+
+				len(evt.Contracts_ContractExecution) == 0 {
+				return nil
+			}
+
+			w.logContractEvts(height, evt)
+			handler.handler(l, height, evt)
+
+			return nil
 		})
 }
 
-func (w *ContractObserver) processEvent(height uint64, evt *types.EventRecords) error {
-	// log event
-	w.logContractEvts(height, evt)
-
-	return nil
-}
-
 func (w *ContractObserver) logContractEvts(height uint64, evt *types.EventRecords) {
-
-	if len(evt.Contracts_Instantiated)+
-		len(evt.Contracts_Evicted)+
-		len(evt.Contracts_Restored)+
-		len(evt.Contracts_CodeStored)+
-		len(evt.Contracts_ScheduleUpdated)+
-		len(evt.Contracts_ContractExecution) == 0 {
-		if height%100 == 0 {
-			w.logger.Debug("block event", "height", height)
-		}
-		return
-	}
 
 	w.logger.Debug("block event", "height", height)
 

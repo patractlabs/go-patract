@@ -57,9 +57,28 @@ func (d *defVariant) findVarIdxByName(name string) int {
 	return -1
 }
 
+func (d *defVariant) IsOptional(v interface{}) (OptionValue, int, bool) {
+	if len(d.Variants) == 2 &&
+		d.Variants[0].Name == "None" &&
+		len(d.Variants[0].Fields) == 0 &&
+		d.Variants[1].Name == "Some" &&
+		len(d.Variants[1].Fields) == 1 {
+		ov, ok := v.(OptionValue)
+		if ok {
+			return ov, d.Variants[1].Fields[0].Typ, true
+		}
+	}
+
+	return nil, 0, false
+}
+
 func (d *defVariant) Encode(ctx CodecContext, value interface{}) error {
 	if o, ok := value.(VariantsI); ok {
 		return d.encodeVariant(ctx, o)
+	}
+
+	if ov, typIdx, ok := d.IsOptional(value); ok {
+		return d.encodeOption(ctx, typIdx, ov)
 	}
 
 	return d.encodeCommonStruct(ctx, value)
@@ -70,6 +89,10 @@ func (d *defVariant) EncodeJSON(ctx CodecContext, value json.RawMessage) error {
 }
 
 func (d *defVariant) Decode(ctx CodecContext, value interface{}) error {
+	if v, typIdx, ok := d.IsOptional(value); ok {
+		return d.decodeOption(ctx, typIdx, v)
+	}
+
 	return d.decodeCommonStruct(ctx, value)
 }
 
@@ -99,6 +122,37 @@ func (d *defVariant) encodeFields(ctx CodecContext, index int, value interface{}
 		}
 	}
 	return nil
+}
+
+type OptionValue interface {
+	IsNone() bool
+	SetHasValue(h bool)
+}
+
+func (d *defVariant) encodeOption(ctx CodecContext, typIdx int, value OptionValue) error {
+	if value.IsNone() {
+		return ctx.encoder.PushByte(0x00)
+	}
+
+	ctx.encoder.PushByte(0x01)
+
+	t := reflect.ValueOf(value)
+	numFields := t.NumField()
+	for i := 0; i < numFields; i++ {
+		vi := t.Field(i)
+		vt := t.Type().Field(i)
+
+		tv, ok := vt.Tag.Lookup("scale")
+		if ok && tv == "-" {
+			continue
+		}
+
+		if tv == "Some" {
+			return d.encodeFields(ctx, 1, vi.Interface())
+		}
+	}
+
+	return errors.Errorf("no found field some")
 }
 
 /*
@@ -151,6 +205,59 @@ func (d *defVariant) encodeCommonStruct(ctx CodecContext, value interface{}) err
 	return errors.Errorf("no fields has value and variants not allow none")
 }
 
+func (d *defVariant) decodeOption(ctx CodecContext, typIdx int, value OptionValue) error {
+	t0 := reflect.TypeOf(value)
+	if t0.Kind() != reflect.Ptr {
+		return errors.New("Target must be a pointer, but was " + fmt.Sprint(t0))
+	}
+
+	val := reflect.ValueOf(value)
+	if val.IsNil() {
+		return errors.New("Target is a nil pointer")
+	}
+
+	target := val.Elem()
+
+	t := target.Type()
+	if !target.CanSet() {
+		return errors.Errorf("Unsettable value %v", t)
+	}
+
+	typ, err := ctx.decoder.ReadOneByte()
+	if err != nil {
+		return errors.Wrapf(err, "decode type error")
+	}
+
+	if typ == 0x00 {
+		value.SetHasValue(false)
+		return nil
+	}
+
+	// find field to value
+	for i := 0; i < target.NumField(); i++ {
+		ft := target.Type().Field(i)
+		tv, ok := ft.Tag.Lookup("scale")
+		if ok && tv == "-" {
+			continue
+		}
+
+		if tv == "Some" {
+			ctx.logger.Debug("target option", "field", tv, "typIdx", typIdx, "v", target.Field(i))
+
+			def := ctx.GetDefCodecByIndex(typIdx)
+			fi := target.Field(i).Addr().Interface()
+
+			if err := def.Decode(ctx, fi); err != nil {
+				return errors.Wrapf(err, "decode composite field %d %d", typIdx, i)
+			}
+
+			return nil
+		}
+	}
+
+	return errors.Errorf("no Some field find for optional")
+}
+
 func (d *defVariant) decodeCommonStruct(ctx CodecContext, value interface{}) error {
 	t0 := reflect.TypeOf(value)
 	if t0.Kind() != reflect.Ptr {
@@ -169,12 +276,12 @@ func (d *defVariant) decodeCommonStruct(ctx CodecContext, value interface{}) err
 		return errors.Errorf("Unsettable value %v", t)
 	}
 
-	var typ byte
-	if err := ctx.decoder.Decode(&typ); err != nil {
+	typ, err := ctx.decoder.ReadOneByte()
+	if err != nil {
 		return errors.Wrapf(err, "decode type error")
 	}
 
-	ctx.logger.Debug("target", "typ", typ)
+	ctx.logger.Debug("decodeCommonStruct target", "typ", typ, "target", target)
 
 	typIdx := int(typ)
 
@@ -184,6 +291,12 @@ func (d *defVariant) decodeCommonStruct(ctx CodecContext, value interface{}) err
 
 	variant := d.Variants[typIdx]
 	name := d.Variants[typIdx].Name
+
+	if len(variant.Fields) == 0 {
+		ctx.logger.Debug("decodeCommonStruct nil target", "typ", typ, "target", target)
+
+		return nil
+	}
 
 	// find field to value
 	for i := 0; i < target.NumField(); i++ {
