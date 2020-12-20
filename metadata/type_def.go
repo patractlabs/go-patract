@@ -2,6 +2,7 @@ package metadata
 
 import (
 	"encoding/json"
+	"reflect"
 
 	"github.com/pkg/errors"
 )
@@ -59,5 +60,6 @@ func (t *TypeDef) EncodeJSON(ctx CodecContext, v json.RawMessage) error {
 }
 
 func (t *TypeDef) Decode(ctx CodecContext, v interface{}) error {
+	ctx.logger.Debug("decode type def", "v", reflect.TypeOf(v).Elem().Name())
 	return t.def.Decode(ctx, v)
 }
