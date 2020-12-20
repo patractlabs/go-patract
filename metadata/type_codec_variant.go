@@ -233,6 +233,8 @@ func (d *defVariant) decodeOption(ctx CodecContext, typIdx int, value OptionValu
 		return nil
 	}
 
+	value.SetHasValue(true)
+
 	// find field to value
 	for i := 0; i < target.NumField(); i++ {
 		ft := target.Type().Field(i)
