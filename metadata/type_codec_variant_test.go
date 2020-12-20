@@ -114,14 +114,14 @@ func TestDefVariantEncodeAndDecode(t *testing.T) {
 
 	type testOption struct {
 		Some *[8]testCompos `scale:"Some"`
-		None *interface{}   `scale:"None"`
 	}
 
 	s := testOption{
 		&valComArr,
-		nil,
 	}
-	sp := testOption{}
+	sp := testOption{
+		Some: &[8]testCompos{},
+	}
 
 	testTypeEncodeAndDecode(t, logger, typeDefs, 5, s, &sp)
 	//require.Equalf(t, s, sp, "encode and decode should match")
