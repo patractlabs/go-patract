@@ -3,6 +3,8 @@ package log
 import (
 	"fmt"
 
+	"github.com/centrifuge/go-substrate-rpc-client/types"
+	"github.com/patractlabs/go-patract/utils"
 	"go.uber.org/zap"
 )
 
@@ -38,6 +40,34 @@ func NewNopLogger() Logger {
 	}
 }
 
+func tryProcessTypes(arg interface{}) (string, bool) {
+	if accountID, ok := arg.(types.AccountID); ok {
+		str, err := utils.EncodeAccountIDToSS58(accountID)
+		if err != nil {
+			return "", false
+		}
+		return str, true
+	}
+
+	if accountID, ok := arg.(*types.AccountID); ok {
+		str, err := utils.EncodeAccountIDToSS58(*accountID)
+		if err != nil {
+			return "", false
+		}
+		return str, true
+	}
+
+	if bz, ok := arg.([]byte); ok {
+		return types.HexEncodeToString(bz), true
+	}
+
+	if bz, ok := arg.(types.Bytes); ok {
+		return types.HexEncodeToString(bz), true
+	}
+
+	return "", false
+}
+
 // Debug imp debug log
 func (l *loggerByZap) Debug(msg string, args ...interface{}) {
 	if len(args) == 0 {
@@ -51,7 +81,12 @@ func (l *loggerByZap) Debug(msg string, args ...interface{}) {
 
 	fields := make([]zap.Field, 0, len(args)/kvLen)
 	for i := 0; i < len(args); i += kvLen {
-		fields = append(fields, zap.Any(fmt.Sprintf("%s", args[i]), args[i+1]))
+		str, ok := tryProcessTypes(args[i+1])
+		if !ok {
+			fields = append(fields, zap.Any(fmt.Sprintf("%s", args[i]), args[i+1]))
+		} else {
+			fields = append(fields, zap.Any(fmt.Sprintf("%s", args[i]), str))
+		}
 	}
 
 	l.l.Debug(msg, fields...)
@@ -70,7 +105,12 @@ func (l *loggerByZap) Error(msg string, args ...interface{}) {
 
 	fields := make([]zap.Field, 0, len(args)/kvLen)
 	for i := 0; i < len(args); i += kvLen {
-		fields = append(fields, zap.Any(fmt.Sprintf("%s", args[i]), args[i+1]))
+		str, ok := tryProcessTypes(args[i+1])
+		if !ok {
+			fields = append(fields, zap.Any(fmt.Sprintf("%s", args[i]), args[i+1]))
+		} else {
+			fields = append(fields, zap.Any(fmt.Sprintf("%s", args[i]), str))
+		}
 	}
 
 	l.l.Error(msg, fields...)
@@ -89,7 +129,12 @@ func (l *loggerByZap) Warn(msg string, args ...interface{}) {
 
 	fields := make([]zap.Field, 0, len(args)/kvLen)
 	for i := 0; i < len(args); i += kvLen {
-		fields = append(fields, zap.Any(fmt.Sprintf("%s", args[i]), args[i+1]))
+		str, ok := tryProcessTypes(args[i+1])
+		if !ok {
+			fields = append(fields, zap.Any(fmt.Sprintf("%s", args[i]), args[i+1]))
+		} else {
+			fields = append(fields, zap.Any(fmt.Sprintf("%s", args[i]), str))
+		}
 	}
 
 	l.l.Warn(msg, fields...)
@@ -108,7 +153,12 @@ func (l *loggerByZap) Info(msg string, args ...interface{}) {
 
 	fields := make([]zap.Field, 0, len(args)/kvLen)
 	for i := 0; i < len(args); i += kvLen {
-		fields = append(fields, zap.Any(fmt.Sprintf("%s", args[i]), args[i+1]))
+		str, ok := tryProcessTypes(args[i+1])
+		if !ok {
+			fields = append(fields, zap.Any(fmt.Sprintf("%s", args[i]), args[i+1]))
+		} else {
+			fields = append(fields, zap.Any(fmt.Sprintf("%s", args[i]), str))
+		}
 	}
 
 	l.l.Info(msg, fields...)

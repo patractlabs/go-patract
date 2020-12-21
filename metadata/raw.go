@@ -21,7 +21,7 @@ type Raw struct {
 	Spec struct {
 		Constructors []ConstructorRaw `json:"constructors"`
 		Docs         []string         `json:"docs"`
-		Events       []EventRaw       `json:"events"`
+		Events       EventRaws        `json:"events"`
 		Messages     []MessageRaw     `json:"messages"`
 	} `json:"spec"`
 	Types []rawTypeDef `json:"types"`
