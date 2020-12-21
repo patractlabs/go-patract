@@ -4,6 +4,7 @@ import (
 	"context"
 	"io/ioutil"
 	"testing"
+	"time"
 
 	"github.com/centrifuge/go-substrate-rpc-client/types"
 	"github.com/patractlabs/go-patract/contracts/erc20"
@@ -18,9 +19,9 @@ import (
 func TestWatch(t *testing.T) {
 	require := require.New(t)
 
-	test.ByExternCanvasEnv(t, func(logger log.Logger, env test.Env) {
+	test.ByCanvasEnv(t, func(logger log.Logger, env test.Env) {
 		o := observer.New(logger, env.URL())
-		ctx, _ := context.WithCancel(context.Background())
+		ctx, cc := context.WithCancel(context.Background())
 
 		metaBz, err := ioutil.ReadFile(erc20MetaPath)
 		require.Nil(err)
@@ -53,6 +54,11 @@ func TestWatch(t *testing.T) {
 				logger.Info("approve event", "evt", approve)
 			}
 		})
+
+		go func() {
+			time.Sleep(2 * time.Second)
+			cc()
+		}()
 
 		o.WatchEvent(ctx, h)
 	})
