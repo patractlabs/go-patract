@@ -10,7 +10,7 @@ PatractGo will be based on [Centrifuge's GSRPC](https://github.com/centrifuge/go
 
 Element Group for disscusion: https://app.element.io/#/room/#PatractLabsDev:matrix.org
 
-### Intruduction
+## Intruduction
 
 Most contract behaviors are highly related to context. In addition to interacting with the chain, user-oriented contract applications also need to provide users with current relevant context status information:
 
@@ -67,8 +67,7 @@ subkey --version
 For Now, the sdk examples will connect to the [canvas](https://github.com/paritytech/canvas-node), and also need cli tools:
 
 ```bash
-cargo install canvas-node --git https://github.com/paritytech/canvas-node.git --tag v0.1.3 --force --locked
-cargo install cargo-contract --vers 0.7.1 --force --locked
+cargo install canvas-node --git https://github.com/paritytech/canvas-node.git --tag v0.1.4 --force --locked
 canvas -V
 ```
 
@@ -76,6 +75,172 @@ For some examples, we can simply run a canvas node:
 
 ```bash
 canvas --dev --tmp
+```
+
+use for external port:
+
+```bash
+canvas --dev --tmp  --ws-external
+```
+
+## Design
+
+PatractGo consists of the following packages:
+
+- `patractgo/metadata` contract metadata processing, and metadata-based contract processing
+- `patractgo/rpc/native` re-encapsulation of the contract module interface to provide the contract-related interaction based on chain RPC
+- `patractgo/rpc` implement the interaction with the contract based on metadata
+- `patractgo/rest` implements an http service based on metadata to interact with the contract
+- `patractgo/observer` Monitoring and Scanning support for contract status on the chain
+- `patractgo/contracts/erc20` supports ERC20 contracts and examples
+- `patractgo/tools` some tools for contracts develop
+
+## Test
+
+PatractGo use `go test` to test, but as need canvas environments, so need run test in one process:
+
+```bash
+go test -v -p 1 ./...
+```
+
+The unittest will start a canvas process for test, if need use a canvas start by localhost, can use this:
+
+```bash
+canvas --dev --tmp --ws-external
+```
+
+```bash
+go test ./contracts/erc20/ -v -p 1 -v -args "extern" -run TestTransfer
+```
+
+This will run `TestTransfer` test to canvas
+
+## Usage
+
+### Contracts
+
+Also can read: [Transfer test](https://github.com/patractlabs/go-patract/blob/master/contracts/erc20/transfer_test.go).
+
+#### Contracts Code
+
+**Put Code:**
+
+```go
+   // read the code wasm from file
+   codeBytes, err := ioutil.ReadFile("/path/to/contracts.wasm")
+   if err != nil {
+      return err
+   }
+
+   // create the api
+   cApi, err := rpc.NewContractAPI(env.URL())
+   
+   // read the abi(metadata) for contract
+   metaBz, err := ioutil.ReadFile("/path/to/contracts_metadata.json")
+   cApi.WithMetaData(metaBz)
+
+   // create context with from auth, like Alice
+   ctx := api.NewCtx(context.Background()).WithFrom(authKey)
+
+   // put code
+   _, err = cApi.Native().PutCode(ctx, codeBytes)
+   
+   // do next steps
+```
+
+**Get Code:**
+
+```go
+   codeHash := readCodeHash() // get code hash
+
+   var codeBz []byte
+   
+	if err := cApi.Native().Cli.GetStorageLatest(&codeBz,
+		"Contracts", "PristineCode",
+		[]byte(codeHash), nil); err != nil {
+		return err
+   }
+   
+   // codeBz is now code
+```
+
+#### Instantiate
+
+```go
+	var endowment uint64 = 1000000000000
+
+	// Instantiate
+	_, contractAccount, err := cApi.Instantiate(ctx,
+		types.NewCompactBalance(endowment),
+		types.NewCompactGas(test.DefaultGas),
+		contracts.CodeHashERC20,
+		types.NewU128(totalSupply),
+   )
+```
+
+api will return contractAccount, which can use to call the contract.
+
+### Call
+
+For a contract, we can read or exec messages:
+
+**Read:**
+
+Read the total_supply of ERC20 contract, no request params:
+
+```go
+	var res types.U128
+
+	err := a.CallToRead(ctx,
+		&res,
+		a.ContractAccountID,
+		[]string{"total_supply"},
+	)
+```
+
+Read the balance_of of AccountID for ERC20 contract:
+
+```go
+	req := struct {
+		Address types.AccountID
+	}{
+		Address: owner,
+	}
+
+	var res types.U128
+
+	err := a.CallToRead(ctx,
+		&res,
+		ContractAccountIDForERC20,
+		[]string{"balance_of"},
+		req,
+	)
+```
+
+**Exec:**
+
+Call Transfer:
+
+```go
+	toParam := struct {
+		Address AccountID
+	}{
+		Address: to,
+	}
+
+	valueParam := struct {
+		Value U128
+	}{
+		Value: amt,
+	}
+
+	return a.CallToExec(ctx,
+		a.ContractAccountID,
+		types.NewCompactBalance(0),
+		types.NewCompactGas(test.DefaultGas),
+		[]string{"transfer"},
+		toParam, valueParam,
+	)
 ```
 
 ## Thanks
