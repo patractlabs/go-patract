@@ -15,17 +15,10 @@ import (
 )
 
 func TestCallERC20(t *testing.T) {
-	isUseExt := false
-
-	funcEnv := test.ByCanvasEnv
-	if isUseExt {
-		funcEnv = test.ByExternCanvasEnv
-	}
-
-	funcEnv(t, func(logger log.Logger, env test.Env) {
+	test.ByCanvasEnv(t, func(logger log.Logger, env test.Env) {
 		require := require.New(t)
 
-		if !isUseExt {
+		if !env.IsUseExtToTest() {
 			initERC20(t, logger, env)
 		}
 
@@ -45,7 +38,7 @@ func TestCallERC20(t *testing.T) {
 
 		var contractAccount types.AccountID
 
-		if !isUseExt {
+		if !env.IsUseExtToTest() {
 			// Instantiate
 			_, contractAccount, err = api.Instantiate(ctx,
 				types.NewCompactBalance(initSupply),

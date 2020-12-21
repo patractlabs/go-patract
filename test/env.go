@@ -1,6 +1,7 @@
 package test
 
 import (
+	"flag"
 	"testing"
 	"time"
 
@@ -15,6 +16,7 @@ const (
 // Env env interface for test
 type Env interface {
 	URL() string
+	IsUseExtToTest() bool
 }
 
 type envExtern struct {
@@ -25,8 +27,24 @@ func (e envExtern) URL() string {
 	return e.url
 }
 
+func (e envExtern) IsUseExtToTest() bool {
+	return true
+}
+
 // ByCanvasEnv test with canvas env
 func ByCanvasEnv(t *testing.T, c func(log.Logger, Env)) {
+	if !flag.Parsed() {
+		flag.Parse()
+	}
+
+	argList := flag.Args()
+	for _, arg := range argList {
+		if arg == "extern" {
+			ByExternCanvasEnv(t, c)
+			return
+		}
+	}
+
 	logger := log.NewLogger()
 	env := canvas.NewCanvasEnv(logger)
 	defer func() {

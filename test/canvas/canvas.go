@@ -67,6 +67,10 @@ func (c *Env) URL() string {
 	return fmt.Sprintf("ws://localhost:%s", c.portWs)
 }
 
+func (c *Env) IsUseExtToTest() bool {
+	return false
+}
+
 // PID get canvas process id
 func (c *Env) PID() int {
 	c.mutex.RLock()
