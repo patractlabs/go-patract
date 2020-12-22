@@ -14,6 +14,8 @@ const (
 
 // Logger a logger interface
 type Logger interface {
+	Flush()
+
 	Debug(msg string, args ...interface{})
 	Info(msg string, args ...interface{})
 	Warn(msg string, args ...interface{})
@@ -66,6 +68,13 @@ func tryProcessTypes(arg interface{}) (string, bool) {
 	}
 
 	return "", false
+}
+
+func (l *loggerByZap) Flush() {
+	err := l.l.Sync()
+	if err != nil {
+		fmt.Printf("logger flush error %s", err.Error())
+	}
 }
 
 // Debug imp debug log

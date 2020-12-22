@@ -15,6 +15,7 @@ type ContractObserver struct {
 	fromHeight  uint64
 	contractIDs map[types.AccountID]bool
 	metaDatas   map[types.Hash]*metadata.Data
+	watcher     *api.Watcher
 }
 
 func New(logger log.Logger, url string) *ContractObserver {
@@ -58,9 +59,9 @@ func (w *ContractObserver) MetaData(codeHash types.Hash) *metadata.Data {
 }
 
 func (w *ContractObserver) WatchEvent(ctx context.Context, handler *EvtHandler) error {
-	watcher := api.NewWatcher(w.logger, w.url)
+	w.watcher = api.NewWatcher(w.logger, w.url)
 
-	return watcher.Watch(ctx, w.fromHeight,
+	return w.watcher.Watch(ctx, w.fromHeight,
 		func(l log.Logger, height uint64, evt *types.EventRecords) error {
 
 			if len(evt.Contracts_Instantiated)+
@@ -79,8 +80,11 @@ func (w *ContractObserver) WatchEvent(ctx context.Context, handler *EvtHandler) 
 		})
 }
 
-func (w *ContractObserver) logContractEvts(height uint64, evt *types.EventRecords) {
+func (w *ContractObserver) Wait() {
+	w.watcher.Wait()
+}
 
+func (w *ContractObserver) logContractEvts(height uint64, evt *types.EventRecords) {
 	w.logger.Debug("block event", "height", height)
 
 	for _, e := range evt.Contracts_Instantiated {
