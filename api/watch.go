@@ -8,7 +8,7 @@ import (
 	"github.com/patractlabs/go-patract/utils/log"
 )
 
-type watcher struct {
+type Watcher struct {
 	wg         sync.WaitGroup
 	eventChann chan evtMsgInChann
 	stat       int
@@ -18,10 +18,10 @@ type watcher struct {
 	logger     log.Logger
 }
 
-func NewWatcher(logger log.Logger, url string) *watcher {
+func NewWatcher(logger log.Logger, url string) *Watcher {
 	scanner := NewScanner(logger, url)
 
-	return &watcher{
+	return &Watcher{
 		scanner:    scanner,
 		cli:        scanner.Cli(),
 		logger:     logger,
@@ -29,25 +29,25 @@ func NewWatcher(logger log.Logger, url string) *watcher {
 	}
 }
 
-func (s *watcher) Cli() *Client {
+func (s *Watcher) Cli() *Client {
 	return s.cli
 }
 
-func (w *watcher) nextStatStep() {
+func (w *Watcher) nextStatStep() {
 	w.mutex.Lock()
 	defer w.mutex.Unlock()
 
 	w.stat++
 }
 
-func (w *watcher) Status() int {
+func (w *Watcher) Status() int {
 	w.mutex.RLock()
 	defer w.mutex.RUnlock()
 
 	return w.stat
 }
 
-func (w *watcher) Wait() {
+func (w *Watcher) Wait() {
 	w.logger.Debug("watcher start wait stopped")
 
 	w.wg.Wait()
@@ -55,7 +55,7 @@ func (w *watcher) Wait() {
 	w.logger.Debug("watcher stopped")
 }
 
-func (w *watcher) Watch(ctx context.Context, fromHeight uint64, h EventHandler) error {
+func (w *Watcher) Watch(ctx context.Context, fromHeight uint64, h EventHandler) error {
 	w.logger.Debug("start scanner first", "from", fromHeight)
 
 	// init the client
@@ -131,7 +131,7 @@ func (w *watcher) Watch(ctx context.Context, fromHeight uint64, h EventHandler) 
 	return nil
 }
 
-func (w *watcher) stop() {
+func (w *Watcher) stop() {
 	w.logger.Debug("watcher start stop")
 	close(w.eventChann)
 }
