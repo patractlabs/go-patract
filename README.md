@@ -243,6 +243,48 @@ Call Transfer:
 	)
 ```
 
+### Rest
+
+We can use rest to get unsigned raw byte datas for constract call, it can help to build a offline signaturer for contract.
+
+can use this for example: [rest](https://github.com/patractlabs/go-patract/blob/master/examples/rest/main.go)
+
+start the rest server:
+
+```bash
+go run ./examples/rest 
+```
+
+to get data:
+
+```bash
+curl -X POST \
+  'http://localhost:8899/erc20/exec/transfer?isOffline=true&contract=5HKinTRKW9THEJxbQb22Nfyq9FPWNVZ9DQ2GEQ4Vg1LqTPuk' \
+  -H 'content-type: application/json' \
+  -d '{
+	"nonce":1,
+	"chain_status":{
+		"spec_version":1,
+		"tx_version":1,
+		"block_hash":"0xc20f241b61039e5685d118c7fbc8b27210153c21eee7686a9466f22e01281114",
+		"genesis_hash":"0xc20f241b61039e5685d118c7fbc8b27210153c21eee7686a9466f22e01281114"
+	},
+	"contract":"5HKinTRKW9THEJxbQb22Nfyq9FPWNVZ9DQ2GEQ4Vg1LqTPuk",
+	"origin":"5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY",
+	"gas_limit":"500000000000",
+	"args":{
+		"to":"5FHneW46xGXgs5mUiveU4sbTyGBzmstUspZC92UhjJM694ty",
+		"value":"100000000"
+	}
+}'
+```
+
+### observer
+
+For a contract, we need observer events for the contract, can use `observer` to build a contract events observer service:
+
+example: [observer](https://github.com/patractlabs/go-patract/blob/master/examples/observer/main.go)
+
 ## Thanks
 
 - [Centrifuge's GSRPC](https://github.com/centrifuge/go-substrate-rpc-client)
