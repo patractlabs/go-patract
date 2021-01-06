@@ -13,7 +13,7 @@ import (
 )
 
 func observerEvts(logger log.Logger, db *erc20DB) (*observer.ContractObserver, context.CancelFunc, error) {
-	o := observer.New(logger, *flagURL)
+	o := observer.New(logger, *flagNodeURL)
 	ctx, cancelFunc := context.WithCancel(context.Background())
 
 	metaBz, err := ioutil.ReadFile(*flagContractMetadata)

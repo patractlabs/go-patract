@@ -12,9 +12,9 @@ import (
 )
 
 type AccountAsset struct {
-	Sequence uint64  `json:"sequence"`
-	Address  string  `json:"address"`
-	Amount   big.Int `json:"amount"`
+	Sequence uint64 `json:"sequence"`
+	Address  string `json:"address"`
+	Amount   string `json:"amount"`
 }
 
 type erc20DB struct {
@@ -74,7 +74,7 @@ func (db *erc20DB) updateUserAsset(b *bolt.Bucket, address string, amtDeta *big.
 
 		na := AccountAsset{
 			Address:  address,
-			Amount:   *amtDeta,
+			Amount:   amtDeta.String(),
 			Sequence: seq,
 		}
 
@@ -93,7 +93,13 @@ func (db *erc20DB) updateUserAsset(b *bolt.Bucket, address string, amtDeta *big.
 		return errors.Wrap(err, "unmarshal")
 	}
 
-	na.Amount = *na.Amount.Add(&na.Amount, amtDeta)
+	amt := big.NewInt(0)
+	amt, ok := amt.SetString(na.Amount, 10)
+	if !ok {
+		return errors.New("set string err")
+	}
+
+	na.Amount = amt.Add(amt, amtDeta).String()
 
 	buf, err := json.Marshal(na)
 	if err != nil {
@@ -107,15 +113,20 @@ func (db *erc20DB) OnEventTransfer(evt *erc20.EventTransfer) error {
 	return db.Update(func(tx *bolt.Tx) error {
 		b := tx.Bucket(db.BucketKey)
 
+		amt := evt.Value.Int
+		if amt.Cmp(big.NewInt(0)) == 0 {
+			return nil
+		}
+
 		if evt.From.IsSome() {
 			from, err := utils.EncodeAccountIDToSS58(evt.From.Value)
 			if err != nil {
 				return errors.Wrapf(err, "encode err")
 			}
 
-			amt := evt.Value.Int
-			if amt.Cmp(big.NewInt(0)) != 0 {
-				return db.updateUserAsset(b, from, amt.Neg(amt))
+			n := big.NewInt(0).Neg(amt)
+			if err := db.updateUserAsset(b, from, n); err != nil {
+				return errors.Wrap(err, "from update")
 			}
 		}
 
@@ -125,9 +136,8 @@ func (db *erc20DB) OnEventTransfer(evt *erc20.EventTransfer) error {
 				return errors.Wrapf(err, "encode err")
 			}
 
-			amt := evt.Value.Int
-			if amt.Cmp(big.NewInt(0)) != 0 {
-				return db.updateUserAsset(b, to, amt)
+			if err := db.updateUserAsset(b, to, amt); err != nil {
+				return errors.Wrap(err, "to update")
 			}
 		}
 

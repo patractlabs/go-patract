@@ -8,10 +8,11 @@ import (
 )
 
 var (
-	flagURL              = flag.String("url", "ws://localhost:9944", "url to chain node")
+	flagNodeURL          = flag.String("ws", "ws://localhost:9944", "url to chain node")
 	flagContractMetadata = flag.String("metadata", "", "metadata for contract")
 	flagCodeHash         = flag.String("hash", "", "codeHash for contract")
 	flagDBPath           = flag.String("path", "./erc20.db", "path to database")
+	flagRestURL          = flag.String("url", ":8899", "path to url")
 )
 
 func main() {
@@ -26,6 +27,8 @@ func main() {
 		db.Close()
 		logger.Flush()
 	}()
+
+	StartRestServer(logger, db)
 
 	o, cancelFunc, err := observerEvts(logger, db)
 	if err != nil {
