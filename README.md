@@ -57,7 +57,7 @@ Therefor, PatractGo will achieve the following support:
 
 PatractGo based on [GSRPC](https://github.com/centrifuge/go-substrate-rpc-client), So we need install some depends:
 
-First is subkey:
+First is subkey(This dependency could be removed after [GSRPC](https://github.com/centrifuge/go-substrate-rpc-client) marge [pr#114](https://github.com/centrifuge/go-substrate-rpc-client/pull/114)):
 
 ```bash
 cargo install --force subkey --git https://github.com/paritytech/substrate --version 2.0.0
@@ -83,6 +83,24 @@ use for external port:
 canvas --dev --tmp  --ws-external
 ```
 
+Same to [canvas](https://github.com/paritytech/canvas-node), we advise developers to use [jupiter](https://github.com/patractlabs/jupiter) 
+or [europa](https://github.com/patractlabs/europa) for debugging their code.
+
+```bash
+# build jupiter
+git clone --recurse-submodules https://github.com/patractlabs/jupiter.git
+cd jupiter
+cargo build
+# or build europa
+git clone --recurse-submodules https://github.com/patractlabs/europa.git
+cd europa
+cargo build
+```
+
+**For [jupiter](https://github.com/patractlabs/jupiter) or [europa](https://github.com/patractlabs/europa), 
+please read their README to provide their suitable ["extending types"](https://polkadot.js.org/docs/api/start/types.extend/) for go sdk.**
+More information refers to [go-substrate-rpc-client#hdr-Types](https://godoc.org/github.com/centrifuge/go-substrate-rpc-client#hdr-Types)
+
 ## Design
 
 PatractGo consists of the following packages:
@@ -94,6 +112,11 @@ PatractGo consists of the following packages:
 - `patractgo/observer` Monitoring and Scanning support for contract status on the chain
 - `patractgo/contracts/erc20` supports ERC20 contracts and examples
 - `patractgo/tools` some tools for contracts develop
+
+Currently, we haven't designed the module which could **auto-gen code** for a contract based on a metadata, thus we provide
+`patractgo/contracts/erc20` as an example to show how to warp a contract as a go source file.
+
+This **auto contract code generator** feature would be developed with `java-patract` repo later (in next version), **for their have same logic to generate the code for contracts**.
 
 ## Test
 
@@ -117,9 +140,20 @@ This will run `TestTransfer` test to canvas
 
 ## Usage
 
+`PatractGo` divides into 3 parts:
+- Contracts: provides the functions to react with contracts.
+- Rest: provides a way to generate an offline signature for contracts.
+- Observer: listens contract events and parse events by contract metadata.
+
 ### Contracts
 
 Also can read: [Transfer test](https://github.com/patractlabs/go-patract/blob/master/contracts/erc20/transfer_test.go).
+
+Currently, `contracts` part just parses metadata and uniforms interface to react with contracts. Based on the generic interface, 
+the auto contract code generator could be implemented easily in the future. Thus, if developers want to react with their contracts by `PatractGo`,
+they need to create some wrapper functions for contracts, just like what `PatractGo` do in `contracts/erc20`.
+
+This process is duplicated for every contract, we would provide auto contract code generator to simplify this process.
 
 #### Contracts Code
 
@@ -180,13 +214,13 @@ Also can read: [Transfer test](https://github.com/patractlabs/go-patract/blob/ma
 
 api will return contractAccount, which can use to call the contract.
 
-### Call
+#### Call
 
 For a contract, we can read or exec messages:
 
 **Read:**
 
-Read the total_supply of ERC20 contract, no request params:
+Read the `total_supply` of ERC20 contract, no request params:
 
 ```go
 	var res types.U128
@@ -198,7 +232,7 @@ Read the total_supply of ERC20 contract, no request params:
 	)
 ```
 
-Read the balance_of of AccountID for ERC20 contract:
+Read the `balance_of` of AccountID for ERC20 contract:
 
 ```go
 	req := struct {
@@ -219,7 +253,7 @@ Read the balance_of of AccountID for ERC20 contract:
 
 **Exec:**
 
-Call Transfer:
+Call `transfer`:
 
 ```go
 	toParam := struct {
@@ -245,7 +279,7 @@ Call Transfer:
 
 ### Rest
 
-We can use rest to get unsigned raw byte datas for constract call, it can help to build a offline signaturer for contract.
+We can use `rest` to get unsigned raw byte data for contract call, it can help to build an offline signature for contract.
 
 can use this for example: [rest](https://github.com/patractlabs/go-patract/blob/master/examples/rest/main.go)
 
@@ -279,7 +313,7 @@ curl -X POST \
 }'
 ```
 
-### observer
+### Observer
 
 For a contract, we need observer events for the contract, can use `observer` to build a contract events observer service:
 
