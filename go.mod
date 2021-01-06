@@ -3,6 +3,7 @@ module github.com/patractlabs/go-patract
 go 1.15
 
 require (
+	github.com/boltdb/bolt v1.3.1
 	github.com/btcsuite/btcutil v1.0.2
 	github.com/centrifuge/go-substrate-rpc-client v2.0.0+incompatible
 	github.com/deckarep/golang-set v1.7.1 // indirect
@@ -17,4 +18,5 @@ require (
 	github.com/stretchr/testify v1.6.1
 	go.uber.org/zap v1.16.0
 	golang.org/x/crypto v0.0.0-20201117144127-c1f2f97bffc9
+	golang.org/x/sys v0.0.0-20210105210732-16f7687f5001 // indirect
 )
