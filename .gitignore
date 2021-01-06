@@ -17,3 +17,6 @@ build/
 /metadata.json
 examples/dump/dump
 examples/dump/erc20.db
+
+.idea/
+.vscode/
