@@ -6,7 +6,7 @@ import (
 	"math/big"
 	"testing"
 
-	"github.com/centrifuge/go-substrate-rpc-client/signature"
+	"github.com/centrifuge/go-substrate-rpc-client/v2/signature"
 	"github.com/patractlabs/go-patract/api"
 	"github.com/patractlabs/go-patract/rpc"
 	"github.com/patractlabs/go-patract/test"
@@ -26,6 +26,8 @@ var (
 	bob     = utils.MustAccountIDFromSS58("5FHneW46xGXgs5mUiveU4sbTyGBzmstUspZC92UhjJM694ty")
 	charlie = utils.MustAccountIDFromSS58("5FLSigC9HGRKVhB9FiEo4Y3koPsNmBmLJbpXg2mp1hXcS59Y")
 	dave    = utils.MustAccountIDFromSS58("5DAAnrj7VHTznn2AWBemMuyBwZWs6FNFjdyVXUeYum3PTXFy")
+
+	instantiateSalt = []byte("ysncz3nbjjzoc7s07of3malp9d")
 
 	totalSupply = *big.NewInt(0).Mul(
 		big.NewInt(1000000000000000000),
@@ -47,28 +49,27 @@ func initERC20(t *testing.T, logger log.Logger, env test.Env, authKey signature.
 
 	ctx := api.NewCtx(context.Background()).WithFrom(authKey)
 
-	_, err = cApi.Native().PutCode(ctx, codeBytes)
+	var endowment uint64 = 1000000000000
+
+	// Instantiate
+	_, contractAccount, err := cApi.InstantiateWithCode(ctx, logger,
+		types.NewCompactBalance(endowment),
+		types.NewCompactGas(test.DefaultGas),
+		contracts.CodeHashERC20,
+		codeBytes,
+		instantiateSalt,
+		types.NewU128(totalSupply),
+	)
 	require.Nil(err)
 
 	// check code
 	var codeBz []byte
 	if err := cApi.Native().Cli.GetStorageLatest(&codeBz,
 		"Contracts", "PristineCode",
-		[]byte(contracts.CodeHashERC20[:]), nil); err != nil {
+		contracts.CodeHashERC20[:], nil); err != nil {
 		require.Nil(err)
 	}
 
-	var endowment uint64 = 1000000000000
-
-	// Instantiate
-	_, contractAccount, err := cApi.Instantiate(ctx,
-		types.NewCompactBalance(endowment),
-		types.NewCompactGas(test.DefaultGas),
-		contracts.CodeHashERC20,
-		types.NewU128(totalSupply),
-	)
-	require.Nil(err)
-
-	t.Logf("constract %s", contractAccount)
+	t.Logf("constract %s", types.HexEncodeToString(contractAccount[:]))
 	return contractAccount
 }

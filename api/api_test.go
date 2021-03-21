@@ -5,7 +5,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/centrifuge/go-substrate-rpc-client/signature"
+	"github.com/centrifuge/go-substrate-rpc-client/v2/signature"
+	gsrpctypes "github.com/centrifuge/go-substrate-rpc-client/v2/types"
 	"github.com/patractlabs/go-patract/api"
 	"github.com/patractlabs/go-patract/test"
 	"github.com/patractlabs/go-patract/types"
@@ -14,7 +15,7 @@ import (
 )
 
 var (
-	bob     = types.MustAddressFromHexAccount("0x8eaf04151687736326c9fea17e25fc5287613693c912909cb226aa4794f26a48")
+	bob, _  = gsrpctypes.NewMultiAddressFromHexAccountID("0x8eaf04151687736326c9fea17e25fc5287613693c912909cb226aa4794f26a48")
 	authKey = signature.TestKeyringPairAlice
 )
 

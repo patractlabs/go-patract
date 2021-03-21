@@ -3,7 +3,7 @@ package types
 import (
 	"math/big"
 
-	"github.com/centrifuge/go-substrate-rpc-client/types"
+	"github.com/centrifuge/go-substrate-rpc-client/v2/types"
 )
 
 // Some type by Compact

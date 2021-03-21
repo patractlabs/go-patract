@@ -18,10 +18,6 @@ func TestCallERC20(t *testing.T) {
 	test.ByCanvasEnv(t, func(logger log.Logger, env test.Env) {
 		require := require.New(t)
 
-		if !env.IsUseExtToTest() {
-			initERC20(t, logger, env)
-		}
-
 		metaBz, err := ioutil.ReadFile(erc20MetaPath)
 		require.Nil(err)
 
@@ -39,18 +35,24 @@ func TestCallERC20(t *testing.T) {
 		var contractAccount types.AccountID
 
 		if !env.IsUseExtToTest() {
+			codeBytes, err := ioutil.ReadFile(erc20WasmPath)
+			require.Nil(err)
+
 			// Instantiate
-			_, contractAccount, err = api.Instantiate(ctx,
+			_, contractAccount, err = api.InstantiateWithCode(ctx,
+				logger,
 				types.NewCompactBalance(initSupply),
 				types.NewCompactGas(test.DefaultGas),
 				contracts.CodeHashERC20,
+				codeBytes,
+				instantiateSalt,
 				types.NewU128(totalSupply),
 			)
 			require.Nil(err)
 
 			t.Logf("constract %s", contractAccount)
 		} else {
-			contractAccount = utils.MustDecodeAccountIDFromSS58("5HKinTRKW9THEJxbQb22Nfyq9FPWNVZ9DQ2GEQ4Vg1LqTPuk")
+			contractAccount = utils.MustDecodeAccountIDFromSS58(contractAddress)
 		}
 
 		req := struct {
@@ -60,7 +62,6 @@ func TestCallERC20(t *testing.T) {
 		}
 		var res types.U128
 
-		// Instantiate
 		err = api.CallToRead(ctx,
 			&res,
 			contractAccount,

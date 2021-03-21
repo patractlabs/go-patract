@@ -3,7 +3,7 @@ package api
 import (
 	"context"
 
-	"github.com/centrifuge/go-substrate-rpc-client/types"
+	"github.com/centrifuge/go-substrate-rpc-client/v2/types"
 	"github.com/pkg/errors"
 )
 
