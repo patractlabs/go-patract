@@ -36,9 +36,9 @@ func (c *ContractAPI) Instantiate(
 	endowment types.CompactBalance,
 	gasLimit types.CompactGas,
 	codeHash types.CodeHash,
-	data []byte) (types.Hash, error) {
+	data, salt []byte) (types.Hash, error) {
 	return c.Cli.SubmitAndWaitExtrinsic(
-		ctx, "Contracts.instantiate", endowment, gasLimit, codeHash, data)
+		ctx, "Contracts.instantiate", endowment, gasLimit, codeHash, data, salt)
 }
 
 // InstantiateWithCode is a new contract from the supplied `code`

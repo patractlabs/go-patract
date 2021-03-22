@@ -9,6 +9,34 @@ import (
 	"github.com/patractlabs/go-patract/utils/log"
 )
 
+// Instantiate is a new contract from the existent `codeHash`
+// optionally transferring some balance.
+func (c *Contract) Instantiate(
+	ctx api.Context,
+	endowment types.CompactBalance,
+	gasLimit types.CompactGas,
+	codeHash types.CodeHash,
+	salt []byte,
+	args ...interface{}) (types.Hash, types.AccountID, error) {
+	data, err := c.getConstructorsData([]string{"new"}, args...)
+	if err != nil {
+		return types.Hash{}, types.AccountID{}, err
+	}
+
+	if salt == nil {
+		salt = []byte(utils.GenerateSalt())
+	}
+
+	hash, err := c.native.Instantiate(ctx, endowment, gasLimit, codeHash, data, salt)
+	if err != nil {
+		return types.Hash{}, types.AccountID{}, err
+	}
+
+	contractAccount := GetContractAccountID(types.NewAccountID(ctx.From().PublicKey), codeHash, salt)
+
+	return hash, contractAccount, nil
+}
+
 // InstantiateWithCode is a new contract from the supplied `code`
 // optionally transferring some balance.
 func (c *Contract) InstantiateWithCode(
