@@ -1,6 +1,6 @@
 package types
 
-import "github.com/centrifuge/go-substrate-rpc-client/types"
+import "github.com/centrifuge/go-substrate-rpc-client/v2/types"
 
 const (
 	ExtrinsicVersion4 = types.ExtrinsicVersion4

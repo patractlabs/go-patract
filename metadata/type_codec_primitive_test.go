@@ -5,8 +5,8 @@ import (
 	"math/big"
 	"testing"
 
-	"github.com/centrifuge/go-substrate-rpc-client/scale"
-	"github.com/centrifuge/go-substrate-rpc-client/types"
+	"github.com/centrifuge/go-substrate-rpc-client/v2/scale"
+	"github.com/centrifuge/go-substrate-rpc-client/v2/types"
 	"github.com/patractlabs/go-patract/metadata"
 	"github.com/stretchr/testify/assert"
 )

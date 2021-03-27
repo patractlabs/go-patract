@@ -6,7 +6,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/centrifuge/go-substrate-rpc-client/types"
+	"github.com/centrifuge/go-substrate-rpc-client/v2/types"
 	"github.com/patractlabs/go-patract/contracts/erc20"
 	"github.com/patractlabs/go-patract/metadata"
 	"github.com/patractlabs/go-patract/observer"
@@ -14,6 +14,11 @@ import (
 	"github.com/patractlabs/go-patract/test/contracts"
 	"github.com/patractlabs/go-patract/utils/log"
 	"github.com/stretchr/testify/require"
+)
+
+const (
+	erc20WasmPath = "../test/contracts/ink/erc20.wasm"
+	erc20MetaPath = "../test/contracts/ink/erc20.json"
 )
 
 func TestWatch(t *testing.T) {

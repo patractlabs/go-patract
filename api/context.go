@@ -3,7 +3,7 @@ package api
 import (
 	"context"
 
-	"github.com/centrifuge/go-substrate-rpc-client/signature"
+	"github.com/centrifuge/go-substrate-rpc-client/v2/signature"
 	"github.com/patractlabs/go-patract/utils/log"
 )
 
