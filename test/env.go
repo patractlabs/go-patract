@@ -5,7 +5,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/patractlabs/go-patract/test/canvas"
+	"github.com/patractlabs/go-patract/test/chainnode"
 	"github.com/patractlabs/go-patract/utils/log"
 )
 
@@ -31,8 +31,8 @@ func (e envExtern) IsUseExtToTest() bool {
 	return true
 }
 
-// ByCanvasEnv test with canvas env
-func ByCanvasEnv(t *testing.T, c func(log.Logger, Env)) {
+// ByNodeEnv test with canvas env
+func ByNodeEnv(t *testing.T, c func(log.Logger, Env)) {
 	if !flag.Parsed() {
 		flag.Parse()
 	}
@@ -40,13 +40,13 @@ func ByCanvasEnv(t *testing.T, c func(log.Logger, Env)) {
 	argList := flag.Args()
 	for _, arg := range argList {
 		if arg == "extern" {
-			ByExternCanvasEnv(t, c)
+			ByExternEnv(t, c)
 			return
 		}
 	}
 
 	logger := log.NewLogger()
-	env := canvas.NewCanvasEnv(logger)
+	env := chainnode.NewCanvasEnv(logger)
 	defer func() {
 		env.Stop()
 		env.Wait()
@@ -56,7 +56,7 @@ func ByCanvasEnv(t *testing.T, c func(log.Logger, Env)) {
 	c(logger, env)
 }
 
-// ByExternCanvasEnv test with canvas env other
-func ByExternCanvasEnv(t *testing.T, c func(log.Logger, Env)) {
+// ByExternEnv test with ext env other
+func ByExternEnv(t *testing.T, c func(log.Logger, Env)) {
 	c(log.NewLogger(), &envExtern{url: "ws://localhost:9944"})
 }

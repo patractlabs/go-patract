@@ -15,7 +15,7 @@ import (
 )
 
 func TestCallERC20(t *testing.T) {
-	test.ByCanvasEnv(t, func(logger log.Logger, env test.Env) {
+	test.ByNodeEnv(t, func(logger log.Logger, env test.Env) {
 		require := require.New(t)
 
 		metaBz, err := ioutil.ReadFile(erc20MetaPath)

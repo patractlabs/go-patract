@@ -15,7 +15,7 @@ import (
 )
 
 func TestTransfer(t *testing.T) {
-	test.ByCanvasEnv(t, func(logger log.Logger, env test.Env) {
+	test.ByNodeEnv(t, func(logger log.Logger, env test.Env) {
 		require := require.New(t)
 
 		contractAccountID := initERC20(t, logger, env, signature.TestKeyringPairAlice)

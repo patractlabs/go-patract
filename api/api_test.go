@@ -22,7 +22,7 @@ var (
 func TestSubmitAndWaitExtrinsic(t *testing.T) {
 	assert := assert.New(t)
 
-	test.ByCanvasEnv(t, func(logger log.Logger, env test.Env) {
+	test.ByNodeEnv(t, func(logger log.Logger, env test.Env) {
 		cli, err := api.NewClient(logger, env.URL())
 		assert.Nil(err)
 
@@ -36,7 +36,7 @@ func TestSubmitAndWaitExtrinsic(t *testing.T) {
 func TestSubmitAndWaitExtrinsicCancel(t *testing.T) {
 	assert := assert.New(t)
 
-	test.ByCanvasEnv(t, func(logger log.Logger, env test.Env) {
+	test.ByNodeEnv(t, func(logger log.Logger, env test.Env) {
 		cli, err := api.NewClient(logger, env.URL())
 		assert.Nil(err)
 
