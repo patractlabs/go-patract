@@ -42,7 +42,7 @@ func TestSubmitAndWaitExtrinsicCancel(t *testing.T) {
 
 		ctx, cancel := context.WithCancel(context.Background())
 		go func() {
-			time.Sleep(100 * time.Millisecond)
+			time.Sleep(1 * time.Millisecond)
 			cancel()
 		}()
 
