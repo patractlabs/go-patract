@@ -31,7 +31,7 @@ func (e envExtern) IsUseExtToTest() bool {
 	return true
 }
 
-// ByNodeEnv test with canvas env
+// ByNodeEnv test with europa env
 func ByNodeEnv(t *testing.T, c func(log.Logger, Env)) {
 	if !flag.Parsed() {
 		flag.Parse()

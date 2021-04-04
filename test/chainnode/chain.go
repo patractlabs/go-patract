@@ -1,9 +1,10 @@
-package channode
+package chainnode
 
 import (
 	"fmt"
 	"os/exec"
 	"sync"
+	"time"
 
 	"github.com/jesselucas/executil"
 	"github.com/patractlabs/go-patract/utils/log"
@@ -32,7 +33,7 @@ func getPorts() (string, string, string) {
 		fmt.Sprintf("%d", portPrometheus+portIdx)
 }
 
-// Env a canvas environment for testing
+// Env a europa environment for testing
 type Env struct {
 	wg sync.WaitGroup
 
@@ -44,7 +45,7 @@ type Env struct {
 	portPrometheus string
 }
 
-// NewCanvasEnv create a canvas chain to test
+// NewCanvasEnv create a europa chain to test
 func NewCanvasEnv(log log.Logger) *Env {
 	portRPC, portWs, portPrometheus := getPorts()
 
@@ -62,7 +63,7 @@ func NewCanvasEnv(log log.Logger) *Env {
 	return res
 }
 
-// URL get the url to the canvas
+// URL get the url to the europa
 func (c *Env) URL() string {
 	return fmt.Sprintf("ws://localhost:%s", c.portWs)
 }
@@ -71,7 +72,7 @@ func (c *Env) IsUseExtToTest() bool {
 	return false
 }
 
-// PID get canvas process id
+// PID get europa process id
 func (c *Env) PID() int {
 	c.mutex.RLock()
 	defer c.mutex.RUnlock()
@@ -86,16 +87,15 @@ func (c *Env) setPID(id int) {
 	c.pID = id
 }
 
-// Start start the canvas process
+// Start start the europa process
 func (c *Env) Start() error {
-	c.log.Debug("start canvas env")
+	c.log.Debug("start europa env")
 
 	outputChan := make(chan string)
 
-	cmd := executil.Command("canvas", "--tmp", "--dev",
-		"--port", c.portRPC,
+	cmd := executil.Command("europa", "--tmp", "--dev",
+		"--rpc-port", c.portRPC,
 		"--ws-port", c.portWs,
-		"--prometheus-port", c.portPrometheus,
 	)
 	cmd.OutputChan = outputChan
 
@@ -103,14 +103,14 @@ func (c *Env) Start() error {
 	go func() {
 		defer func() {
 			c.wg.Done()
-			c.log.Debug("stop canvas cmd goroutine", "PID", c.PID())
+			c.log.Debug("stop europa cmd goroutine", "PID", c.PID())
 			close(outputChan)
 		}()
 
 		err := cmd.Start()
 
 		if err != nil {
-			c.log.Error("start canvas cmd error", "err", err)
+			c.log.Error("start europa cmd error", "err", err)
 			panic(err)
 		}
 
@@ -135,11 +135,15 @@ func (c *Env) Start() error {
 		}
 	}()
 
+	// wait started
+	time.Sleep(1 * time.Second)
+	c.log.Debug("started")
+
 	return nil
 }
 
 func (c *Env) processOutput(str string) {
-	c.log.Debug("canvas log", "str", str)
+	c.log.Debug("europa log", "str", str)
 }
 
 // Stop stop the environment
