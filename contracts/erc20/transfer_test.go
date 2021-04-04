@@ -15,7 +15,7 @@ import (
 )
 
 func TestTransfer(t *testing.T) {
-	test.ByCanvasEnv(t, func(logger log.Logger, env test.Env) {
+	test.ByNodeEnv(t, func(logger log.Logger, env test.Env) {
 		require := require.New(t)
 
 		contractAccountID := initERC20(t, logger, env, signature.TestKeyringPairAlice)
@@ -46,11 +46,11 @@ func TestTransfer(t *testing.T) {
 
 		bobBalance, err := erc20API.BalanceOf(ctx, bob)
 		require.Nil(err)
-		require.Equalf(bobBalance, amt2Bob, "alice should be total supply")
+		require.Equalf(bobBalance, amt2Bob, "bob Balance should be amt2Bob")
 
 		aliceNewTotal, err := erc20API.BalanceOf(ctx, test.AliceAccountID)
 		require.Nil(err)
 		require.Equalf(aliceTotal.Int, aliceNewTotal.Int.Add(aliceNewTotal.Int, amt2Bob.Int),
-			"alice should be total supply")
+			"alice new add transfer should be alice old")
 	})
 }

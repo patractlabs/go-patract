@@ -12,7 +12,7 @@ import (
 )
 
 func TestWatchEventByBlock(t *testing.T) {
-	test.ByCanvasEnv(t, func(logger log.Logger, env test.Env) {
+	test.ByNodeEnv(t, func(logger log.Logger, env test.Env) {
 		time.Sleep(10 * time.Second)
 
 		w := api.NewWatcher(logger, env.URL())

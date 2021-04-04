@@ -24,7 +24,7 @@ const (
 func TestWatch(t *testing.T) {
 	require := require.New(t)
 
-	test.ByCanvasEnv(t, func(logger log.Logger, env test.Env) {
+	test.ByNodeEnv(t, func(logger log.Logger, env test.Env) {
 		o := observer.New(logger, env.URL())
 		ctx, cc := context.WithCancel(context.Background())
 

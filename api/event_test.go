@@ -14,7 +14,7 @@ import (
 func TestQueryEventByBlock(t *testing.T) {
 	require := require.New(t)
 
-	test.ByCanvasEnv(t, func(logger log.Logger, env test.Env) {
+	test.ByNodeEnv(t, func(logger log.Logger, env test.Env) {
 		cli, err := api.NewClient(logger, env.URL())
 		require.Nil(err)
 

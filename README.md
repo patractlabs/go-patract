@@ -64,36 +64,35 @@ cargo install --force subkey --git https://github.com/paritytech/substrate --ver
 subkey --version
 ```
 
-For Now, the sdk examples will connect to the [canvas](https://github.com/paritytech/canvas-node), and also need cli tools:
+For Now, the sdk examples will connect to the [europa](https://github.com/patractlabs/europa), and also need cli tools:
 
 ```bash
-cargo install canvas-node --git https://github.com/paritytech/canvas-node.git --tag v0.1.4 --force --locked
-canvas -V
+> git clone --recurse-submodules https://github.com/patractlabs/europa.git
+## or do following commands
+> git clone https://github.com/patractlabs/europa.git
+> cd europa/vendor
+> git submodule update --init --recursive
+> cargo build
 ```
 
-For some examples, we can simply run a canvas node:
+For some examples, we can simply run a europa node:
 
 ```bash
-canvas --dev --tmp
+europa --dev --tmp
 ```
 
 use for external port:
 
 ```bash
-canvas --dev --tmp  --ws-external
+europa --dev --tmp  --ws-external
 ```
 
-Same to [canvas](https://github.com/paritytech/canvas-node), we advise developers to use [jupiter](https://github.com/patractlabs/jupiter) 
-or [europa](https://github.com/patractlabs/europa) for debugging their code.
+We advise developers to use [jupiter](https://github.com/patractlabs/jupiter) for debugging their code.
 
 ```bash
 # build jupiter
 git clone --recurse-submodules https://github.com/patractlabs/jupiter.git
 cd jupiter
-cargo build
-# or build europa
-git clone --recurse-submodules https://github.com/patractlabs/europa.git
-cd europa
 cargo build
 ```
 
@@ -120,23 +119,25 @@ This **auto contract code generator** feature would be developed with `java-patr
 
 ## Test
 
-PatractGo use `go test` to test, but as need canvas environments, so need run test in one process:
+PatractGo use `go test` to test, but as need europa environments, so need run test in one process:
+
+Test Environment need add `europa` to bash PATH.
 
 ```bash
 go test -v -p 1 ./...
 ```
 
-The unittest will start a canvas process for test, if need use a canvas start by localhost, can use this:
+The unittest will start a europa process for test, if need use a europa start by localhost, can use this:
 
 ```bash
-canvas --dev --tmp --ws-external
+europa --dev --tmp --ws-external
 ```
 
 ```bash
 go test ./contracts/erc20/ -v -p 1 -v -args "extern" -run TestTransfer
 ```
 
-This will run `TestTransfer` test to canvas
+This will run `TestTransfer` test to europa
 
 ## Usage
 

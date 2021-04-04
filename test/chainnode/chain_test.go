@@ -1,15 +1,15 @@
-package canvas_test
+package chainnode_test
 
 import (
 	"testing"
 	"time"
 
-	"github.com/patractlabs/go-patract/test/canvas"
+	"github.com/patractlabs/go-patract/test/chainnode"
 	"github.com/patractlabs/go-patract/utils/log"
 )
 
 func TestCanvas(t *testing.T) {
-	env := canvas.NewCanvasEnv(log.NewLogger())
+	env := chainnode.NewCanvasEnv(log.NewLogger())
 
 	time.Sleep(1 * time.Second)
 

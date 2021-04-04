@@ -23,7 +23,7 @@ func TestDeployAndCallERC20(t *testing.T) {
 	codeBytes, err := ioutil.ReadFile("../../test/contracts/ink/erc20.wasm")
 	require.Nil(err)
 
-	test.ByCanvasEnv(t, func(logger log.Logger, env test.Env) {
+	test.ByNodeEnv(t, func(logger log.Logger, env test.Env) {
 		cli, err := api.NewClient(logger, env.URL())
 		require.Nil(err)
 
