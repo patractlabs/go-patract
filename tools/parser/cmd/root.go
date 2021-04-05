@@ -5,6 +5,7 @@ import (
 	"os"
 
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
 var (
@@ -15,6 +16,11 @@ var (
 )
 
 func init() {
+	rootCmd.PersistentFlags().StringP("ss58Prefix", "s", "", "ss58Prefix")
+	if err := viper.BindPFlag("ss58Prefix", rootCmd.PersistentFlags().Lookup("ss58Prefix")); err != nil {
+		panic(err)
+	}
+
 	parseAccountIDCmd(rootCmd)
 }
 

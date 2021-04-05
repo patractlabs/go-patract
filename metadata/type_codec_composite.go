@@ -69,7 +69,7 @@ func (d *defComposite) encodeAccountIDJSON(ctx CodecContext, value json.RawMessa
 
 	ctx.logger.Debug("encode accountID", "v", str)
 
-	acc, err := utils.NewAccountIDFromSS58(str)
+	acc, err := ctx.GetSS58Codec().DecodeAccountID(str)
 	if err != nil {
 		return errors.Wrap(err, "failed to decode accountID SS58")
 	}

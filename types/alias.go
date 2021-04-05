@@ -18,10 +18,19 @@ type (
 )
 
 var (
-	NewU32 = types.NewU32
-	NewU64 = types.NewU64
-	// NewU128 creates a new U128 type
+	NewBool = types.NewBool
+
+	NewU8   = types.NewU8
+	NewU16  = types.NewU16
+	NewU32  = types.NewU32
+	NewU64  = types.NewU64
 	NewU128 = types.NewU128
+
+	NewI8   = types.NewI8
+	NewI16  = types.NewI16
+	NewI32  = types.NewI32
+	NewI64  = types.NewI64
+	NewI128 = types.NewI128
 )
 
 type (

@@ -14,12 +14,14 @@ type Router struct {
 	cli             *rpc.Contract
 	runtimeMetadata *types.Metadata
 	metadatas       map[string]*metadata.Data
+	ss58Codec       *types.SS58Codec
 }
 
 func NewRouter(router *gin.Engine) Router {
 	return Router{
 		Engine:    router,
 		metadatas: make(map[string]*metadata.Data, 16),
+		ss58Codec: types.GetDefaultSS58Codec(),
 	}
 }
 
@@ -32,6 +34,10 @@ func (r *Router) WithMetaData(data *metadata.Data) {
 
 func (r *Router) WithCli(cli *rpc.Contract) {
 	r.cli = cli
+}
+
+func (r *Router) WithSS58Codec(codec *types.SS58Codec) {
+	r.ss58Codec = codec
 }
 
 func (r *Router) WithRuntimeMetadata(m *types.Metadata) {

@@ -8,7 +8,6 @@ import (
 	"github.com/patractlabs/go-patract/api"
 	"github.com/patractlabs/go-patract/metadata"
 	"github.com/patractlabs/go-patract/types"
-	"github.com/patractlabs/go-patract/utils"
 	"github.com/patractlabs/go-patract/utils/log"
 	"github.com/pkg/errors"
 )
@@ -192,7 +191,7 @@ func (c *Contract) CallToRead(
 	contractID types.AccountID,
 	call []string,
 	args ...interface{}) error {
-	contractIDStr, err := utils.EncodeAccountIDToSS58(contractID)
+	contractIDStr, err := c.ss58Codec.EncodeAccountID(contractID)
 	if err != nil {
 		return errors.Wrapf(err, "encode accountid for contract %v", contractID)
 	}

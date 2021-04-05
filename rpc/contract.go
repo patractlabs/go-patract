@@ -65,7 +65,7 @@ func (c *Contract) InstantiateWithCode(
 	}
 
 	contractAccount := GetContractAccountID(types.NewAccountID(ctx.From().PublicKey), codeHash, salt)
-	contractAddress, _ := utils.EncodeAccountIDToSS58(contractAccount)
+	contractAddress, _ := c.ss58Codec.EncodeAccountID(contractAccount)
 
 	logger.Info("InstantiateWithCode", "deployer", ctx.From().Address, "salt", string(salt),
 		"hash", types.HexEncodeToString(hash[:]), "contractAccount", contractAddress)
