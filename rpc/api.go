@@ -4,6 +4,7 @@ import (
 	"github.com/patractlabs/go-patract/api"
 	"github.com/patractlabs/go-patract/metadata"
 	"github.com/patractlabs/go-patract/rpc/native"
+	"github.com/patractlabs/go-patract/types"
 	"github.com/patractlabs/go-patract/utils/log"
 	"github.com/pkg/errors"
 )
@@ -13,9 +14,10 @@ var (
 )
 
 type Contract struct {
-	logger   log.Logger
-	native   *native.ContractAPI
-	metaData metadata.Data
+	logger    log.Logger
+	native    *native.ContractAPI
+	metaData  metadata.Data
+	ss58Codec *types.SS58Codec
 }
 
 func NewContractAPI(url string) (*Contract, error) {
@@ -25,14 +27,19 @@ func NewContractAPI(url string) (*Contract, error) {
 	}
 
 	return &Contract{
-		logger: log.NewNopLogger(),
-		native: native.NewContractAPI(cli),
+		logger:    log.NewNopLogger(),
+		native:    native.NewContractAPI(cli),
+		ss58Codec: types.GetDefaultSS58Codec(),
 	}, nil
 }
 
 func (c *Contract) WithLogger(logger log.Logger) {
 	c.logger = logger
 	c.native.WithLogger(logger)
+}
+
+func (c *Contract) WithSS58Codec(ss58Codec *types.SS58Codec) {
+	c.ss58Codec = ss58Codec
 }
 
 func (c *Contract) WithMetaData(bz []byte) error {

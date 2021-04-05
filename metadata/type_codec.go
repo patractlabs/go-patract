@@ -9,7 +9,8 @@ import (
 	"strings"
 
 	"github.com/centrifuge/go-substrate-rpc-client/v2/scale"
-	"github.com/centrifuge/go-substrate-rpc-client/v2/types"
+
+	"github.com/patractlabs/go-patract/types"
 	"github.com/patractlabs/go-patract/utils/log"
 	"github.com/pkg/errors"
 )
@@ -35,17 +36,19 @@ const (
 type CodecContext struct {
 	logger log.Logger
 
-	encoder *scale.Encoder
-	decoder *scale.Decoder
-	typs    []DefCodec
+	encoder   *scale.Encoder
+	decoder   *scale.Decoder
+	ss58Codec *types.SS58Codec
+	typs      []DefCodec
 }
 
 // NewCtxForEncoder new ctx for encoder
 func NewCtxForEncoder(typs []DefCodec, encoder *scale.Encoder) CodecContext {
 	return CodecContext{
-		logger:  log.NewNopLogger(),
-		typs:    typs,
-		encoder: encoder,
+		logger:    log.NewNopLogger(),
+		typs:      typs,
+		encoder:   encoder,
+		ss58Codec: types.GetDefaultSS58Codec(),
 	}
 }
 
@@ -64,9 +67,20 @@ func (c CodecContext) WithLogger(logger log.Logger) CodecContext {
 	return c
 }
 
+// WithSS58Codec with ss58Codec for ctx
+func (c CodecContext) WithSS58Codec(ss58Codec *types.SS58Codec) CodecContext {
+	c.ss58Codec = ss58Codec
+	return c
+}
+
 // GetDefCodecByIndex get def codec by index
 func (c CodecContext) GetDefCodecByIndex(i int) DefCodec {
 	return c.typs[i-1]
+}
+
+// GetSS58Codec get ss58 codec
+func (c CodecContext) GetSS58Codec() *types.SS58Codec {
+	return c.ss58Codec
 }
 
 // DefCodec interface to def codec

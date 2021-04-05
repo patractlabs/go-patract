@@ -28,6 +28,11 @@ func GetDefaultSS58Prefix() []byte {
 	return defaultSS58Prefix
 }
 
+// GetDefaultSS58Codec get default ss58 codec
+func GetDefaultSS58Codec() *SS58Codec {
+	return defaultSS58Codec
+}
+
 type SS58Codec struct {
 	prefix []byte
 }

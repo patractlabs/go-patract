@@ -11,7 +11,6 @@ import (
 	"github.com/patractlabs/go-patract/metadata"
 	"github.com/patractlabs/go-patract/rpc"
 	"github.com/patractlabs/go-patract/types"
-	"github.com/patractlabs/go-patract/utils"
 	"github.com/pkg/errors"
 )
 
@@ -53,7 +52,7 @@ func (r *Router) messageHandler(metaDate metadata.Data, message metadata.Message
 			contractIDStr = params.Contract
 		}
 
-		contractID, err := utils.DecodeAccountIDFromSS58(contractIDStr)
+		contractID, err := r.ss58Codec.DecodeAccountID(contractIDStr)
 		if err != nil {
 			ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
