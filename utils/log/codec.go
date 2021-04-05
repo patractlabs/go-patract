@@ -12,7 +12,7 @@ type LoggerCodec struct {
 // NewLoggerCodec creates a new LoggerCodec
 func NewLoggerCodec() *LoggerCodec {
 	return &LoggerCodec{
-		ss58Codec: types.NewSS58Codec(types.DefaultSS58Prefix),
+		ss58Codec: types.NewSS58Codec(types.GetDefaultSS58Prefix()),
 	}
 }
 
