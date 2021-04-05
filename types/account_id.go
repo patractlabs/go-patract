@@ -13,8 +13,20 @@ const (
 )
 
 var (
-	DefaultSS58Prefix = []byte("SS58PRE")
+	defaultSS58Prefix = []byte("SS58PRE")
+	defaultSS58Codec  = NewSS58Codec(defaultSS58Prefix)
 )
+
+// SetDefaultSS58Prefix set default ss58 prefix
+func SetDefaultSS58Prefix(p []byte) {
+	defaultSS58Prefix = p
+	defaultSS58Codec = NewSS58Codec(defaultSS58Prefix)
+}
+
+// GetDefaultSS58Prefix get default ss58 prefix
+func GetDefaultSS58Prefix() []byte {
+	return defaultSS58Prefix
+}
 
 type SS58Codec struct {
 	prefix []byte
@@ -28,10 +40,6 @@ func NewSS58Codec(prefix []byte) *SS58Codec {
 		prefix: p,
 	}
 }
-
-var (
-	defaultSS58Codec = NewSS58Codec(DefaultSS58Prefix)
-)
 
 // GetPrefix get ss58 prefix
 func (c SS58Codec) GetPrefix() []byte {
