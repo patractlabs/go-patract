@@ -61,6 +61,9 @@ func MustAddressFromHexAccount(str string) Address {
 type (
 	// AccountID represents a public key (an 32 byte array)
 	AccountID = types.AccountID
+
+	// Bytes represents byte slices. Bytes has a variable length, it is encoded with a scale prefix
+	Bytes = types.Bytes
 )
 
 var (

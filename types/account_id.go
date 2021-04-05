@@ -21,7 +21,7 @@ type SS58Codec struct {
 }
 
 func NewSS58Codec(prefix []byte) *SS58Codec {
-	p := make([]byte, 0, len(prefix))
+	p := make([]byte, len(prefix))
 	copy(p, prefix)
 
 	return &SS58Codec{
