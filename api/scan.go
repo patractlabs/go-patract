@@ -9,12 +9,17 @@ import (
 	"github.com/pkg/errors"
 )
 
+const (
+	defaultChannelSize = 4096
+)
+
 type evtMsgInChann struct {
 	height  uint64
 	records *types.EventRecords
 }
 
-type scanner struct {
+// Scanner scanner for scan all events
+type Scanner struct {
 	wg                sync.WaitGroup
 	cli               *Client
 	logger            log.Logger
@@ -25,38 +30,38 @@ type scanner struct {
 
 type EventHandler func(logger log.Logger, height uint64, evt *types.EventRecords) error
 
-func NewScanner(logger log.Logger, url string) *scanner {
+func NewScanner(logger log.Logger, url string) *Scanner {
 	cli, err := NewClient(logger, url)
 	if err != nil {
 		panic(err)
 	}
 
-	return &scanner{
+	return &Scanner{
 		cli:        cli,
 		logger:     logger,
-		eventChann: make(chan evtMsgInChann, 4096),
+		eventChann: make(chan evtMsgInChann, defaultChannelSize),
 	}
 }
 
-func (s *scanner) Cli() *Client {
+func (s *Scanner) Cli() *Client {
 	return s.cli
 }
 
-func (s *scanner) LastestBlockHeight() uint64 {
+func (s *Scanner) LastestBlockHeight() uint64 {
 	s.mutex.RLock()
 	defer s.mutex.RUnlock()
 
 	return s.latestBlockHeight
 }
 
-func (s *scanner) setToHeight(height uint64) {
+func (s *Scanner) setToHeight(height uint64) {
 	s.mutex.Lock()
 	defer s.mutex.Unlock()
 
 	s.latestBlockHeight = height
 }
 
-func (s *scanner) Scan(ctx context.Context, fromHeight uint64, h EventHandler) {
+func (s *Scanner) Scan(ctx context.Context, fromHeight uint64, h EventHandler) {
 	s.wg.Add(1)
 	go func() {
 		defer s.wg.Done()
@@ -64,7 +69,7 @@ func (s *scanner) Scan(ctx context.Context, fromHeight uint64, h EventHandler) {
 		for {
 			evts, ok := <-s.eventChann
 			if !ok {
-				// closed scanner, closed by last
+				// closed Scanner, closed by last
 				s.logger.Info("stop handler gorountinue")
 				return
 			}
@@ -80,7 +85,7 @@ func (s *scanner) Scan(ctx context.Context, fromHeight uint64, h EventHandler) {
 		defer func() {
 			s.wg.Done()
 
-			// stop the scanner handler
+			// stop the Scanner handler
 			close(s.eventChann)
 		}()
 
@@ -88,10 +93,9 @@ func (s *scanner) Scan(ctx context.Context, fromHeight uint64, h EventHandler) {
 			s.logger.Error("scan block error", "err", err)
 		}
 	}()
-
 }
 
-func (s *scanner) scanBlocksImp(ctx context.Context, fromHeight uint64) error {
+func (s *Scanner) scanBlocksImp(ctx context.Context, fromHeight uint64) error {
 	currentBlockHeight := fromHeight
 	if currentBlockHeight < 1 {
 		currentBlockHeight = 1
@@ -115,7 +119,7 @@ func (s *scanner) scanBlocksImp(ctx context.Context, fromHeight uint64) error {
 	for {
 		select {
 		case <-ctx.Done():
-			s.logger.Info("scanner stoped")
+			s.logger.Info("Scanner stoped")
 			return nil
 		default:
 			curr := currentBlockHeight
@@ -145,6 +149,6 @@ func (s *scanner) scanBlocksImp(ctx context.Context, fromHeight uint64) error {
 	}
 }
 
-func (s *scanner) Wait() {
+func (s *Scanner) Wait() {
 	s.wg.Wait()
 }

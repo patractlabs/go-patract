@@ -8,6 +8,11 @@ import (
 	"github.com/pkg/errors"
 )
 
+const (
+	OptionNoneName = "None"
+	OptionSomeName = "Some"
+)
+
 type VariantsI interface {
 	ToFieldValue() (string, interface{})
 }
@@ -59,9 +64,9 @@ func (d *defVariant) findVarIdxByName(name string) int {
 
 func (d *defVariant) IsOptional(v interface{}) (OptionValue, int, bool) {
 	if len(d.Variants) == 2 &&
-		d.Variants[0].Name == "None" &&
+		d.Variants[0].Name == OptionNoneName &&
 		len(d.Variants[0].Fields) == 0 &&
-		d.Variants[1].Name == "Some" &&
+		d.Variants[1].Name == OptionSomeName &&
 		len(d.Variants[1].Fields) == 1 {
 		ov, ok := v.(OptionValue)
 		if ok {
@@ -97,7 +102,11 @@ func (d *defVariant) Decode(ctx CodecContext, value interface{}) error {
 }
 
 func (d *defVariant) encodeFields(ctx CodecContext, index int, value interface{}) error {
-	ctx.encoder.Encode(byte(index))
+	err := ctx.encoder.Encode(byte(index))
+	if err != nil {
+		return errors.Wrap(err, "ctx encoder Encode err")
+	}
+
 	if value != nil {
 		if index >= len(d.Variants) {
 			return errors.Errorf("err index for %d, all %d", index, len(d.Variants))
@@ -110,31 +119,38 @@ func (d *defVariant) encodeFields(ctx CodecContext, index int, value interface{}
 			return errors.Errorf("err not nil val to zero fields %d", index)
 		}
 
-		for idx, f := range fields.Fields {
-			codec := ctx.GetDefCodecByIndex(f.Typ)
-			if err := codec.Encode(ctx, v); err != nil {
-				return errors.Wrapf(err, "encode fields %d with i: %d, t: %d",
-					index, idx, f.Typ)
-			}
+		// now just one
+		field := fields.Fields[0]
 
-			// now just one
-			return nil
+		codec := ctx.GetDefCodecByIndex(field.Typ)
+		if err := codec.Encode(ctx, v); err != nil {
+			return errors.Wrapf(err, "encode fields %d with i: %d, t: %d",
+				index, 0, field.Typ)
 		}
 	}
+
 	return nil
 }
+
+const (
+	OptionValueNilPrefix  byte = 0x00
+	OptionValueSomePrefix byte = 0x01
+)
 
 type OptionValue interface {
 	IsNone() bool
 	SetHasValue(h bool)
 }
 
-func (d *defVariant) encodeOption(ctx CodecContext, typIdx int, value OptionValue) error {
+func (d *defVariant) encodeOption(ctx CodecContext, _ int, value OptionValue) error {
 	if value.IsNone() {
-		return ctx.encoder.PushByte(0x00)
+		return ctx.encoder.PushByte(OptionValueNilPrefix)
 	}
 
-	ctx.encoder.PushByte(0x01)
+	err := ctx.encoder.PushByte(OptionValueSomePrefix)
+	if err != nil {
+		return errors.Wrap(err, "push byte 0x01 err")
+	}
 
 	t := reflect.ValueOf(value)
 	numFields := t.NumField()
@@ -147,7 +163,7 @@ func (d *defVariant) encodeOption(ctx CodecContext, typIdx int, value OptionValu
 			continue
 		}
 
-		if tv == "Some" {
+		if tv == OptionSomeName {
 			return d.encodeFields(ctx, 1, vi.Interface())
 		}
 	}
@@ -228,7 +244,7 @@ func (d *defVariant) decodeOption(ctx CodecContext, typIdx int, value OptionValu
 		return errors.Wrapf(err, "decode type error")
 	}
 
-	if typ == 0x00 {
+	if typ == OptionValueNilPrefix {
 		value.SetHasValue(false)
 		return nil
 	}
@@ -243,7 +259,7 @@ func (d *defVariant) decodeOption(ctx CodecContext, typIdx int, value OptionValu
 			continue
 		}
 
-		if tv == "Some" {
+		if tv == OptionSomeName {
 			ctx.logger.Debug("target option", "field", tv, "typIdx", typIdx, "v", target.Field(i))
 
 			def := ctx.GetDefCodecByIndex(typIdx)

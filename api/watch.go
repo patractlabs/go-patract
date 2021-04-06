@@ -6,6 +6,7 @@ import (
 
 	"github.com/centrifuge/go-substrate-rpc-client/v2/types"
 	"github.com/patractlabs/go-patract/utils/log"
+	"github.com/pkg/errors"
 )
 
 type Watcher struct {
@@ -13,7 +14,7 @@ type Watcher struct {
 	eventChann chan evtMsgInChann
 	stat       int
 	mutex      sync.RWMutex
-	scanner    *scanner
+	scanner    *Scanner
 	cli        *Client
 	logger     log.Logger
 }
@@ -25,12 +26,12 @@ func NewWatcher(logger log.Logger, url string) *Watcher {
 		scanner:    scanner,
 		cli:        scanner.Cli(),
 		logger:     logger,
-		eventChann: make(chan evtMsgInChann, 4096),
+		eventChann: make(chan evtMsgInChann, defaultChannelSize),
 	}
 }
 
-func (s *Watcher) Cli() *Client {
-	return s.cli
+func (w *Watcher) Cli() *Client {
+	return w.cli
 }
 
 func (w *Watcher) nextStatStep() {
@@ -118,7 +119,7 @@ func (w *Watcher) Watch(ctx context.Context, fromHeight uint64, h EventHandler) 
 	w.nextStatStep()
 
 	// on watch
-	w.cli.WatchEvents(ctx, func(logger log.Logger, height uint64, records *types.EventRecords) error {
+	err := w.cli.WatchEvents(ctx, func(logger log.Logger, height uint64, records *types.EventRecords) error {
 		logger.Debug("handler block events", "height", height)
 
 		w.eventChann <- evtMsgInChann{
@@ -128,7 +129,7 @@ func (w *Watcher) Watch(ctx context.Context, fromHeight uint64, h EventHandler) 
 		return nil
 	})
 
-	return nil
+	return errors.Wrap(err, "Watch events failed")
 }
 
 func (w *Watcher) stop() {

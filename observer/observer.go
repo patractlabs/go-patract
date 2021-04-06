@@ -63,7 +63,6 @@ func (w *ContractObserver) WatchEvent(ctx context.Context, handler *EvtHandler) 
 
 	return w.watcher.Watch(ctx, w.fromHeight,
 		func(l log.Logger, height uint64, evt *types.EventRecords) error {
-
 			if len(evt.Contracts_Instantiated)+
 				len(evt.Contracts_Evicted)+
 				len(evt.Contracts_Restored)+
