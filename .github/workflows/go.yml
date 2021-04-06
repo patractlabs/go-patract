@@ -2,10 +2,10 @@ name: ActionsForGo
 
 on:
   push:
-    branches: [ master ]
+    branches: [ main ]
 
   pull_request:
-    branches: [ master, features/* ]
+    branches: [ main, features/* ]
 
 jobs:
   go-lint-check:
