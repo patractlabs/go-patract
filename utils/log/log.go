@@ -2,8 +2,10 @@ package log
 
 import (
 	"fmt"
+	"os"
 
 	"go.uber.org/zap"
+	"go.uber.org/zap/zapcore"
 )
 
 const (
@@ -26,11 +28,26 @@ type loggerByZap struct {
 	codec *LoggerCodec
 }
 
+func newZapLogger() *zap.Logger {
+	encoderCfg := zap.NewDevelopmentEncoderConfig()
+
+	encoderCfg.MessageKey = "msg"
+	encoderCfg.LevelKey = "level"
+	encoderCfg.NameKey = "logger"
+	encoderCfg.EncodeLevel = zapcore.LowercaseLevelEncoder
+	encoderCfg.EncodeTime = zapcore.ISO8601TimeEncoder
+	encoderCfg.EncodeDuration = zapcore.StringDurationEncoder
+	encoderCfg.EncodeCaller = zapcore.FullCallerEncoder
+
+	core := zapcore.NewCore(zapcore.NewConsoleEncoder(encoderCfg), os.Stdout, zap.DebugLevel)
+	return zap.New(core, zap.WithCaller(true), zap.AddCallerSkip(1))
+}
+
 // NewLogger create logger
 func NewLogger() Logger {
 	// TODO: log config
 	return &loggerByZap{
-		l:     zap.NewExample(),
+		l:     newZapLogger(),
 		codec: NewLoggerCodec(),
 	}
 }
