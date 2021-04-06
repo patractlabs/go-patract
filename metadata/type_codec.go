@@ -388,7 +388,7 @@ func (d *defArray) Decode(ctx CodecContext, value interface{}) error {
 
 	defCodec := ctx.GetDefCodecByIndex(d.TypeIndex)
 
-	ctx.logger.Debug("decode target", "val", value, "target", target)
+	ctx.logger.Debug("decode target", "val", val, "target", target)
 
 	targetLen := target.Len()
 	for i := 0; i < targetLen; i++ {
