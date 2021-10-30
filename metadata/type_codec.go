@@ -8,7 +8,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/centrifuge/go-substrate-rpc-client/v2/scale"
+	"github.com/centrifuge/go-substrate-rpc-client/v3/scale"
 
 	"github.com/patractlabs/go-patract/types"
 	"github.com/patractlabs/go-patract/utils/log"

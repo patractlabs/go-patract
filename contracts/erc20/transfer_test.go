@@ -5,7 +5,7 @@ import (
 	"io/ioutil"
 	"testing"
 
-	"github.com/centrifuge/go-substrate-rpc-client/v2/signature"
+	"github.com/centrifuge/go-substrate-rpc-client/v3/signature"
 	"github.com/patractlabs/go-patract/contracts/erc20"
 	"github.com/patractlabs/go-patract/rpc"
 	"github.com/patractlabs/go-patract/test"

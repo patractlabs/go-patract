@@ -10,7 +10,7 @@ import (
 )
 
 var (
-	path      = flag.String("path", ":8899", "path to url")
+	path      = flag.String("path", "0.0.0.0:8899", "path to url")
 	isOffline = flag.Bool("offline", false, "is use offline mode")
 )
 
@@ -42,6 +42,6 @@ func main() {
 	r.WithMetaData(flipper)
 
 	r.Init()
-
+	//r.Run(*path)
 	rest.NewRouter(router).Run(*path)
 }

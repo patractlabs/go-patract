@@ -6,7 +6,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/centrifuge/go-substrate-rpc-client/v2/types"
+	"github.com/centrifuge/go-substrate-rpc-client/v3/types"
 	"github.com/patractlabs/go-patract/contracts/erc20"
 	"github.com/patractlabs/go-patract/metadata"
 	"github.com/patractlabs/go-patract/observer"

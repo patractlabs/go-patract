@@ -1,7 +1,7 @@
 package native
 
 import (
-	gsrpctypes "github.com/centrifuge/go-substrate-rpc-client/v2/types"
+	gsrpctypes "github.com/centrifuge/go-substrate-rpc-client/v3/types"
 	"github.com/patractlabs/go-patract/api"
 	"github.com/patractlabs/go-patract/types"
 	"github.com/patractlabs/go-patract/utils/log"

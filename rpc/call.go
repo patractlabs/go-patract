@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 
-	"github.com/centrifuge/go-substrate-rpc-client/v2/scale"
+	"github.com/centrifuge/go-substrate-rpc-client/v3/scale"
 	"github.com/patractlabs/go-patract/api"
 	"github.com/patractlabs/go-patract/metadata"
 	"github.com/patractlabs/go-patract/types"

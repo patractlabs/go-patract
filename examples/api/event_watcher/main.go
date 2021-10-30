@@ -3,8 +3,8 @@ package main
 import (
 	"fmt"
 
-	gsrpc "github.com/centrifuge/go-substrate-rpc-client/v2"
-	"github.com/centrifuge/go-substrate-rpc-client/v2/config"
+	gsrpc "github.com/centrifuge/go-substrate-rpc-client/v3"
+	"github.com/centrifuge/go-substrate-rpc-client/v3/config"
 )
 
 func main() {
@@ -14,7 +14,7 @@ func main() {
 		panic(err)
 	}
 
-	hash, err := api.RPC.Chain.GetBlockHash(320)
+	hash, err := api.RPC.Chain.GetBlockHash(2)
 	if err != nil {
 		panic(err)
 	}
@@ -25,6 +25,9 @@ func main() {
 	}
 
 	fmt.Printf("blk %v\n", blk)
+
+	fmt.Println("-------------------------------------------------------")
+	fmt.Println("-------------------------------------------------------")
 
 	queryEventByBlock(hash)
 

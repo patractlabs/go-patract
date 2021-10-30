@@ -6,7 +6,7 @@ import (
 	"math/big"
 	"testing"
 
-	"github.com/centrifuge/go-substrate-rpc-client/v2/signature"
+	"github.com/centrifuge/go-substrate-rpc-client/v3/signature"
 	"github.com/patractlabs/go-patract/rpc"
 	"github.com/patractlabs/go-patract/test"
 	"github.com/patractlabs/go-patract/test/contracts"
