@@ -14,7 +14,7 @@ func main() {
 		panic(err)
 	}
 
-	hash, err := api.RPC.Chain.GetBlockHash(2)
+	hash, err := api.RPC.Chain.GetBlockHash(320)
 	if err != nil {
 		panic(err)
 	}
@@ -25,9 +25,6 @@ func main() {
 	}
 
 	fmt.Printf("blk %v\n", blk)
-
-	fmt.Println("-------------------------------------------------------")
-	fmt.Println("-------------------------------------------------------")
 
 	queryEventByBlock(hash)
 
