@@ -2,6 +2,7 @@ package erc20_test
 
 import (
 	"context"
+	"fmt"
 	"io/ioutil"
 	"testing"
 
@@ -18,8 +19,14 @@ func TestTransfer(t *testing.T) {
 	test.ByNodeEnv(t, func(logger log.Logger, env test.Env) {
 		require := require.New(t)
 
-		contractAccountID := initERC20(t, logger, env, signature.TestKeyringPairAlice)
-
+		//contractAccountID := initERC20(t, logger, env, signature.TestKeyringPairAlice)
+		ss58byte := types.NewSS58Codec([]byte{})
+		b := "5CcZdeQEH7Q6qy1PqE6uaPns5u1rJtjdi6yHjmoMX3gEpkMW" // 合约地址
+		contractAccountID, _ := ss58byte.DecodeAccountID(b)
+		fmt.Println(contractAccountID)
+		fmt.Println(contractAccountID)
+		//strcode, _ := ss58byte.EncodeAccountID(contractAccountID)
+		fmt.Println("====================================================")
 		rpcAPI, err := rpc.NewContractAPI(env.URL())
 		require.Nil(err)
 
@@ -33,8 +40,12 @@ func TestTransfer(t *testing.T) {
 
 		// transfer alice to bob
 		ctx := rpc.NewCtx(context.Background()).WithFrom(signature.TestKeyringPairAlice)
+		total, _ := erc20API.TotalSupply(ctx)
+		fmt.Println(total)
 		aliceTotal, err := erc20API.BalanceOf(ctx, test.AliceAccountID)
-
+		fmt.Println("_________________________________________")
+		fmt.Println(aliceTotal)
+		fmt.Println(err)
 		// check curr
 		require.Nil(err)
 		require.Equalf(*aliceTotal.Int, totalSupply, "alice should be total supply")
