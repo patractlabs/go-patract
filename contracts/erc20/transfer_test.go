@@ -16,16 +16,18 @@ import (
 )
 
 func TestTransfer(t *testing.T) {
-	test.ByNodeEnv(t, func(logger log.Logger, env test.Env) {
+	test.ByExternEnv(t, func(logger log.Logger, env test.Env) {
 		require := require.New(t)
 
 		//contractAccountID := initERC20(t, logger, env, signature.TestKeyringPairAlice)
 		ss58byte := types.NewSS58Codec([]byte{})
-		b := "5CcZdeQEH7Q6qy1PqE6uaPns5u1rJtjdi6yHjmoMX3gEpkMW" // 合约地址
+		//b := "5CcZdeQEH7Q6qy1PqE6uaPns5u1rJtjdi6yHjmoMX3gEpkMW" // 合约地址
+		b := "5EpBWdyLweZZkbv9cntVsZNAzEMjr8nx1vm5SBWCQoEVXhbL"
 		contractAccountID, _ := ss58byte.DecodeAccountID(b)
 		fmt.Println(contractAccountID)
 		fmt.Println(contractAccountID)
-		//strcode, _ := ss58byte.EncodeAccountID(contractAccountID)
+		strcode, _ := ss58byte.EncodeAccountID(contractAccountID)
+		fmt.Println(strcode)
 		fmt.Println("====================================================")
 		rpcAPI, err := rpc.NewContractAPI(env.URL())
 		require.Nil(err)
@@ -45,7 +47,7 @@ func TestTransfer(t *testing.T) {
 		aliceTotal, err := erc20API.BalanceOf(ctx, test.AliceAccountID)
 		fmt.Println("_________________________________________")
 		fmt.Println(aliceTotal)
-		fmt.Println(err)
+		//fmt.Println(err)
 		// check curr
 		require.Nil(err)
 		require.Equalf(*aliceTotal.Int, totalSupply, "alice should be total supply")

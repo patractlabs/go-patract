@@ -56,3 +56,35 @@ func (a *API) TransferFrom(ctx Context, from, to AccountID, amt U128) (Hash, err
 		fromParam, toParam, valueParam,
 	)
 }
+
+func (a *API) Mint(ctx Context, id U32) (Hash, error) {
+	idParam := struct {
+		Id U32
+	}{
+		Id: id,
+	}
+
+	return a.CallToExec(ctx,
+		a.ContractAccountID,
+		types.NewCompactBalance(0),
+		types.NewCompactGas(test.DefaultGas),
+		[]string{"mint"},
+		idParam,
+	)
+}
+
+func (a *API) Burn(ctx Context, id U32) (Hash, error) {
+	idParam := struct {
+		Id U32
+	}{
+		Id: id,
+	}
+
+	return a.CallToExec(ctx,
+		a.ContractAccountID,
+		types.NewCompactBalance(0),
+		types.NewCompactGas(test.DefaultGas),
+		[]string{"burn"},
+		idParam,
+	)
+}

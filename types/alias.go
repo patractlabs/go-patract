@@ -11,10 +11,12 @@ var (
 )
 
 type (
+	U8  = types.U8
 	U32 = types.U32
 	U64 = types.U64
 	// U128 is an unsigned 128-bit integer, it is represented as a big.Int in Go.
 	U128 = types.U128
+	Bool = types.Bool
 )
 
 var (
@@ -109,3 +111,7 @@ var (
 	NewExtrinsic = types.NewExtrinsic
 	NewCall      = types.NewCall
 )
+
+//type (
+//	VecU8 = types.ExampleVec
+//)

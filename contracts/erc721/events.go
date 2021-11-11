@@ -30,10 +30,10 @@ func (e EventApproval) String() string {
 type EventApprovalForAll struct {
 	Owner    types.AccountID `scale:"owner"`
 	Operator types.AccountID `scale:"operator"`
-	approved bool            `scale:"approved"`
+	approved bool            `scale:"approved"` // TODO: did not have #[ink(topic)]
 }
 
 func (e EventApprovalForAll) String() string {
-	return fmt.Sprintf("event ApprovalForAll: %s -> %s by %s",
+	return fmt.Sprintf("event Approval For All: %s -> %s by %s",
 		types.NewOptionAccountID(e.Owner), types.NewOptionAccountID(e.Operator), e.approved)
 }
