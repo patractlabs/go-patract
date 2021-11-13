@@ -13,11 +13,10 @@ type (
 type (
 	AccountID    = types.AccountID
 	Balance      = types.Balance
-	TokenId      = types.U128
+	U128         = types.U128
 	Hash         = types.Hash
 	U32          = types.U32
 	VecU8        = []types.U8
-	VecTokenId   = []types.U128
 	VecBalance   = []types.Balance
 	VecAccountID = []types.AccountID
 	Bool         = types.Bool

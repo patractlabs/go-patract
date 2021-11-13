@@ -1,0 +1,1 @@
+package contract_terminate_test

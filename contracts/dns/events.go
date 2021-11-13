@@ -6,33 +6,35 @@ import (
 	"github.com/patractlabs/go-patract/types"
 )
 
-type TransferSingle struct {
-	Operator types.OptionAccountID `scale:"operator"`
-	From     types.OptionAccountID `scale:"from"`
-	To       types.OptionAccountID `scale:"to"`
-	Id       types.U32             `scale:"id"`
+type Register struct {
+	Name types.Hash            `scale:"name"`
+	From types.OptionAccountID `scale:"from"`
 }
 
-func (e TransferSingle) String() string {
-	return fmt.Sprintf("transfer Single: %s - %s -> %s by %s", e.Operator, e.From, e.To, e.Id)
+func (e Register) String() string {
+	return fmt.Sprintf("register: %s - %s", e.Name, e.From)
 }
 
-type ApprovalForAll struct {
-	Owner    types.AccountID `scale:"owner"`
-	Operator types.AccountID `scale:"operator"`
-	approved types.Bool      `scale:"approved"` // TODO: did not have #[ink(topic)]
+type SetAddress struct {
+	Name       types.Hash            `scale:"name"`
+	From       types.AccountID       `scale:"from"`
+	OldAddress types.OptionAccountID `scale:"old_address"`
+	NewAddress types.AccountID       `scale:"new_address"`
 }
 
-func (e ApprovalForAll) String() string {
-	return fmt.Sprintf("approval For All: %s -> %s by %s",
-		types.NewOptionAccountID(e.Owner), types.NewOptionAccountID(e.Operator), e.approved)
+func (e SetAddress) String() string {
+	return fmt.Sprintf("set Address: %s : %s - %s -> %s",
+		e.Name, types.NewOptionAccountID(e.From), e.OldAddress, types.NewOptionAccountID(e.NewAddress))
 }
 
-type Uri struct {
-	value   string     `scale:"value"` // TODO: did not have #[ink(topic)]
-	TokenId types.U128 `scale:"token_id"`
+type Transfer struct {
+	Name     types.Hash            `scale:"name"`
+	From     types.AccountID       `scale:"from"`
+	OldOwner types.OptionAccountID `scale:"old_owner"`
+	NewOwner types.AccountID       `scale:"new_owner"`
 }
 
-func (e Uri) String() string {
-	return fmt.Sprintf("Uri: %s : %s", e.TokenId, e.value)
+func (e Transfer) String() string {
+	return fmt.Sprintf("transfer: %s : %s - %s -> %s",
+		e.Name, types.NewOptionAccountID(e.From), e.OldOwner, types.NewOptionAccountID(e.NewOwner))
 }
