@@ -1,103 +1,88 @@
 {
-  "metadataVersion": "0.1.0",
   "source": {
-    "hash": "0xdc14c58ac958891408637773e045dc325162058b6ce4e2828d9666ca530f7e86",
-    "language": "ink! 3.0.0-rc2",
-    "compiler": "rustc 1.49.0-nightly"
+    "hash": "0x4a13efbd917a28bceb3c47498b20072abed35bcf9131d5a2910847f4940c1e86",
+    "language": "ink! 3.0.0-rc6",
+    "compiler": "rustc 1.58.0-nightly"
   },
   "contract": {
-    "name": "flipper",
-    "version": "3.0.0-rc2",
+    "name": "trait_flipper",
+    "version": "3.0.0-rc6",
     "authors": [
       "Parity Technologies <admin@parity.io>"
     ]
   },
-  "spec": {
-    "constructors": [
-      {
-        "args": [],
-        "docs": [
-          " Creates a new flipper smart contract initialized to `false`."
-        ],
-        "name": [
-          "default"
-        ],
-        "selector": "0x6a3712e2"
-      },
-      {
-        "args": [
-          {
-            "name": "init_value",
-            "type": {
-              "displayName": [
-                "bool"
-              ],
-              "type": 1
-            }
-          }
-        ],
-        "docs": [],
-        "name": [
-          "Flip",
-          "new"
-        ],
-        "selector": "0x818482e7"
-      }
-    ],
-    "docs": [],
-    "events": [],
-    "messages": [
-      {
-        "args": [],
-        "docs": [],
-        "mutates": true,
-        "name": [
-          "Flip",
-          "flip"
-        ],
-        "payable": false,
-        "returnType": null,
-        "selector": "0xad931d5f"
-      },
-      {
-        "args": [],
-        "docs": [],
-        "mutates": false,
-        "name": [
-          "Flip",
-          "get"
-        ],
-        "payable": false,
-        "returnType": {
-          "displayName": [
-            "bool"
-          ],
-          "type": 1
-        },
-        "selector": "0x6b3549bc"
-      }
-    ]
-  },
-  "storage": {
-    "struct": {
-      "fields": [
+  "V1": {
+    "spec": {
+      "constructors": [
         {
-          "layout": {
-            "cell": {
-              "key": "0x0000000000000000000000000000000000000000000000000000000000000000",
-              "ty": 1
-            }
+          "args": [],
+          "docs": [
+            "Creates a new flipper smart contract initialized to `false`."
+          ],
+          "name": [
+            "new"
+          ],
+          "selector": "0x9bae9d5e"
+        }
+      ],
+      "docs": [],
+      "events": [],
+      "messages": [
+        {
+          "args": [],
+          "docs": [],
+          "mutates": true,
+          "name": [
+            "Flip",
+            "flip"
+          ],
+          "payable": false,
+          "returnType": null,
+          "selector": "0xaa97cade"
+        },
+        {
+          "args": [],
+          "docs": [],
+          "mutates": false,
+          "name": [
+            "Flip",
+            "get"
+          ],
+          "payable": false,
+          "returnType": {
+            "displayName": [
+              "bool"
+            ],
+            "type": 0
           },
-          "name": "value"
+          "selector": "0x84693fb2"
         }
       ]
-    }
-  },
-  "types": [
-    {
-      "def": {
-        "primitive": "bool"
+    },
+    "storage": {
+      "struct": {
+        "fields": [
+          {
+            "layout": {
+              "cell": {
+                "key": "0x0000000000000000000000000000000000000000000000000000000000000000",
+                "ty": 0
+              }
+            },
+            "name": "value"
+          }
+        ]
       }
-    }
-  ]
+    },
+    "types": [
+      {
+        "id": 0,
+        "type": {
+          "def": {
+            "primitive": "bool"
+          }
+        }
+      }
+    ]
+  }
 }

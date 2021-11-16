@@ -47,8 +47,9 @@ func (c *Contract) InstantiateWithCode(
 	codeHash types.CodeHash,
 	code []byte,
 	salt []byte,
+	constructorName []string,
 	args ...interface{}) (types.Hash, types.AccountID, error) {
-	data, err := c.getConstructorsData([]string{"new"}, args...)
+	data, err := c.getConstructorsData(constructorName, args...)
 	if err != nil {
 		return types.Hash{}, types.AccountID{}, err
 	}

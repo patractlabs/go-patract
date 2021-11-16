@@ -18,13 +18,16 @@ type Raw struct {
 		Version string   `json:"version"`
 		Authors []string `json:"authors"`
 	} `json:"contract"`
-	Spec struct {
-		Constructors []ConstructorRaw `json:"constructors"`
-		Docs         []string         `json:"docs"`
-		Events       EventRaws        `json:"events"`
-		Messages     []MessageRaw     `json:"messages"`
-	} `json:"spec"`
-	Types []rawTypeDef `json:"types"`
+	V1 struct {
+		Spec struct {
+			Constructors []ConstructorRaw `json:"constructors"`
+			Docs         []string         `json:"docs"`
+			Events       EventRaws        `json:"events"`
+			Messages     []MessageRaw     `json:"messages"`
+		} `json:"spec"`
+
+		Types []rawTypesDef `json:"types"`
+	} `json:"V1"`
 }
 
 // TypeIndex type index to def params type
@@ -73,7 +76,7 @@ type ConstructorRaw struct {
 
 // GetConstructor get constructor by name
 func (r *Raw) GetConstructor(name []string) (ConstructorRaw, error) {
-	for _, c := range r.Spec.Constructors {
+	for _, c := range r.V1.Spec.Constructors {
 		if utils.IsNameEqual(c.Name, name) {
 			return c, nil
 		}
@@ -84,7 +87,7 @@ func (r *Raw) GetConstructor(name []string) (ConstructorRaw, error) {
 
 // GetMessage get message by name
 func (r *Raw) GetMessage(name []string) (MessageRaw, error) {
-	for _, c := range r.Spec.Messages {
+	for _, c := range r.V1.Spec.Messages {
 		if utils.IsNameEqual(c.Name, name) {
 			return c, nil
 		}

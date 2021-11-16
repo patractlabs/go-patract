@@ -45,7 +45,7 @@ func observerEvts(logger log.Logger, db *erc20DB) (*observer.ContractObserver, c
 		switch typ {
 		case 0:
 			var transfer erc20.EventTransfer
-			err := metaData.Spec.Events.DecodeEvt(metaData.NewCtxForDecode(data).WithLogger(l), &transfer)
+			err := metaData.V1.Spec.Events.DecodeEvt(metaData.NewCtxForDecode(data).WithLogger(l), &transfer)
 			if err != nil {
 				logger.Error("evt decode transfer error", "err", err, "height", height)
 			}
@@ -58,7 +58,7 @@ func observerEvts(logger log.Logger, db *erc20DB) (*observer.ContractObserver, c
 			}
 		case 1:
 			var approve erc20.EventApproval
-			err := metaData.Spec.Events.DecodeEvt(metaData.NewCtxForDecode(data).WithLogger(l), &approve)
+			err := metaData.V1.Spec.Events.DecodeEvt(metaData.NewCtxForDecode(data).WithLogger(l), &approve)
 			if err != nil {
 				logger.Error("evt decode approve error", "err", err, "height", height)
 			}

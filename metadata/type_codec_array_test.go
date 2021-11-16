@@ -81,7 +81,7 @@ func TestDefArrayEncodeAndDecode(t *testing.T) {
 	`)
 
 	typeDefs := make([]metadata.DefCodec, 0, 16)
-	for _, ty := range raw.Types {
+	for _, ty := range raw.V1.Types {
 		typeDefs = append(typeDefs, metadata.NewTypeDef(&ty))
 	}
 

@@ -1,4 +1,4 @@
-package contract_terminate_test
+package trait_flipper_test
 
 import (
 	"context"
@@ -17,10 +17,10 @@ import (
 )
 
 const (
-	//flipperWasmPath = "../../test/contracts/ink/flipper.wasm"
-	//flipperMetaPath = "../../test/contracts/ink/flipper.json"
-	contractTerminateWasmPath = "/mnt/c/Users/lizhaoyang/Desktop/deploy_ink_file/contract-terminate/contract_terminate.wasm"
-	contractTerminateMetaPath = "/mnt/c/Users/lizhaoyang/Desktop/deploy_ink_file/contract-terminate/metadata.json"
+	flipperWasmPath = "../../test/contracts/ink/trait-flipper.wasm"
+	flipperMetaPath = "../../test/contracts/ink/trait-flipper.json"
+	//flipperWasmPath = "/mnt/c/Users/lizhaoyang/Desktop/deploy_ink_file/trait-flipper/trait_flipper.wasm"
+	//flipperMetaPath = "/mnt/c/Users/lizhaoyang/Desktop/deploy_ink_file/trait-flipper/metadata.json"
 )
 
 var (
@@ -29,19 +29,18 @@ var (
 	dave    = utils.MustAccountIDFromSS58("5DAAnrj7VHTznn2AWBemMuyBwZWs6FNFjdyVXUeYum3PTXFy")
 
 	instantiateSalt = []byte("ysncz3nbjjzoc7s07of3malp9d")
-	//initValue       = types.NewBool(true)
 )
 
-func initContractTerminate(t *testing.T, logger log.Logger, env test.Env, authKey signature.KeyringPair) types.AccountID {
+func initTraitFlipper(t *testing.T, logger log.Logger, env test.Env, authKey signature.KeyringPair) types.AccountID {
 	require := require.New(t)
 
-	codeBytes, err := ioutil.ReadFile(contractTerminateWasmPath)
+	codeBytes, err := ioutil.ReadFile(flipperWasmPath)
 	require.Nil(err)
 
 	cApi, err := rpc.NewContractAPI(env.URL())
 	require.Nil(err)
 
-	metaBz, err := ioutil.ReadFile(contractTerminateMetaPath)
+	metaBz, err := ioutil.ReadFile(flipperMetaPath)
 	require.Nil(err)
 	cApi.WithMetaData(metaBz)
 
@@ -53,7 +52,7 @@ func initContractTerminate(t *testing.T, logger log.Logger, env test.Env, authKe
 	_, contractAccount, err := cApi.InstantiateWithCode(ctx, logger,
 		types.NewCompactBalance(endowment),
 		types.NewCompactGas(test.DefaultGas),
-		contracts.CodeHashContractTerminate,
+		contracts.CodeHashTraitFlipper,
 		codeBytes,
 		instantiateSalt,
 		[]string{"new"},
@@ -65,7 +64,7 @@ func initContractTerminate(t *testing.T, logger log.Logger, env test.Env, authKe
 	var codeBz []byte
 	if err := cApi.Native().Cli.GetStorageLatest(&codeBz,
 		"Contracts", "PristineCode",
-		contracts.CodeHashContractTerminate[:], nil); err != nil {
+		contracts.CodeHashTraitFlipper[:], nil); err != nil {
 		require.Nil(err)
 	}
 

@@ -7,6 +7,11 @@ import (
 	"github.com/pkg/errors"
 )
 
+type rawTypesDef struct {
+	Id   int        `json:"id"`
+	Type rawTypeDef `json:"type"`
+}
+
 // rawTypeDef type definition
 type rawTypeDef struct {
 	Def    map[string]json.RawMessage `json:"def"`

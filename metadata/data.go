@@ -26,32 +26,32 @@ func New(bz []byte) (*Data, error) {
 		return nil, errors.Wrap(err, "unmarshal json")
 	}
 
-	res.Codecs = make([]DefCodec, 0, len(res.Raw.Types))
-	for idx := range res.Raw.Types {
-		res.Codecs = append(res.Codecs, NewTypeDef(&res.Raw.Types[idx]))
+	res.Codecs = make([]DefCodec, 0, len(res.Raw.V1.Types))
+	for idx := range res.Raw.V1.Types {
+		res.Codecs = append(res.Codecs, NewTypeDef(&res.Raw.V1.Types[idx].Type))
 	}
 
 	// parse datas
-	for i := 0; i < len(res.Raw.Spec.Constructors); i++ {
-		selectorStr := res.Raw.Spec.Constructors[i].Selector
+	for i := 0; i < len(res.Raw.V1.Spec.Constructors); i++ {
+		selectorStr := res.Raw.V1.Spec.Constructors[i].Selector
 
 		bz, err := types.HexDecodeString(selectorStr)
 		if err != nil {
 			return nil, errors.Wrapf(err, "decode str selector from %s", selectorStr)
 		}
 
-		res.Raw.Spec.Constructors[i].SelectorData = bz
+		res.Raw.V1.Spec.Constructors[i].SelectorData = bz
 	}
 
-	for i := 0; i < len(res.Raw.Spec.Messages); i++ {
-		selectorStr := res.Raw.Spec.Messages[i].Selector
+	for i := 0; i < len(res.Raw.V1.Spec.Messages); i++ {
+		selectorStr := res.Raw.V1.Spec.Messages[i].Selector
 
 		bz, err := types.HexDecodeString(selectorStr)
 		if err != nil {
 			return nil, errors.Wrapf(err, "decode str selector from %s", selectorStr)
 		}
 
-		res.Raw.Spec.Messages[i].SelectorData = bz
+		res.Raw.V1.Spec.Messages[i].SelectorData = bz
 	}
 
 	return res, nil
@@ -73,7 +73,7 @@ func (d *Data) GetCodecByTypeIdx(i TypeIndex) (DefCodec, error) {
 			i.Type, len(d.Codecs))
 	}
 
-	return d.Codecs[i.Type-1], nil
+	return d.Codecs[i.Type], nil
 }
 
 // NewCtxForDecode new ctx for decoder

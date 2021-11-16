@@ -2,7 +2,6 @@ package erc20_test
 
 import (
 	"context"
-	"fmt"
 	"io/ioutil"
 	"testing"
 
@@ -33,8 +32,7 @@ func TestTransfer(t *testing.T) {
 
 		// transfer alice to bob
 		ctx := rpc.NewCtx(context.Background()).WithFrom(signature.TestKeyringPairAlice)
-		total, _ := erc20API.TotalSupply(ctx)
-		fmt.Println(total)
+
 		aliceTotal, err := erc20API.BalanceOf(ctx, test.AliceAccountID)
 		require.Nil(err)
 		require.Equalf(*aliceTotal.Int, totalSupply, "alice should be total supply")

@@ -54,6 +54,7 @@ func initFlipper(t *testing.T, logger log.Logger, env test.Env, authKey signatur
 		contracts.CodeHashFlipper,
 		codeBytes,
 		instantiateSalt,
+		[]string{"new"},
 		initValue,
 	)
 	require.Nil(err)

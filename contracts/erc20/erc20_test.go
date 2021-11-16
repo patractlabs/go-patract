@@ -59,6 +59,7 @@ func initERC20(t *testing.T, logger log.Logger, env test.Env, authKey signature.
 		contracts.CodeHashERC20,
 		codeBytes,
 		instantiateSalt,
+		[]string{"new"},
 		types.NewU128(totalSupply),
 	)
 	require.Nil(err)

@@ -17,9 +17,9 @@ func TestUnmarshal(t *testing.T) {
 	err := json.Unmarshal(bz, &raw)
 	assert.Nil(t, err)
 
-	for _, rt := range raw.Types {
-		t.Logf("type %v", rt.Path)
-		for k, v := range rt.Def {
+	for _, rt := range raw.V1.Types {
+		t.Logf("type %v", rt.Type.Path)
+		for k, v := range rt.Type.Def {
 			t.Logf("def %s", k)
 			t.Logf("def value %v", string(v))
 		}

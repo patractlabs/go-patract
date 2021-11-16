@@ -24,7 +24,7 @@ func TestPrimitiveEncode(t *testing.T) {
   }
 	`)
 
-	def := metadata.NewTypeDef(&raw.Types[0])
+	def := metadata.NewTypeDef(&raw.V1.Types[0].Type)
 
 	bz := bytes.NewBuffer(make([]byte, 0, 64))
 

@@ -10,7 +10,7 @@ func (a *API) Flip(ctx Context) (Hash, error) {
 		a.ContractAccountID,
 		types.NewCompactBalance(0),
 		types.NewCompactGas(test.DefaultGas),
-		[]string{"flip"},
+		[]string{"Flip", "flip"},
 	)
 }
 
@@ -20,7 +20,7 @@ func (a *API) Get(ctx Context) (Bool, error) {
 	err := a.CallToRead(ctx,
 		&res,
 		a.ContractAccountID,
-		[]string{"get"},
+		[]string{"Flip", "get"},
 	)
 	return res, err
 }

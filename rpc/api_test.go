@@ -59,6 +59,7 @@ func TestDeployAndCallERC20(t *testing.T) {
 			contracts.CodeHashERC20,
 			codeBytes,
 			instantiateSalt,
+			[]string{"new"},
 			types.NewU128(totalSupply),
 		)
 

@@ -1,4 +1,4 @@
-package contract_terminate_test
+package dns_test
 
 import (
 	"context"
@@ -17,31 +17,30 @@ import (
 )
 
 const (
-	//flipperWasmPath = "../../test/contracts/ink/flipper.wasm"
-	//flipperMetaPath = "../../test/contracts/ink/flipper.json"
-	contractTerminateWasmPath = "/mnt/c/Users/lizhaoyang/Desktop/deploy_ink_file/contract-terminate/contract_terminate.wasm"
-	contractTerminateMetaPath = "/mnt/c/Users/lizhaoyang/Desktop/deploy_ink_file/contract-terminate/metadata.json"
+	dnsWasmPath = "../../test/contracts/ink/dns.wasm"
+	dnsMetaPath = "../../test/contracts/ink/dns.json"
 )
 
 var (
 	bob     = utils.MustAccountIDFromSS58("5FHneW46xGXgs5mUiveU4sbTyGBzmstUspZC92UhjJM694ty")
 	charlie = utils.MustAccountIDFromSS58("5FLSigC9HGRKVhB9FiEo4Y3koPsNmBmLJbpXg2mp1hXcS59Y")
-	dave    = utils.MustAccountIDFromSS58("5DAAnrj7VHTznn2AWBemMuyBwZWs6FNFjdyVXUeYum3PTXFy")
 
-	instantiateSalt = []byte("ysncz3nbjjzoc7s07of3malp9d")
-	//initValue       = types.NewBool(true)
+	TestKeyringPairBob, _ = signature.KeyringPairFromSecret("//Bob", 42)
+	instantiateSalt       = []byte("ysncz3nbjjzoc7s07of3malp9d")
+
+	initName = types.NewHash(types.MustHexDecodeString("0x43a3d97a2bf7293835cdecdd25df56bb18c9d9c0e856246622a6c5164c2f2e0e"))
 )
 
-func initContractTerminate(t *testing.T, logger log.Logger, env test.Env, authKey signature.KeyringPair) types.AccountID {
+func initDNS(t *testing.T, logger log.Logger, env test.Env, authKey signature.KeyringPair) types.AccountID {
 	require := require.New(t)
 
-	codeBytes, err := ioutil.ReadFile(contractTerminateWasmPath)
+	codeBytes, err := ioutil.ReadFile(dnsWasmPath)
 	require.Nil(err)
 
 	cApi, err := rpc.NewContractAPI(env.URL())
 	require.Nil(err)
 
-	metaBz, err := ioutil.ReadFile(contractTerminateMetaPath)
+	metaBz, err := ioutil.ReadFile(dnsMetaPath)
 	require.Nil(err)
 	cApi.WithMetaData(metaBz)
 
@@ -53,11 +52,10 @@ func initContractTerminate(t *testing.T, logger log.Logger, env test.Env, authKe
 	_, contractAccount, err := cApi.InstantiateWithCode(ctx, logger,
 		types.NewCompactBalance(endowment),
 		types.NewCompactGas(test.DefaultGas),
-		contracts.CodeHashContractTerminate,
+		contracts.CodeHashDNS,
 		codeBytes,
 		instantiateSalt,
 		[]string{"new"},
-		//initValue,
 	)
 	require.Nil(err)
 
@@ -65,7 +63,7 @@ func initContractTerminate(t *testing.T, logger log.Logger, env test.Env, authKe
 	var codeBz []byte
 	if err := cApi.Native().Cli.GetStorageLatest(&codeBz,
 		"Contracts", "PristineCode",
-		contracts.CodeHashContractTerminate[:], nil); err != nil {
+		contracts.CodeHashDNS[:], nil); err != nil {
 		require.Nil(err)
 	}
 

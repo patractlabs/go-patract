@@ -89,8 +89,8 @@ func TestDefVariantEncodeAndDecode(t *testing.T) {
 	`)
 
 	typeDefs := make([]metadata.DefCodec, 0, 16)
-	for _, ty := range raw.Types {
-		typeDefs = append(typeDefs, metadata.NewTypeDef(&ty))
+	for _, ty := range raw.V1.Types {
+		typeDefs = append(typeDefs, metadata.NewTypeDef(&ty.Type))
 	}
 
 	logger := log.NewLogger()

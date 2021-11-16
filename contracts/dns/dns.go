@@ -25,7 +25,7 @@ func (a *API) Register(ctx Context, name Hash) (Hash, error) {
 	)
 }
 
-func (a *API) set_address(ctx Context, name Hash, new_address AccountID) (Hash, error) {
+func (a *API) SetAddress(ctx Context, name Hash, newAddress AccountID) (Hash, error) {
 	nameParam := struct {
 		Name Hash
 	}{
@@ -35,7 +35,7 @@ func (a *API) set_address(ctx Context, name Hash, new_address AccountID) (Hash, 
 	NewAddressParam := struct {
 		Address AccountID
 	}{
-		Address: new_address,
+		Address: newAddress,
 	}
 
 	return a.CallToExec(ctx,
@@ -47,7 +47,7 @@ func (a *API) set_address(ctx Context, name Hash, new_address AccountID) (Hash, 
 	)
 }
 
-func (a *API) transfer(ctx Context, name Hash, to AccountID) (Hash, error) {
+func (a *API) Transfer(ctx Context, name Hash, to AccountID) (Hash, error) {
 	nameParam := struct {
 		Name Hash
 	}{
@@ -69,7 +69,7 @@ func (a *API) transfer(ctx Context, name Hash, to AccountID) (Hash, error) {
 	)
 }
 
-func (a *API) get_address(ctx Context, name Hash) (AccountID, error) {
+func (a *API) GetAddress(ctx Context, name Hash) (AccountID, error) {
 	nameParam := struct {
 		Name Hash
 	}{
