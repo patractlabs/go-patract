@@ -40,7 +40,9 @@ func (c *Contract) encodeDataFromArgs(argsToEncode []metadata.ArgRaw, args ...in
 		fmt.Println(argsToEncode[i].Type)
 		fmt.Println("------------------------------- here")
 		fmt.Println("------------------------------- here")
-		fmt.Println(cdc.Encode(ctx, args[i]))
+		fmt.Println(args[i])
+		//err = cdc.Encode(ctx, args[i])
+		//fmt.Println(args[i])
 		if err := cdc.Encode(ctx, args[i]); err != nil {
 			return nil, errors.Wrapf(err, "encode args %d", i)
 		}

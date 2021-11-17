@@ -2,7 +2,6 @@ package metadata
 
 import (
 	"encoding/json"
-	"fmt"
 	"reflect"
 
 	"github.com/pkg/errors"
@@ -62,10 +61,10 @@ func NewTypeDef(raw *rawTypeDef) *TypeDef {
 }
 
 func (t *TypeDef) Encode(ctx CodecContext, v interface{}) error {
-	fmt.Println("--------------------------------------- 1 here is the")
-	fmt.Println("--------------------------------------- 1 here is the")
-	fmt.Println("--------------------------------------- 1 here is the")
-	fmt.Println("--------------------------------------- 1 here is the")
+	//fmt.Println("--------------------------------------- 1 here is the")
+	//fmt.Println("--------------------------------------- 1 here is the")
+	//fmt.Println("--------------------------------------- 1 here is the")
+	//fmt.Println("--------------------------------------- 1 here is the")
 	//fmt.Println()
 	return t.def.Encode(ctx, v)
 }
