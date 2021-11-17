@@ -11,9 +11,9 @@ import (
 
 func (a *API) Register(ctx Context, name Hash) (Hash, error) {
 	nameParam := struct {
-		Name Hash
+		Value Hash
 	}{
-		Name: name,
+		Value: name,
 	}
 
 	return a.CallToExec(ctx,

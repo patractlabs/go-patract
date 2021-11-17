@@ -33,6 +33,11 @@ func newDefComposite(raw json.RawMessage, path []string) *defComposite {
 
 func (d *defComposite) Encode(ctx CodecContext, value interface{}) error {
 	target := reflect.ValueOf(value)
+	fmt.Println("========================================")
+	fmt.Println(value)
+	fmt.Println("=======================================")
+	fmt.Println(target.Kind())
+	fmt.Println("=======================================")
 
 	for idx, field := range d.Fields {
 		ctx.logger.Debug("defComposite encode", "idx", idx, "field", field)
@@ -49,7 +54,22 @@ func (d *defComposite) Encode(ctx CodecContext, value interface{}) error {
 				ctx.logger.Debug("target", "field", tv, "v", target.Field(i))
 
 				def := ctx.GetDefCodecByIndex(field.TypeIndex)
-				if err := def.Encode(ctx, target.Field(i).Interface()); err != nil {
+				fmt.Println("--------------------------------------- 2 here is the")
+				fmt.Println("--------------------------------------- 2 here is the")
+				fmt.Println("--------------------------------------- 2 here is the")
+				//fmt.Println(target.Field(i))
+				//fmt.Println(target.Field(i).Interface())
+				//fmt.Println(target.Field(i))
+				a := target.Field(i)
+				fmt.Println(a.Kind())
+				//a := struct{}
+				b := ArgRaw{}
+				_ = json.Unmarshal([]byte(a.String()), &b)
+				fmt.Println(a)
+				fmt.Println(b)
+				fmt.Println("--------------------------------------- 2 here is the")
+				//a := target.Field(i).
+				if err := def.Encode(ctx, a.Interface()); err != nil {
 					return errors.Wrapf(err,
 						"encode composite field %s %d", field.Name, i)
 				}

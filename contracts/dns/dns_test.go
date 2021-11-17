@@ -2,6 +2,7 @@ package dns_test
 
 import (
 	"context"
+	"fmt"
 	"io/ioutil"
 	"testing"
 
@@ -41,6 +42,8 @@ func initDNS(t *testing.T, logger log.Logger, env test.Env, authKey signature.Ke
 	require.Nil(err)
 
 	metaBz, err := ioutil.ReadFile(dnsMetaPath)
+	fmt.Println("--------------------------------")
+	//fmt.Println(metaBz)
 	require.Nil(err)
 	cApi.WithMetaData(metaBz)
 
@@ -56,6 +59,7 @@ func initDNS(t *testing.T, logger log.Logger, env test.Env, authKey signature.Ke
 		codeBytes,
 		instantiateSalt,
 		[]string{"new"},
+		//nil,
 	)
 	require.Nil(err)
 

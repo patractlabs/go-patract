@@ -3,6 +3,7 @@ package rpc
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 
 	"github.com/centrifuge/go-substrate-rpc-client/v3/scale"
 	"github.com/patractlabs/go-patract/api"
@@ -27,13 +28,19 @@ func (c *Contract) encodeDataFromArgs(argsToEncode []metadata.ArgRaw, args ...in
 	bz := bytes.NewBuffer(make([]byte, 0, 1024))
 	encoder := scale.NewEncoder(bz)
 	ctx := metadata.NewCtxForEncoder(c.metaData.Codecs, encoder).WithLogger(c.logger)
-
+	fmt.Println(args)
+	fmt.Println(len(args))
 	for i := 0; i < len(args); i++ {
 		cdc, err := c.metaData.GetCodecByTypeIdx(argsToEncode[i].Type)
 		if err != nil {
 			return nil, errors.Wrapf(err, "get codec args %d", i)
 		}
-
+		fmt.Println("------------------------------- here")
+		fmt.Println("------------------------------- here")
+		fmt.Println(argsToEncode[i].Type)
+		fmt.Println("------------------------------- here")
+		fmt.Println("------------------------------- here")
+		fmt.Println(cdc.Encode(ctx, args[i]))
 		if err := cdc.Encode(ctx, args[i]); err != nil {
 			return nil, errors.Wrapf(err, "encode args %d", i)
 		}

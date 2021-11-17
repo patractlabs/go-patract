@@ -2,46 +2,51 @@ package metadata
 
 import (
 	"encoding/json"
+	"fmt"
 	"reflect"
 
 	"github.com/pkg/errors"
 )
 
-type rawTypesDef struct {
-	Id   int        `json:"id"`
-	Type rawTypeDef `json:"type"`
-}
-
 // rawTypeDef type definition
 type rawTypeDef struct {
-	Def    map[string]json.RawMessage `json:"def"`
-	Params []int                      `json:"params"`
-	Path   []string                   `json:"path"`
+	Id   int `json:"id"`
+	Type struct {
+		Def    map[string]json.RawMessage `json:"def"`
+		Params []struct {
+			Name string `json:"name"`
+			Type int    `json:"type"`
+		} `json:"params"`
+		Path []string `json:"path"`
+	} `json:"type"`
 }
 
 // TypeDef type definition
 type TypeDef struct {
 	def    DefCodec
-	Params []int
-	Path   []string
+	Params []struct {
+		Name string `json:"name"`
+		Type int    `json:"type"`
+	}
+	Path []string
 }
 
 func NewTypeDef(raw *rawTypeDef) *TypeDef {
-	if len(raw.Def) != 1 {
-		panic(errors.Errorf("type def raw error by not key %v", raw.Def))
+	if len(raw.Type.Def) != 1 {
+		panic(errors.Errorf("type def raw error by not key %v", raw.Type.Def))
 	}
 
 	res := &TypeDef{
-		Params: raw.Params,
-		Path:   raw.Path,
+		Params: raw.Type.Params,
+		Path:   raw.Type.Path,
 	}
 
-	for k, jsonRaw := range raw.Def {
+	for k, jsonRaw := range raw.Type.Def {
 		switch k {
 		case "primitive":
 			res.def = newDefPrimitive(jsonRaw)
 		case "composite":
-			res.def = newDefComposite(jsonRaw, raw.Path)
+			res.def = newDefComposite(jsonRaw, raw.Type.Path)
 		case "array":
 			res.def = newDefArray(jsonRaw)
 		case "variant":
@@ -57,6 +62,11 @@ func NewTypeDef(raw *rawTypeDef) *TypeDef {
 }
 
 func (t *TypeDef) Encode(ctx CodecContext, v interface{}) error {
+	fmt.Println("--------------------------------------- 1 here is the")
+	fmt.Println("--------------------------------------- 1 here is the")
+	fmt.Println("--------------------------------------- 1 here is the")
+	fmt.Println("--------------------------------------- 1 here is the")
+	//fmt.Println()
 	return t.def.Encode(ctx, v)
 }
 

@@ -1,6 +1,7 @@
 package metadata
 
 import (
+	"fmt"
 	"github.com/patractlabs/go-patract/utils"
 	"github.com/pkg/errors"
 )
@@ -26,7 +27,7 @@ type Raw struct {
 			Messages     []MessageRaw     `json:"messages"`
 		} `json:"spec"`
 
-		Types []rawTypesDef `json:"types"`
+		Types []rawTypeDef `json:"types"`
 	} `json:"V1"`
 }
 
@@ -76,6 +77,12 @@ type ConstructorRaw struct {
 
 // GetConstructor get constructor by name
 func (r *Raw) GetConstructor(name []string) (ConstructorRaw, error) {
+	fmt.Println("=====================================")
+	fmt.Println("=====================================")
+	fmt.Println("=====================================")
+	fmt.Println("=====================================")
+	//fmt.Println(r.V1)
+	//fmt.Println(r.V1.Spec.Constructors)
 	for _, c := range r.V1.Spec.Constructors {
 		if utils.IsNameEqual(c.Name, name) {
 			return c, nil

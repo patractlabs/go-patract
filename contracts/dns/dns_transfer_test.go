@@ -2,6 +2,7 @@ package dns_test
 
 import (
 	"context"
+	"fmt"
 	"io/ioutil"
 	"testing"
 
@@ -13,10 +14,12 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestFlip(t *testing.T) {
+func TestDNSTransfer(t *testing.T) {
 	test.ByNodeEnv(t, func(logger log.Logger, env test.Env) {
 		require := require.New(t)
 		contractAccountID := initDNS(t, logger, env, signature.TestKeyringPairAlice)
+		fmt.Println("============================ success create contract")
+		fmt.Println(contractAccountID)
 		rpcAPI, err := rpc.NewContractAPI(env.URL())
 		require.Nil(err)
 
@@ -29,12 +32,15 @@ func TestFlip(t *testing.T) {
 		dnsAPI := dns.New(rpcAPI, contractAccountID)
 
 		aliceCtx := rpc.NewCtx(context.Background()).WithFrom(signature.TestKeyringPairAlice)
-
+		fmt.Println("register ============================================")
 		_, err = dnsAPI.Register(aliceCtx, initName)
-
+		fmt.Println(err)
 		require.Nil(err)
 
+		fmt.Println("transfer ============================================")
 		dnsAPI.Transfer(aliceCtx, initName, bob)
+		fmt.Println("setaddress ============================================")
+
 		_, err = dnsAPI.SetAddress(aliceCtx, initName, charlie)
 		require.Nil(err)
 
