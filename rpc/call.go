@@ -35,17 +35,22 @@ func (c *Contract) encodeDataFromArgs(argsToEncode []metadata.ArgRaw, args ...in
 		if err != nil {
 			return nil, errors.Wrapf(err, "get codec args %d", i)
 		}
-		fmt.Println("------------------------------- here")
-		fmt.Println("------------------------------- here")
+		fmt.Println("------------------------------- here", i)
+		fmt.Println("------------------------------- here", i)
 		fmt.Println(argsToEncode[i].Type)
-		fmt.Println("------------------------------- here")
-		fmt.Println("------------------------------- here")
+		fmt.Println("------------------------------- here", i)
+		fmt.Println("------------------------------- here", i)
 		fmt.Println(args[i])
 		//err = cdc.Encode(ctx, args[i])
 		//fmt.Println(args[i])
+
 		if err := cdc.Encode(ctx, args[i]); err != nil {
 			return nil, errors.Wrapf(err, "encode args %d", i)
 		}
+		fmt.Println("------------------------------ here2", i)
+		fmt.Println("------------------------------ here2", i)
+		fmt.Println("------------------------------ here2", i)
+		fmt.Println(args[i])
 	}
 
 	return bz.Bytes(), nil

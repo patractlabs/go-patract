@@ -29,7 +29,7 @@ var (
 	TestKeyringPairBob, _ = signature.KeyringPairFromSecret("//Bob", 42)
 	instantiateSalt       = []byte("ysncz3nbjjzoc7s07of3malp9d")
 
-	initName = types.NewHash(types.MustHexDecodeString("0x43a3d97a2bf7293835cdecdd25df56bb18c9d9c0e856246622a6c5164c2f2e0e"))
+	initName = types.NewHash(types.MustHexDecodeString("0x43a3d97a2bf7293835cdecdd25df56bb18c9d9c0e856246622a6c5164c2f2e0a"))
 )
 
 func initDNS(t *testing.T, logger log.Logger, env test.Env, authKey signature.KeyringPair) types.AccountID {

@@ -9,7 +9,7 @@ var (
 		types.MustHexDecodeString("0x95fbcfd248193474b11b56a8d61db8d2b1d67f5db9ababd5dfbf4836d56b2f03"))
 	// CodeHashERC20 hash for erc20.wasm
 	CodeHashERC20 = types.NewHash(
-		types.MustHexDecodeString("0x57f26a48169e57f118f6a0bca610a09b85cac7892f73c48f0c409cc8971817e7"))
+		types.MustHexDecodeString("0x2d8214d5a8b920fc351d2a186cd15e842f4bf4d35da8b210a46beaeabbea62bf"))
 	CodeHashFlipper = types.NewHash(
 		types.MustHexDecodeString("0x88af2390f1eb7c7adbf9bc726e454e94507995627e1e38d6df4d5071cc274849"))
 	CodeHashTraitFlipper = types.NewHash(

@@ -20,7 +20,6 @@ import (
 const (
 	erc20WasmPath = "../../test/contracts/ink/erc20.wasm"
 	erc20MetaPath = "../../test/contracts/ink/erc20.json"
-	//erc20MetaPath = "/mnt/c/Users/lizhaoyang/Desktop/metadata.json"
 )
 
 var (

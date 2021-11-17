@@ -19,8 +19,6 @@ import (
 const (
 	flipperWasmPath = "../../test/contracts/ink/trait-flipper.wasm"
 	flipperMetaPath = "../../test/contracts/ink/trait-flipper.json"
-	//flipperWasmPath = "/mnt/c/Users/lizhaoyang/Desktop/deploy_ink_file/trait-flipper/trait_flipper.wasm"
-	//flipperMetaPath = "/mnt/c/Users/lizhaoyang/Desktop/deploy_ink_file/trait-flipper/metadata.json"
 )
 
 var (
