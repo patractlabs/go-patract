@@ -2,8 +2,8 @@ package metadata_test
 
 import (
 	"bytes"
-	"fmt"
-	//"math/big"
+	"math/big"
+
 	"testing"
 
 	"github.com/centrifuge/go-substrate-rpc-client/v3/scale"
@@ -80,24 +80,13 @@ func TestCompositeEncodeDecode(t *testing.T) {
 	encoder := scale.NewEncoder(bz)
 	ctx := metadata.NewCtxForEncoder(typeDefs, encoder).WithLogger(logger)
 
-	//val := testCompos{
-	//	I1: types.NewU128(*big.NewInt(1000000000000000000)),
-	//	I2: types.NewU128(*big.NewInt(1000000000000)),
-	//	B1: types.NewBool(true),
-	//}
-	val1 := metadata.TypeIndex{
-		DisplayName: []string{"Hash"},
-		Type:        4,
+	val := testCompos{
+		I1: types.NewU128(*big.NewInt(1000000000000000000)),
+		I2: types.NewU128(*big.NewInt(1000000000000)),
+		B1: types.NewBool(true),
 	}
-	fmt.Println("----------------- 1")
-	err := typeDefs[2].Encode(ctx, val1)
-	fmt.Println("----------------- 2")
-	fmt.Println(err)
-	fmt.Println(val1)
-	fmt.Println(bz.Bytes())
-	fmt.Println(toData)
+	err := typeDefs[2].Encode(ctx, val)
 	assert.Nil(t, err)
-	//assert.Equal(t, string(bz.Bytes()), string(toData))
 
 	decoder := scale.NewDecoder(bytes.NewReader(toData))
 	ctx = metadata.NewCtxForDecoder(typeDefs, decoder).WithLogger(logger)
@@ -106,6 +95,4 @@ func TestCompositeEncodeDecode(t *testing.T) {
 
 	err = typeDefs[2].Decode(ctx, &res)
 	assert.Nil(t, err)
-	//assert.Equal(t, res, val)
-
 }

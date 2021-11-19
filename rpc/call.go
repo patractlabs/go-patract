@@ -3,8 +3,6 @@ package rpc
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
-
 	"github.com/centrifuge/go-substrate-rpc-client/v3/scale"
 	"github.com/patractlabs/go-patract/api"
 	"github.com/patractlabs/go-patract/metadata"
@@ -28,29 +26,15 @@ func (c *Contract) encodeDataFromArgs(argsToEncode []metadata.ArgRaw, args ...in
 	bz := bytes.NewBuffer(make([]byte, 0, 1024))
 	encoder := scale.NewEncoder(bz)
 	ctx := metadata.NewCtxForEncoder(c.metaData.Codecs, encoder).WithLogger(c.logger)
-	fmt.Println(args)
-	fmt.Println(len(args))
 	for i := 0; i < len(args); i++ {
 		cdc, err := c.metaData.GetCodecByTypeIdx(argsToEncode[i].Type)
 		if err != nil {
 			return nil, errors.Wrapf(err, "get codec args %d", i)
 		}
-		fmt.Println("------------------------------- here", i)
-		fmt.Println("------------------------------- here", i)
-		fmt.Println(argsToEncode[i].Type)
-		fmt.Println("------------------------------- here", i)
-		fmt.Println("------------------------------- here", i)
-		fmt.Println(args[i])
-		//err = cdc.Encode(ctx, args[i])
-		//fmt.Println(args[i])
 
 		if err := cdc.Encode(ctx, args[i]); err != nil {
 			return nil, errors.Wrapf(err, "encode args %d", i)
 		}
-		fmt.Println("------------------------------ here2", i)
-		fmt.Println("------------------------------ here2", i)
-		fmt.Println("------------------------------ here2", i)
-		fmt.Println(args[i])
 	}
 
 	return bz.Bytes(), nil
@@ -71,7 +55,7 @@ func encodeDataFromArgJSONs(
 	ctx := metadata.NewCtxForEncoder(metaData.Codecs, encoder).WithLogger(log.NewLogger())
 
 	for i := 0; i < len(args); i++ {
-		cdc, err := metaData.GetCodecByTypeIdx(argsToEncode[i].Type)
+		cdc, err := metaData.GetCodecByArgRaw(argsToEncode[i])
 		if err != nil {
 			return nil, errors.Wrapf(err, "get codec args %d", i)
 		}
@@ -90,6 +74,7 @@ func (c *Contract) GetMessageData(name []string, args ...interface{}) ([]byte, e
 
 func (c *Contract) getMessagesData(name []string, args ...interface{}) ([]byte, error) {
 	message, err := c.metaData.Raw.GetMessage(name)
+
 	if err != nil {
 		return nil, err
 	}
@@ -100,7 +85,6 @@ func (c *Contract) getMessagesData(name []string, args ...interface{}) ([]byte, 
 	if err != nil {
 		return nil, errors.Wrap(err, "write selector data")
 	}
-
 	bz, err := c.encodeDataFromArgs(message.Args, args...)
 	if err != nil {
 		return nil, errors.Wrap(err, "encode data")

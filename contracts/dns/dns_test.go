@@ -2,7 +2,6 @@ package dns_test
 
 import (
 	"context"
-	"fmt"
 	"io/ioutil"
 	"testing"
 
@@ -29,7 +28,8 @@ var (
 	TestKeyringPairBob, _ = signature.KeyringPairFromSecret("//Bob", 42)
 	instantiateSalt       = []byte("ysncz3nbjjzoc7s07of3malp9d")
 
-	initName = types.NewHash(types.MustHexDecodeString("0x43a3d97a2bf7293835cdecdd25df56bb18c9d9c0e856246622a6c5164c2f2e0a"))
+	initName = types.NewHash(types.MustHexDecodeString("0xdbb05a29d53db0a4f2e04969040922469b067cf424d20035426f81ca3d07034c"))
+	noneName = types.NewAccountID([]byte(nil))
 )
 
 func initDNS(t *testing.T, logger log.Logger, env test.Env, authKey signature.KeyringPair) types.AccountID {
@@ -42,9 +42,8 @@ func initDNS(t *testing.T, logger log.Logger, env test.Env, authKey signature.Ke
 	require.Nil(err)
 
 	metaBz, err := ioutil.ReadFile(dnsMetaPath)
-	fmt.Println("--------------------------------")
-	//fmt.Println(metaBz)
 	require.Nil(err)
+
 	cApi.WithMetaData(metaBz)
 
 	ctx := api.NewCtx(context.Background()).WithFrom(authKey)
@@ -59,7 +58,6 @@ func initDNS(t *testing.T, logger log.Logger, env test.Env, authKey signature.Ke
 		codeBytes,
 		instantiateSalt,
 		[]string{"new"},
-		//nil,
 	)
 	require.Nil(err)
 

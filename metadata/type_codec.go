@@ -75,7 +75,7 @@ func (c CodecContext) WithSS58Codec(ss58Codec *types.SS58Codec) CodecContext {
 
 // GetDefCodecByIndex get def codec by index
 func (c CodecContext) GetDefCodecByIndex(i int) DefCodec {
-	return c.typs[i-1]
+	return c.typs[i]
 }
 
 // GetSS58Codec get ss58 codec
@@ -120,7 +120,6 @@ func (d *defPrimitive) Encode(ctx CodecContext, value interface{}) error {
 	if tk != d.typ.Kind() {
 		return errors.Errorf("type not equal, expect %v, got %v", d.typ, tk)
 	}
-
 	return ctx.encoder.Encode(value)
 }
 

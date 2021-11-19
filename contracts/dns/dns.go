@@ -11,9 +11,9 @@ import (
 
 func (a *API) Register(ctx Context, name Hash) (Hash, error) {
 	nameParam := struct {
-		Value Hash
+		Name Hash
 	}{
-		Value: name,
+		Name: name,
 	}
 
 	return a.CallToExec(ctx,
@@ -33,9 +33,9 @@ func (a *API) SetAddress(ctx Context, name Hash, newAddress AccountID) (Hash, er
 	}
 
 	NewAddressParam := struct {
-		Address AccountID
+		NewAddress AccountID
 	}{
-		Address: newAddress,
+		NewAddress: newAddress,
 	}
 
 	return a.CallToExec(ctx,

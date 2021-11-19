@@ -21,13 +21,10 @@ type Data struct {
 // New create metadata from metadata.json
 func New(bz []byte) (*Data, error) {
 	res := &Data{}
-	//fmt.Println("1____________________________________________")
 
 	if err := json.Unmarshal(bz, &res.Raw); err != nil {
-		//fmt.Println(err)
 		return nil, errors.Wrap(err, "unmarshal json")
 	}
-	//fmt.Println("2____________________________________________")
 
 	res.Codecs = make([]DefCodec, 0, len(res.Raw.V1.Types))
 
@@ -35,20 +32,10 @@ func New(bz []byte) (*Data, error) {
 		res.Codecs = append(res.Codecs, NewTypeDef(&res.Raw.V1.Types[idx]))
 	}
 
-	// parse datas
-	//fmt.Println("3____________________________________________")
-	//fmt.Println("-____________________________________________")
-	//fmt.Println("-____________________________________________")
-	//fmt.Println("-____________________________________________")
-	//fmt.Println(string(types.HexDecodeString(res.Raw.V1.Spec.Constructors[0].Selector)))
-	//fmt.Println(len(res.Raw.V1.Spec.Constructors))
 	for i := 0; i < len(res.Raw.V1.Spec.Constructors); i++ {
 		selectorStr := res.Raw.V1.Spec.Constructors[i].Selector
 
 		bz, err := types.HexDecodeString(selectorStr)
-		//fmt.Println(bz)
-		//fmt.Println("------------------------------------------")
-		//fmt.Println("------------------------------------------")
 		if err != nil {
 			return nil, errors.Wrapf(err, "decode str selector from %s", selectorStr)
 		}
@@ -80,13 +67,20 @@ func NewFromFile(path string) (*Data, error) {
 	return New(bz)
 }
 
-func (d *Data) GetCodecByTypeIdx(i TypeIndex) (DefCodec, error) {
-	if len(d.Codecs) < i.Type {
+func (d *Data) GetCodecByArgRaw(i ArgRaw) (DefCodec, error) {
+	if len(d.Codecs) < i.Type.TypeIndex {
 		return nil, errors.Errorf("codec idx no found to %d, all len %d",
 			i.Type, len(d.Codecs))
 	}
+	return d.Codecs[i.Type.TypeIndex], nil
+}
 
-	return d.Codecs[i.Type], nil
+func (d *Data) GetCodecByTypeIdx(i TypeIndex) (DefCodec, error) {
+	if len(d.Codecs) < i.TypeIndex {
+		return nil, errors.Errorf("codec idx no found to %d, all len %d",
+			i.TypeIndex, len(d.Codecs))
+	}
+	return d.Codecs[i.TypeIndex], nil
 }
 
 // NewCtxForDecode new ctx for decoder

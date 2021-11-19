@@ -112,7 +112,3 @@ var (
 	NewExtrinsic = types.NewExtrinsic
 	NewCall      = types.NewCall
 )
-
-//type (
-//	VecU8 = types.ExampleVec
-//)

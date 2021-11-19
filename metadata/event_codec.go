@@ -37,13 +37,13 @@ func (e EventRaws) DecodeEvt(ctx CodecContext, target interface{}) error {
 			}
 
 			if tv == f.Name {
-				ctx.logger.Debug("decode evt", "name", f.Name, "i", i, "typ", f.Type.Type)
+				ctx.logger.Debug("decode evt", "name", f.Name, "i", i, "typ", f.Type.TypeIndex)
 
-				td := ctx.GetDefCodecByIndex(f.Type.Type)
+				td := ctx.GetDefCodecByIndex(f.Type.TypeIndex)
 				di := vt.Field(i).Addr().Interface()
 				if err := td.Decode(ctx, di); err != nil {
 					return errors.Wrapf(err,
-						"decode arg %d field %d with typ %d err", idx, i, f.Type.Type)
+						"decode arg %d field %d with typ %d err", idx, i, f.Type.TypeIndex)
 				}
 
 				ctx.logger.Debug("decode", "v", di)

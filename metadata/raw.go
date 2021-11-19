@@ -1,7 +1,6 @@
 package metadata
 
 import (
-	"fmt"
 	"github.com/patractlabs/go-patract/utils"
 	"github.com/pkg/errors"
 )
@@ -34,7 +33,7 @@ type Raw struct {
 // TypeIndex type index to def params type
 type TypeIndex struct {
 	DisplayName []string `json:"displayName"`
-	Type        int      `json:"type"`
+	TypeIndex   int      `json:"type"`
 }
 
 // EventRaw raw json data for event
@@ -77,12 +76,6 @@ type ConstructorRaw struct {
 
 // GetConstructor get constructor by name
 func (r *Raw) GetConstructor(name []string) (ConstructorRaw, error) {
-	fmt.Println("=====================================")
-	fmt.Println("=====================================")
-	fmt.Println("=====================================")
-	fmt.Println("=====================================")
-	//fmt.Println(r.V1)
-	//fmt.Println(r.V1.Spec.Constructors)
 	for _, c := range r.V1.Spec.Constructors {
 		if utils.IsNameEqual(c.Name, name) {
 			return c, nil

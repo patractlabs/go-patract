@@ -61,11 +61,6 @@ func NewTypeDef(raw *rawTypeDef) *TypeDef {
 }
 
 func (t *TypeDef) Encode(ctx CodecContext, v interface{}) error {
-	//fmt.Println("--------------------------------------- 1 here is the")
-	//fmt.Println("--------------------------------------- 1 here is the")
-	//fmt.Println("--------------------------------------- 1 here is the")
-	//fmt.Println("--------------------------------------- 1 here is the")
-	//fmt.Println()
 	return t.def.Encode(ctx, v)
 }
 

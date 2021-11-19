@@ -25,9 +25,11 @@ type VariantsFromJSON struct {
 type variantType struct {
 	Name   string `json:"name"`
 	Fields []struct {
-		Typ int `json:"type"`
+		TypeIndex int    `json:"type"`
+		TypeName  string `json:"typeName"`
 	}
-	Discriminant int `json:"discriminant"`
+	//Discriminant int `json:"discriminant"`
+	Index int `json:"index"`
 }
 
 type defVariant struct {
@@ -70,7 +72,7 @@ func (d *defVariant) IsOptional(v interface{}) (OptionValue, int, bool) {
 		len(d.Variants[1].Fields) == 1 {
 		ov, ok := v.(OptionValue)
 		if ok {
-			return ov, d.Variants[1].Fields[0].Typ, true
+			return ov, d.Variants[1].Fields[0].TypeIndex, true
 		}
 	}
 
@@ -122,10 +124,10 @@ func (d *defVariant) encodeFields(ctx CodecContext, index int, value interface{}
 		// now just one
 		field := fields.Fields[0]
 
-		codec := ctx.GetDefCodecByIndex(field.Typ)
+		codec := ctx.GetDefCodecByIndex(field.TypeIndex)
 		if err := codec.Encode(ctx, v); err != nil {
 			return errors.Wrapf(err, "encode fields %d with i: %d, t: %d",
-				index, 0, field.Typ)
+				index, 0, field.TypeIndex)
 		}
 	}
 
@@ -328,11 +330,11 @@ func (d *defVariant) decodeCommonStruct(ctx CodecContext, value interface{}) err
 			ctx.logger.Debug("target", "field", tv, "v", target.Field(i))
 
 			for _, f := range variant.Fields {
-				def := ctx.GetDefCodecByIndex(f.Typ)
+				def := ctx.GetDefCodecByIndex(f.TypeIndex)
 				fi := target.Field(i).Interface()
 
 				if err := def.Decode(ctx, fi); err != nil {
-					return errors.Wrapf(err, "decode composite field %d %d", f.Typ, i)
+					return errors.Wrapf(err, "decode composite field %d %d", f.TypeIndex, i)
 				}
 				break
 			}
