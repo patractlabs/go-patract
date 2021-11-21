@@ -7,14 +7,13 @@ import (
 )
 
 type EventConfirmation struct {
-	Transaction types.OptionAccountID `scale:"operator"`
+	Transaction TransactionId         `scale:"transaction"`
 	From        types.OptionAccountID `scale:"from"`
-	Status      types.OptionAccountID `scale:"to"`
-	Id          types.U32             `scale:"id"`
+	// TODO: status should
 }
 
 func (e EventConfirmation) String() string {
-	return fmt.Sprintf("transfer Single: %s - %s -> %s by %s", e.Operator, e.From, e.To, e.Id)
+	return fmt.Sprintf("event Confirmation: %s - %s", e.Transaction, e.From)
 }
 
 type ApprovalForAll struct {
