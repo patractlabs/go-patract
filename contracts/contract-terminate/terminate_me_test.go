@@ -28,7 +28,6 @@ func TestFlip(t *testing.T) {
 
 		contractAPI := contract_terminate.New(rpcAPI, contractAccountID)
 
-		// transfer alice to bob
 		ctx := rpc.NewCtx(context.Background()).WithFrom(signature.TestKeyringPairAlice)
 
 		_, err = contractAPI.TerminateMe(ctx)

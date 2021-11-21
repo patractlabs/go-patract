@@ -1,4 +1,4 @@
-package erc721_test
+package trait_erc20_test
 
 import (
 	"context"
@@ -18,8 +18,8 @@ import (
 )
 
 const (
-	erc20WasmPath = "../../test/contracts/ink/erc721.wasm"
-	erc20MetaPath = "../../test/contracts/ink/erc721.json"
+	erc20WasmPath = "../../test/contracts/ink/trait_erc20.wasm"
+	erc20MetaPath = "../../test/contracts/ink/trait_erc20.json"
 )
 
 var (
@@ -34,7 +34,7 @@ var (
 		big.NewInt(1000000000000000000))
 )
 
-func initERC721(t *testing.T, logger log.Logger, env test.Env, authKey signature.KeyringPair) types.AccountID {
+func initTraitERC20(t *testing.T, logger log.Logger, env test.Env, authKey signature.KeyringPair) types.AccountID {
 	require := require.New(t)
 
 	codeBytes, err := ioutil.ReadFile(erc20WasmPath)
@@ -55,7 +55,7 @@ func initERC721(t *testing.T, logger log.Logger, env test.Env, authKey signature
 	_, contractAccount, err := cApi.InstantiateWithCode(ctx, logger,
 		types.NewCompactBalance(endowment),
 		types.NewCompactGas(test.DefaultGas),
-		contracts.CodeHashERC721,
+		contracts.CodeHashTraitERC20,
 		codeBytes,
 		instantiateSalt,
 		[]string{"new"},
@@ -67,7 +67,7 @@ func initERC721(t *testing.T, logger log.Logger, env test.Env, authKey signature
 	var codeBz []byte
 	if err := cApi.Native().Cli.GetStorageLatest(&codeBz,
 		"Contracts", "PristineCode",
-		contracts.CodeHashERC721[:], nil); err != nil {
+		contracts.CodeHashTraitERC20[:], nil); err != nil {
 		require.Nil(err)
 	}
 

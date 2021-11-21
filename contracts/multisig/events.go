@@ -6,14 +6,14 @@ import (
 	"github.com/patractlabs/go-patract/types"
 )
 
-type TransferSingle struct {
-	Operator types.OptionAccountID `scale:"operator"`
-	From     types.OptionAccountID `scale:"from"`
-	To       types.OptionAccountID `scale:"to"`
-	Id       types.U32             `scale:"id"`
+type EventConfirmation struct {
+	Transaction types.OptionAccountID `scale:"operator"`
+	From        types.OptionAccountID `scale:"from"`
+	Status      types.OptionAccountID `scale:"to"`
+	Id          types.U32             `scale:"id"`
 }
 
-func (e TransferSingle) String() string {
+func (e EventConfirmation) String() string {
 	return fmt.Sprintf("transfer Single: %s - %s -> %s by %s", e.Operator, e.From, e.To, e.Id)
 }
 

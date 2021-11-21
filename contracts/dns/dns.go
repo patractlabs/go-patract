@@ -1,9 +1,5 @@
 package dns
 
-/**
-  合约转让
-*/
-
 import (
 	"github.com/patractlabs/go-patract/test"
 	"github.com/patractlabs/go-patract/types"

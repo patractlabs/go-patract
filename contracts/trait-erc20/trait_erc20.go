@@ -22,7 +22,7 @@ func (a *API) Approve(ctx Context, spender AccountID, value U128) (Hash, error) 
 		a.ContractAccountID,
 		types.NewCompactBalance(0),
 		types.NewCompactGas(test.DefaultGas),
-		[]string{"approve"},
+		[]string{"BaseErc20", "approve"},
 		spenderParam, valueParam,
 	)
 }
@@ -44,7 +44,7 @@ func (a *API) Transfer(ctx Context, to AccountID, amt U128) (Hash, error) {
 		a.ContractAccountID,
 		types.NewCompactBalance(0),
 		types.NewCompactGas(test.DefaultGas),
-		[]string{"transfer"},
+		[]string{"BaseErc20", "transfer"},
 		toParam, valueParam,
 	)
 }
@@ -72,7 +72,7 @@ func (a *API) TransferFrom(ctx Context, from, to AccountID, amt U128) (Hash, err
 		a.ContractAccountID,
 		types.NewCompactBalance(0),
 		types.NewCompactGas(test.DefaultGas),
-		[]string{"transfer_from"},
+		[]string{"BaseErc20", "transfer_from"},
 		fromParam, toParam, valueParam,
 	)
 }
@@ -95,7 +95,7 @@ func (a *API) Allowance(ctx Context, owner, spender AccountID) (U128, error) {
 	err := a.CallToRead(ctx,
 		&res,
 		a.ContractAccountID,
-		[]string{"approve"},
+		[]string{"BaseErc20", "approve"},
 		ownerParam, spenderParam,
 	)
 
@@ -114,7 +114,7 @@ func (a *API) BalanceOf(ctx Context, owner AccountID) (U128, error) {
 	err := a.CallToRead(ctx,
 		&res,
 		a.ContractAccountID,
-		[]string{"balance_of"},
+		[]string{"BaseErc20", "balance_of"},
 		req,
 	)
 
@@ -127,7 +127,7 @@ func (a *API) TotalSupply(ctx Context) (U128, error) {
 	err := a.CallToRead(ctx,
 		&res,
 		a.ContractAccountID,
-		[]string{"total_supply"},
+		[]string{"BaseErc20", "total_supply"},
 	)
 
 	return res, err

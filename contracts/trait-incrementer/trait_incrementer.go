@@ -16,7 +16,7 @@ func (a *API) IncBy(ctx Context, delta U64) (Hash, error) {
 		a.ContractAccountID,
 		types.NewCompactBalance(0),
 		types.NewCompactGas(test.DefaultGas),
-		[]string{"inc_by"},
+		[]string{"Increment", "inc_by"},
 		byParam,
 	)
 }
@@ -26,7 +26,7 @@ func (a *API) Inc(ctx Context) (Hash, error) {
 		a.ContractAccountID,
 		types.NewCompactBalance(0),
 		types.NewCompactGas(test.DefaultGas),
-		[]string{"inc"},
+		[]string{"Increment", "inc"},
 	)
 }
 
@@ -35,7 +35,7 @@ func (a *API) Reset(ctx Context) (Hash, error) {
 		a.ContractAccountID,
 		types.NewCompactBalance(0),
 		types.NewCompactGas(test.DefaultGas),
-		[]string{"reset"},
+		[]string{"Increment", "reset"},
 	)
 }
 
@@ -45,7 +45,7 @@ func (a *API) Get(ctx Context) (U64, error) {
 	err := a.CallToRead(ctx,
 		&res,
 		a.ContractAccountID,
-		[]string{"get"},
+		[]string{"Increment", "get"},
 	)
 	return res, err
 }

@@ -1,0 +1,133 @@
+{
+  "source": {
+    "hash": "0x5ce5992896f5ba4cb10babde6e557e7842fbe2aaeb3c2d7a3a7ac83786a55d30",
+    "language": "ink! 3.0.0-rc6",
+    "compiler": "rustc 1.58.0-nightly"
+  },
+  "contract": {
+    "name": "trait-incrementer",
+    "version": "3.0.0-rc6",
+    "authors": [
+      "Parity Technologies <admin@parity.io>"
+    ]
+  },
+  "V1": {
+    "spec": {
+      "constructors": [
+        {
+          "args": [
+            {
+              "name": "init_value",
+              "type": {
+                "displayName": [
+                  "u64"
+                ],
+                "type": 0
+              }
+            }
+          ],
+          "docs": [
+            "Creates a new incrementer smart contract initialized with zero."
+          ],
+          "name": [
+            "new"
+          ],
+          "selector": "0x9bae9d5e"
+        }
+      ],
+      "docs": [],
+      "events": [],
+      "messages": [
+        {
+          "args": [
+            {
+              "name": "delta",
+              "type": {
+                "displayName": [
+                  "u64"
+                ],
+                "type": 0
+              }
+            }
+          ],
+          "docs": [
+            " Increases the value of the incrementer by an amount."
+          ],
+          "mutates": true,
+          "name": [
+            "inc_by"
+          ],
+          "payable": false,
+          "returnType": null,
+          "selector": "0xfe5bd8ea"
+        },
+        {
+          "args": [],
+          "docs": [],
+          "mutates": true,
+          "name": [
+            "Increment",
+            "inc"
+          ],
+          "payable": false,
+          "returnType": null,
+          "selector": "0xa599f3cf"
+        },
+        {
+          "args": [],
+          "docs": [],
+          "mutates": false,
+          "name": [
+            "Increment",
+            "get"
+          ],
+          "payable": false,
+          "returnType": {
+            "displayName": [
+              "u64"
+            ],
+            "type": 0
+          },
+          "selector": "0x66a84ab0"
+        },
+        {
+          "args": [],
+          "docs": [],
+          "mutates": true,
+          "name": [
+            "Reset",
+            "reset"
+          ],
+          "payable": false,
+          "returnType": null,
+          "selector": "0x6e2d5a76"
+        }
+      ]
+    },
+    "storage": {
+      "struct": {
+        "fields": [
+          {
+            "layout": {
+              "cell": {
+                "key": "0x0000000000000000000000000000000000000000000000000000000000000000",
+                "ty": 0
+              }
+            },
+            "name": "value"
+          }
+        ]
+      }
+    },
+    "types": [
+      {
+        "id": 0,
+        "type": {
+          "def": {
+            "primitive": "u64"
+          }
+        }
+      }
+    ]
+  }
+}
