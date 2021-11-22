@@ -16,14 +16,14 @@ type (
 	U64       = types.U64
 )
 
-// API for erc20
+// API for trait-incrementer
 type API struct {
 	*rpc.Contract
 
 	ContractAccountID types.AccountID
 }
 
-// New creates a new API for erc20
+// New creates a new API for trait-incrementer
 func New(a *rpc.Contract, contractAccountID AccountID) *API {
 	return &API{
 		Contract:          a,

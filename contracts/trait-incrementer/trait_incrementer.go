@@ -6,18 +6,12 @@ import (
 )
 
 func (a *API) IncBy(ctx Context, delta U64) (Hash, error) {
-	byParam := struct {
-		Value U64
-	}{
-		Value: delta,
-	}
-
 	return a.CallToExec(ctx,
 		a.ContractAccountID,
 		types.NewCompactBalance(0),
 		types.NewCompactGas(test.DefaultGas),
-		[]string{"Increment", "inc_by"},
-		byParam,
+		[]string{"inc_by"},
+		delta,
 	)
 }
 
@@ -35,7 +29,7 @@ func (a *API) Reset(ctx Context) (Hash, error) {
 		a.ContractAccountID,
 		types.NewCompactBalance(0),
 		types.NewCompactGas(test.DefaultGas),
-		[]string{"Increment", "reset"},
+		[]string{"Reset", "reset"},
 	)
 }
 

@@ -14,9 +14,12 @@ var (
 		types.MustHexDecodeString("0xe403d76a74a8a434e74087f6c773d3e9e54702b1585e2a281cab41b5e02a66fb"))
 	CodeHashFlipper = types.NewHash(
 		types.MustHexDecodeString("0x88af2390f1eb7c7adbf9bc726e454e94507995627e1e38d6df4d5071cc274849"))
+	CodeHashIncrementer = types.NewHash(
+		types.MustHexDecodeString("0xc9ecf4f718b10d3b6e4a1ba244fe3fbca3fc084baff276e925c111c78d57bf47"))
 	CodeHashTraitFlipper = types.NewHash(
 		types.MustHexDecodeString("0x4a13efbd917a28bceb3c47498b20072abed35bcf9131d5a2910847f4940c1e86"))
-
+	CodeHashTraitIncrementer = types.NewHash(
+		types.MustHexDecodeString("0x5ce5992896f5ba4cb10babde6e557e7842fbe2aaeb3c2d7a3a7ac83786a55d30"))
 	CodeHashTraitERC20 = types.NewHash(
 		types.MustHexDecodeString("0x66f7b38626227ec7c880740904ae741d3a2dc09a5103f9913a75cbe2e2e02b9f"))
 )

@@ -6,18 +6,12 @@ import (
 )
 
 func (a *API) Inc(ctx Context, by I32) (Hash, error) {
-	byParam := struct {
-		Value I32
-	}{
-		Value: by,
-	}
-
 	return a.CallToExec(ctx,
 		a.ContractAccountID,
 		types.NewCompactBalance(0),
 		types.NewCompactGas(test.DefaultGas),
 		[]string{"inc"},
-		byParam,
+		by,
 	)
 }
 

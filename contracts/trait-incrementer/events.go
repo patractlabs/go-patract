@@ -14,7 +14,7 @@ type TransferSingle struct {
 }
 
 func (e TransferSingle) String() string {
-	return fmt.Sprintf("transfer Single: %s - %s -> %s by %s", e.Operator, e.From, e.To, e.Id)
+	return fmt.Sprintf("transfer Single: %s - %s -> %s by %v", e.Operator, e.From, e.To, e.Id)
 }
 
 type ApprovalForAll struct {
@@ -24,7 +24,7 @@ type ApprovalForAll struct {
 }
 
 func (e ApprovalForAll) String() string {
-	return fmt.Sprintf("approval For All: %s -> %s by %s",
+	return fmt.Sprintf("approval For All: %s -> %s by %v",
 		types.NewOptionAccountID(e.Owner), types.NewOptionAccountID(e.Operator), e.approved)
 }
 

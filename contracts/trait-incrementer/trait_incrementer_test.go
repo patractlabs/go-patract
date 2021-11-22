@@ -1,4 +1,4 @@
-package incrementer_test
+package trait_incrementer_test
 
 import (
 	"context"
@@ -17,8 +17,8 @@ import (
 )
 
 const (
-	incrementerWasmPath = "../../test/contracts/ink/incrementer.wasm"
-	incrementerMetaPath = "../../test/contracts/ink/incrementer.json"
+	traitIncrementerWasmPath = "../../test/contracts/ink/trait_incrementer.wasm"
+	traitIncrementerMetaPath = "../../test/contracts/ink/trait_incrementer.json"
 )
 
 var (
@@ -28,21 +28,21 @@ var (
 
 	instantiateSalt = []byte("ysncz3nbjjzoc7s07of3malp9d")
 
-	initValue   = types.NewI32(10)
-	addValue    = types.NewI32(5)
+	initValue   = types.NewU64(10)
+	addValue    = types.NewU64(5)
 	targetValue = initValue + addValue
 )
 
-func initIncrementer(t *testing.T, logger log.Logger, env test.Env, authKey signature.KeyringPair) types.AccountID {
+func initTraitIncrementer(t *testing.T, logger log.Logger, env test.Env, authKey signature.KeyringPair) types.AccountID {
 	require := require.New(t)
 
-	codeBytes, err := ioutil.ReadFile(incrementerWasmPath)
+	codeBytes, err := ioutil.ReadFile(traitIncrementerWasmPath)
 	require.Nil(err)
 
 	cApi, err := rpc.NewContractAPI(env.URL())
 	require.Nil(err)
 
-	metaBz, err := ioutil.ReadFile(incrementerMetaPath)
+	metaBz, err := ioutil.ReadFile(traitIncrementerMetaPath)
 	require.Nil(err)
 	cApi.WithMetaData(metaBz)
 
@@ -54,7 +54,7 @@ func initIncrementer(t *testing.T, logger log.Logger, env test.Env, authKey sign
 	_, contractAccount, err := cApi.InstantiateWithCode(ctx, logger,
 		types.NewCompactBalance(endowment),
 		types.NewCompactGas(test.DefaultGas),
-		contracts.CodeHashIncrementer,
+		contracts.CodeHashTraitIncrementer,
 		codeBytes,
 		instantiateSalt,
 		[]string{"new"},
@@ -66,7 +66,7 @@ func initIncrementer(t *testing.T, logger log.Logger, env test.Env, authKey sign
 	var codeBz []byte
 	if err := cApi.Native().Cli.GetStorageLatest(&codeBz,
 		"Contracts", "PristineCode",
-		contracts.CodeHashIncrementer[:], nil); err != nil {
+		contracts.CodeHashTraitIncrementer[:], nil); err != nil {
 		require.Nil(err)
 	}
 
