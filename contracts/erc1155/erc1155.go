@@ -6,40 +6,22 @@ import (
 )
 
 func (a *API) Create(ctx Context, value Balance) (Hash, error) {
-	valueParam := struct {
-		Value Balance
-	}{
-		Value: value,
-	}
-
 	return a.CallToExec(ctx,
 		a.ContractAccountID,
 		types.NewCompactBalance(0),
 		types.NewCompactGas(test.DefaultGas),
 		[]string{"create"},
-		valueParam,
+		value,
 	)
 }
 
 func (a *API) Mint(ctx Context, tokenId TokenId, value Balance) (Hash, error) {
-	tokenIdParam := struct {
-		Id TokenId
-	}{
-		Id: tokenId,
-	}
-
-	valueParam := struct {
-		value Balance
-	}{
-		value: value,
-	}
-
 	return a.CallToExec(ctx,
 		a.ContractAccountID,
 		types.NewCompactBalance(0),
 		types.NewCompactGas(test.DefaultGas),
 		[]string{"mint"},
-		tokenIdParam, valueParam,
+		tokenId, value,
 	)
 }
 
@@ -56,18 +38,6 @@ func (a *API) SafeTransferFrom(ctx Context, from AccountID, to AccountID, tokenI
 		Address: to,
 	}
 
-	tokenIdParam := struct {
-		Id TokenId
-	}{
-		Id: tokenId,
-	}
-
-	valueParam := struct {
-		value Balance
-	}{
-		value: value,
-	}
-
 	dataParam := struct {
 		data VecU8
 	}{
@@ -78,8 +48,8 @@ func (a *API) SafeTransferFrom(ctx Context, from AccountID, to AccountID, tokenI
 		a.ContractAccountID,
 		types.NewCompactBalance(0),
 		types.NewCompactGas(test.DefaultGas),
-		[]string{"safe_transfer_from"},
-		fromParam, toParam, tokenIdParam, valueParam, dataParam,
+		[]string{"Erc1155", "safe_transfer_from"},
+		fromParam, toParam, tokenId, value, dataParam,
 	)
 }
 
@@ -118,7 +88,7 @@ func (a *API) SafeBatchTransferFrom(ctx Context, from AccountID, to AccountID, t
 		a.ContractAccountID,
 		types.NewCompactBalance(0),
 		types.NewCompactGas(test.DefaultGas),
-		[]string{"safe_batch_transfer_from"},
+		[]string{"Erc1155", "safe_batch_transfer_from"},
 		fromParam, toParam, tokenIdsParam, valuesParam, dataParam,
 	)
 }
@@ -130,19 +100,13 @@ func (a *API) BalanceOf(ctx Context, owner AccountID, tokenId TokenId) (Balance,
 		Address: owner,
 	}
 
-	tokenIdParam := struct {
-		Id TokenId
-	}{
-		Id: tokenId,
-	}
-
 	var res Balance
 
 	err := a.CallToRead(ctx,
 		&res,
 		a.ContractAccountID,
-		[]string{"balance_of"},
-		ownerParam, tokenIdParam,
+		[]string{"Erc1155", "balance_of"},
+		ownerParam, tokenId,
 	)
 
 	return res, err
@@ -166,7 +130,7 @@ func (a *API) BalanceOfBatch(ctx Context, owners VecAccountID, tokenIds VecToken
 	err := a.CallToRead(ctx,
 		&res,
 		a.ContractAccountID,
-		[]string{"balance_of_batch"},
+		[]string{"Erc1155", "balance_of_batch"},
 		ownersParam, tokenIdsParam,
 	)
 
@@ -180,18 +144,12 @@ func (a *API) SetApprovalForAll(ctx Context, operator AccountID, approved Bool) 
 		Address: operator,
 	}
 
-	approvedParam := struct {
-		Address Bool
-	}{
-		Address: approved,
-	}
-
 	return a.CallToExec(ctx,
 		a.ContractAccountID,
 		types.NewCompactBalance(0),
 		types.NewCompactGas(test.DefaultGas),
-		[]string{"set_approval_for_all"},
-		operatorParam, approvedParam,
+		[]string{"Erc1155", "set_approval_for_all"},
+		operatorParam, approved,
 	)
 }
 
@@ -213,7 +171,7 @@ func (a *API) IsApprovedForAll(ctx Context, owner, operator AccountID) (Bool, er
 	err := a.CallToRead(ctx,
 		&res,
 		a.ContractAccountID,
-		[]string{"is_approved_for_all"},
+		[]string{"Erc1155", "is_approved_for_all"},
 		ownerParam, operatorParam,
 	)
 
@@ -233,18 +191,6 @@ func (a *API) OnReceived(ctx Context, _operator, _from AccountID, _token_id Toke
 		Address: _from,
 	}
 
-	tokenIdParam := struct {
-		Id TokenId
-	}{
-		Id: _token_id,
-	}
-
-	valueParam := struct {
-		Value Balance
-	}{
-		Value: _value,
-	}
-
 	dataParam := struct {
 		Data VecU8
 	}{
@@ -255,8 +201,8 @@ func (a *API) OnReceived(ctx Context, _operator, _from AccountID, _token_id Toke
 		a.ContractAccountID,
 		types.NewCompactBalance(0),
 		types.NewCompactGas(test.DefaultGas),
-		[]string{"on_received"},
-		operatorParam, fromParam, tokenIdParam, valueParam, dataParam,
+		[]string{"Erc1155TokenReceiver", "on_received"},
+		operatorParam, fromParam, _token_id, _value, dataParam,
 	)
 }
 
@@ -295,7 +241,7 @@ func (a *API) OnBatchReceived(ctx Context, _operator, _from AccountID, _token_id
 		a.ContractAccountID,
 		types.NewCompactBalance(0),
 		types.NewCompactGas(test.DefaultGas),
-		[]string{"on_batch_received"},
+		[]string{"Erc1155TokenReceiver", "on_batch_received"},
 		operatorParam, fromParam, tokenIdsParam, valuesParam, dataParam,
 	)
 }

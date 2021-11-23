@@ -11,26 +11,20 @@ type (
 )
 
 type (
-	AccountID    = types.AccountID
-	Balance      = types.Balance
-	TokenId      = types.U128
-	Hash         = types.Hash
-	U32          = types.U32
-	VecU8        = []types.U8
-	VecTokenId   = []types.U128
-	VecBalance   = []types.Balance
-	VecAccountID = []types.AccountID
-	Bool         = types.Bool
+	AccountID = types.AccountID
+	Balance   = types.Balance
+	Hash      = types.Hash
+	VecU8     = []types.U8
 )
 
-// API for erc20
+// API for rand-extension
 type API struct {
 	*rpc.Contract
 
 	ContractAccountID types.AccountID
 }
 
-// New creates a new API for erc20
+// New creates a new API for rand-extension
 func New(a *rpc.Contract, contractAccountID AccountID) *API {
 	return &API{
 		Contract:          a,

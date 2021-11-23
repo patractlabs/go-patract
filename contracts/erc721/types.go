@@ -12,9 +12,9 @@ type (
 
 type (
 	AccountID = types.AccountID
-	U128      = types.U128
 	Hash      = types.Hash
-	U32       = types.U32
+	TokenId   = types.U32
+	Bool      = types.Bool
 )
 
 // API for erc20

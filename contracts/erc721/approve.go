@@ -5,17 +5,11 @@ import (
 	"github.com/patractlabs/go-patract/types"
 )
 
-func (a *API) Approve(ctx Context, spender AccountID, id U32) (Hash, error) {
+func (a *API) Approve(ctx Context, spender AccountID, id TokenId) (Hash, error) {
 	spenderParam := struct {
 		Address AccountID
 	}{
 		Address: spender,
-	}
-
-	idParam := struct {
-		Id U32
-	}{
-		Id: id,
 	}
 
 	return a.CallToExec(ctx,
@@ -23,29 +17,23 @@ func (a *API) Approve(ctx Context, spender AccountID, id U32) (Hash, error) {
 		types.NewCompactBalance(0),
 		types.NewCompactGas(test.DefaultGas),
 		[]string{"approve"},
-		spenderParam, idParam,
+		spenderParam, id,
 	)
 }
 
-func (a *API) GetApproved(ctx Context, id U32) (types.OptionAccountID, error) {
-	idParam := struct {
-		Id U32
-	}{
-		Id: id,
-	}
-
+func (a *API) GetApproved(ctx Context, id TokenId) (types.OptionAccountID, error) {
 	var res types.OptionAccountID
 
 	err := a.CallToRead(ctx,
 		&res,
 		a.ContractAccountID,
 		[]string{"get_approved"},
-		idParam,
+		id,
 	)
 	return res, err
 }
 
-func (a *API) IsApprovedForAll(ctx Context, owner, operator AccountID) (bool, error) {
+func (a *API) IsApprovedForAll(ctx Context, owner, operator AccountID) (Bool, error) {
 	ownerParam := struct {
 		Address AccountID
 	}{
@@ -58,7 +46,7 @@ func (a *API) IsApprovedForAll(ctx Context, owner, operator AccountID) (bool, er
 		Address: operator,
 	}
 
-	var res bool
+	var res Bool
 
 	err := a.CallToRead(ctx,
 		&res,
@@ -70,17 +58,11 @@ func (a *API) IsApprovedForAll(ctx Context, owner, operator AccountID) (bool, er
 	return res, err
 }
 
-func (a *API) SetApprovalForAll(ctx Context, to AccountID, approved bool) (Hash, error) {
+func (a *API) SetApprovalForAll(ctx Context, to AccountID, approved Bool) (Hash, error) {
 	toParam := struct {
 		Address AccountID
 	}{
 		Address: to,
-	}
-
-	approvedParam := struct {
-		Approved bool
-	}{
-		Approved: approved,
 	}
 
 	return a.CallToExec(ctx,
@@ -88,6 +70,6 @@ func (a *API) SetApprovalForAll(ctx Context, to AccountID, approved bool) (Hash,
 		types.NewCompactBalance(0),
 		types.NewCompactGas(test.DefaultGas),
 		[]string{"set_approval_for_all"},
-		toParam, approvedParam,
+		toParam, approved,
 	)
 }

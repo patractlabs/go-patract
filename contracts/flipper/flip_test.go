@@ -28,7 +28,6 @@ func TestFlip(t *testing.T) {
 
 		flipAPI := flipper.New(rpcAPI, contractAccountID)
 
-		// transfer alice to bob
 		ctx := rpc.NewCtx(context.Background()).WithFrom(signature.TestKeyringPairAlice)
 
 		resGet, err := flipAPI.Get(ctx)

@@ -15,14 +15,14 @@ type (
 	Hash      = types.Hash
 )
 
-// API for erc20
+// API for contract-terminate
 type API struct {
 	*rpc.Contract
 
 	ContractAccountID types.AccountID
 }
 
-// New creates a new API for erc20
+// New creates a new API for contract-terminate
 func New(a *rpc.Contract, contractAccountID AccountID) *API {
 	return &API{
 		Contract:          a,

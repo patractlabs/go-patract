@@ -3,7 +3,6 @@ package erc721_test
 import (
 	"context"
 	"io/ioutil"
-	"math/big"
 	"testing"
 
 	"github.com/centrifuge/go-substrate-rpc-client/v3/signature"
@@ -18,32 +17,31 @@ import (
 )
 
 const (
-	erc20WasmPath = "../../test/contracts/ink/erc721.wasm"
-	erc20MetaPath = "../../test/contracts/ink/erc721.json"
+	erc721WasmPath = "../../test/contracts/ink/erc721.wasm"
+	erc721MetaPath = "../../test/contracts/ink/erc721.json"
 )
 
 var (
 	bob     = utils.MustAccountIDFromSS58("5FHneW46xGXgs5mUiveU4sbTyGBzmstUspZC92UhjJM694ty")
 	charlie = utils.MustAccountIDFromSS58("5FLSigC9HGRKVhB9FiEo4Y3koPsNmBmLJbpXg2mp1hXcS59Y")
-	dave    = utils.MustAccountIDFromSS58("5DAAnrj7VHTznn2AWBemMuyBwZWs6FNFjdyVXUeYum3PTXFy")
+
+	TestKeyringPairBob, _ = signature.KeyringPairFromSecret("//Bob", 42)
 
 	instantiateSalt = []byte("ysncz3nbjjzoc7s07of3malp9d")
 
-	totalSupply = *big.NewInt(0).Mul(
-		big.NewInt(1000000000000000000),
-		big.NewInt(1000000000000000000))
+	tokenId = types.NewU32(0)
 )
 
 func initERC721(t *testing.T, logger log.Logger, env test.Env, authKey signature.KeyringPair) types.AccountID {
 	require := require.New(t)
 
-	codeBytes, err := ioutil.ReadFile(erc20WasmPath)
+	codeBytes, err := ioutil.ReadFile(erc721WasmPath)
 	require.Nil(err)
 
 	cApi, err := rpc.NewContractAPI(env.URL())
 	require.Nil(err)
 
-	metaBz, err := ioutil.ReadFile(erc20MetaPath)
+	metaBz, err := ioutil.ReadFile(erc721MetaPath)
 	require.Nil(err)
 	cApi.WithMetaData(metaBz)
 
@@ -59,7 +57,6 @@ func initERC721(t *testing.T, logger log.Logger, env test.Env, authKey signature
 		codeBytes,
 		instantiateSalt,
 		[]string{"new"},
-		types.NewU128(totalSupply),
 	)
 	require.Nil(err)
 

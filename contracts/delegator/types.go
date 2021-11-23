@@ -23,14 +23,14 @@ type (
 	Bool         = types.Bool
 )
 
-// API for erc20
+// API for delegator
 type API struct {
 	*rpc.Contract
 
 	ContractAccountID types.AccountID
 }
 
-// New creates a new API for erc20
+// New creates a new API for delegator
 func New(a *rpc.Contract, contractAccountID AccountID) *API {
 	return &API{
 		Contract:          a,

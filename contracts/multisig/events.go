@@ -19,7 +19,7 @@ func (e EventConfirmation) String() string {
 type ApprovalForAll struct {
 	Owner    types.AccountID `scale:"owner"`
 	Operator types.AccountID `scale:"operator"`
-	approved types.Bool      `scale:"approved"` // TODO: did not have #[ink(topic)]
+	approved types.Bool      `scale:"approved"`
 }
 
 func (e ApprovalForAll) String() string {
@@ -28,7 +28,7 @@ func (e ApprovalForAll) String() string {
 }
 
 type Uri struct {
-	value   string     `scale:"value"` // TODO: did not have #[ink(topic)]
+	value   string     `scale:"value"`
 	TokenId types.U128 `scale:"token_id"`
 }
 

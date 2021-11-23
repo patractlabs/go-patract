@@ -11,26 +11,19 @@ type (
 )
 
 type (
-	AccountID    = types.AccountID
-	Balance      = types.Balance
-	TokenId      = types.U128
-	Hash         = types.Hash
-	U32          = types.U32
-	VecU8        = []types.U8
-	VecTokenId   = []types.U128
-	VecBalance   = []types.Balance
-	VecAccountID = []types.AccountID
-	Bool         = types.Bool
+	AccountID = types.AccountID
+	Hash      = types.Hash
+	Bool      = types.Bool
 )
 
-// API for erc20
+// API for trait-flipper
 type API struct {
 	*rpc.Contract
 
 	ContractAccountID types.AccountID
 }
 
-// New creates a new API for erc20
+// New creates a new API for trait-flipper
 func New(a *rpc.Contract, contractAccountID AccountID) *API {
 	return &API{
 		Contract:          a,

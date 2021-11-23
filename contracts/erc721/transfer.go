@@ -6,17 +6,11 @@ import (
 )
 
 // Transfer
-func (a *API) Transfer(ctx Context, destination AccountID, id U32) (Hash, error) {
+func (a *API) Transfer(ctx Context, destination AccountID, id TokenId) (Hash, error) {
 	destinationParam := struct {
 		Address AccountID
 	}{
 		Address: destination,
-	}
-
-	idParam := struct {
-		Id U32
-	}{
-		Id: id,
 	}
 
 	return a.CallToExec(ctx,
@@ -24,12 +18,12 @@ func (a *API) Transfer(ctx Context, destination AccountID, id U32) (Hash, error)
 		types.NewCompactBalance(0),
 		types.NewCompactGas(test.DefaultGas),
 		[]string{"transfer"},
-		destinationParam, idParam,
+		destinationParam, id,
 	)
 }
 
 // TransferFrom
-func (a *API) TransferFrom(ctx Context, from, to AccountID, amt U128) (Hash, error) {
+func (a *API) TransferFrom(ctx Context, from, to AccountID, id TokenId) (Hash, error) {
 	fromParam := struct {
 		Address AccountID
 	}{
@@ -42,49 +36,31 @@ func (a *API) TransferFrom(ctx Context, from, to AccountID, amt U128) (Hash, err
 		Address: to,
 	}
 
-	valueParam := struct {
-		Value U128
-	}{
-		Value: amt,
-	}
-
 	return a.CallToExec(ctx,
 		a.ContractAccountID,
 		types.NewCompactBalance(0),
 		types.NewCompactGas(test.DefaultGas),
 		[]string{"transfer_from"},
-		fromParam, toParam, valueParam,
+		fromParam, toParam, id,
 	)
 }
 
-func (a *API) Mint(ctx Context, id U32) (Hash, error) {
-	idParam := struct {
-		Id U32
-	}{
-		Id: id,
-	}
-
+func (a *API) Mint(ctx Context, id TokenId) (Hash, error) {
 	return a.CallToExec(ctx,
 		a.ContractAccountID,
 		types.NewCompactBalance(0),
 		types.NewCompactGas(test.DefaultGas),
 		[]string{"mint"},
-		idParam,
+		id,
 	)
 }
 
-func (a *API) Burn(ctx Context, id U32) (Hash, error) {
-	idParam := struct {
-		Id U32
-	}{
-		Id: id,
-	}
-
+func (a *API) Burn(ctx Context, id TokenId) (Hash, error) {
 	return a.CallToExec(ctx,
 		a.ContractAccountID,
 		types.NewCompactBalance(0),
 		types.NewCompactGas(test.DefaultGas),
 		[]string{"burn"},
-		idParam,
+		id,
 	)
 }

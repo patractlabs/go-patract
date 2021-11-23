@@ -1,9 +1,5 @@
 package contract_transfer
 
-/**
-合约转让
-*/
-
 import (
 	"github.com/patractlabs/go-patract/test"
 	"github.com/patractlabs/go-patract/types"
@@ -26,13 +22,12 @@ func (a *API) GiveMe(ctx Context, value Balance) (Hash, error) {
 	)
 }
 
-//
-//func (a *API) WasItTen(ctx Context) {
-//	var res interface{}
-//
-//	a.CallToRead(ctx,
-//		&res,
-//		a.ContractAccountID,
-//		[]string{"was_it_ten"},
-//	)
-//}
+func (a *API) WasItTen(ctx Context) {
+	var res interface{}
+
+	a.CallToRead(ctx,
+		&res,
+		a.ContractAccountID,
+		[]string{"was_it_ten"},
+	)
+}

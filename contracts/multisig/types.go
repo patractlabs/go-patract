@@ -16,14 +16,14 @@ type (
 	TransactionId = types.U32
 )
 
-// API for erc20
+// API for multisig
 type API struct {
 	*rpc.Contract
 
 	ContractAccountID types.AccountID
 }
 
-// New creates a new API for erc20
+// New creates a new API for multisig
 func New(a *rpc.Contract, contractAccountID AccountID) *API {
 	return &API{
 		Contract:          a,

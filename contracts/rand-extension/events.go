@@ -1,9 +1,11 @@
 package rand_extension
 
-//type RandomUpdated struct {
-//	New types.U8 `scale:"operator"`
-//}
-//
-//func (e RandomUpdated) String() string {
-//	return fmt.Sprintf("random Updated: %s - %s -> %s by %s", e.Operator, e.From, e.To, e.Id)
-//}
+import "fmt"
+
+type EventRandomUpdated struct {
+	New VecU8 `scale:"operator"`
+}
+
+func (e EventRandomUpdated) String() string {
+	return fmt.Sprintf("event RandomUpdated: %v", e.New)
+}

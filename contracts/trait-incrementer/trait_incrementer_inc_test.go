@@ -9,6 +9,7 @@ import (
 	"github.com/patractlabs/go-patract/contracts/trait-incrementer"
 	"github.com/patractlabs/go-patract/rpc"
 	"github.com/patractlabs/go-patract/test"
+	"github.com/patractlabs/go-patract/types"
 	"github.com/patractlabs/go-patract/utils/log"
 	"github.com/stretchr/testify/require"
 )
@@ -33,8 +34,22 @@ func TestIncrementerInc(t *testing.T) {
 		_, err = traitIncrementerAPI.IncBy(ctx, addValue)
 		require.Nil(err)
 
-		value, err := traitIncrementerAPI.Get(ctx)
+		incByValue, err := traitIncrementerAPI.Get(ctx)
 		require.Nil(err)
-		require.Equalf(value, targetValue, "The value after Inc must be targetValue.")
+		require.Equalf(incByValue, targetValue, "The value after IncBy must be targetValue.")
+
+		_, err = traitIncrementerAPI.Inc(ctx)
+		require.Nil(err)
+
+		incValue, err := traitIncrementerAPI.Get(ctx)
+		require.Nil(err)
+		require.Equalf(incValue, targetValue+types.NewU64(1), "The value after Inc must be targetValue+1.")
+
+		_, err = traitIncrementerAPI.Reset(ctx)
+		require.Nil(err)
+
+		resetValue, err := traitIncrementerAPI.Get(ctx)
+		require.Nil(err)
+		require.Equalf(resetValue, types.NewU64(0), "The value after Reset must be 0.")
 	})
 }
