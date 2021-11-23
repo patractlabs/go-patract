@@ -11,16 +11,10 @@ type (
 )
 
 type (
-	AccountID    = types.AccountID
-	Balance      = types.Balance
-	TokenId      = types.U128
-	Hash         = types.Hash
-	U32          = types.U32
-	VecU8        = []types.U8
-	VecTokenId   = []types.U128
-	VecBalance   = []types.Balance
-	VecAccountID = []types.AccountID
-	Bool         = types.Bool
+	AccountID = types.AccountID
+
+	Hash = types.Hash
+	I32  = types.I32
 )
 
 // API for delegator
