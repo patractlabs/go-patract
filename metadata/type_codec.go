@@ -296,7 +296,6 @@ func (d *defArray) Encode(ctx CodecContext, value interface{}) error {
 	if tk != reflect.Array && tk != reflect.Slice {
 		return errors.Errorf("def array need value is array type by %v %v", tk, value)
 	}
-
 	defCodec := ctx.GetDefCodecByIndex(d.TypeIndex)
 
 	l := t.Len()
@@ -304,7 +303,7 @@ func (d *defArray) Encode(ctx CodecContext, value interface{}) error {
 		return errors.Errorf("value len larger than def by %d > %d", l, d.Len)
 	}
 
-	ctx.logger.Debug("encode array", "val", value, "tk", tk)
+	//ctx.logger.Debug("encode array", "val", value, "tk", tk)  // TODO: check it by delegator
 
 	for i := 0; i < l && i < d.Len; i++ {
 		if err := defCodec.Encode(ctx, t.Index(i).Interface()); err != nil {

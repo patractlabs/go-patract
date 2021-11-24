@@ -2,7 +2,6 @@ package delegator_test
 
 import (
 	"context"
-	"fmt"
 	"io/ioutil"
 	"testing"
 
@@ -15,20 +14,11 @@ import (
 )
 
 func TestDelegator(t *testing.T) {
-	test.ByExternEnv(t, func(logger log.Logger, env test.Env) {
+	test.ByNodeEnv(t, func(logger log.Logger, env test.Env) {
 		require := require.New(t)
 		_ = initAccumulator(t, logger, env, signature.TestKeyringPairAlice)
-		fmt.Println("====================================== 1")
-		fmt.Println("====================================== 1")
-		fmt.Println("====================================== 1")
 		_ = initAdder(t, logger, env, signature.TestKeyringPairAlice)
-		fmt.Println("====================================== 2")
-		fmt.Println("====================================== 2")
-		fmt.Println("====================================== 2")
 		_ = initSubber(t, logger, env, signature.TestKeyringPairAlice)
-		fmt.Println("====================================== 3")
-		fmt.Println("====================================== 3")
-		fmt.Println("====================================== 3")
 
 		contractAccountID := initDelegator(t, logger, env, signature.TestKeyringPairAlice)
 		rpcAPI, err := rpc.NewContractAPI(env.URL())

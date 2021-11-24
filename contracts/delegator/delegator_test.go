@@ -52,13 +52,15 @@ var (
 	}{
 		SubberCodeHash: contracts.CodeHashSubber,
 	}
-
-	accountParam = struct {
-		Account types.AccountID
-	}{
-		Account: test.AliceAccountID,
-	}
 )
+
+type AccountParam struct {
+	Inner struct {
+		AccountID struct {
+			Account types.AccountID
+		} `scale:"account_id"`
+	} `scale:"inner"`
+}
 
 func initDelegator(t *testing.T, logger log.Logger, env test.Env, authKey signature.KeyringPair) types.AccountID {
 	require := require.New(t)
@@ -171,7 +173,16 @@ func initAdder(t *testing.T, logger log.Logger, env test.Env, authKey signature.
 		codeBytes,
 		instantiateSalt,
 		[]string{"new"},
-		accountParam,
+		AccountParam{
+			struct {
+				AccountID struct {
+					Account types.AccountID
+				} `scale:"account_id"`
+			}{AccountID: struct {
+				Account types.AccountID
+			}{
+				Account: test.AliceAccountID,
+			}}},
 	)
 	require.Nil(err)
 
@@ -212,7 +223,16 @@ func initSubber(t *testing.T, logger log.Logger, env test.Env, authKey signature
 		codeBytes,
 		instantiateSalt,
 		[]string{"new"},
-		accountParam,
+		AccountParam{
+			struct {
+				AccountID struct {
+					Account types.AccountID
+				} `scale:"account_id"`
+			}{AccountID: struct {
+				Account types.AccountID
+			}{
+				Account: test.AliceAccountID,
+			}}},
 	)
 	require.Nil(err)
 
