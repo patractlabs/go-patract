@@ -1,4 +1,4 @@
-package dns
+package contract_terminate
 
 import (
 	"github.com/patractlabs/go-patract/api"
@@ -15,14 +15,14 @@ type (
 	Hash      = types.Hash
 )
 
-// API for dns
+// API for contract-terminate
 type API struct {
 	*rpc.Contract
 
 	ContractAccountID types.AccountID
 }
 
-// New creates a new API for dns
+// New creates a new API for contract-terminate
 func New(a *rpc.Contract, contractAccountID AccountID) *API {
 	return &API{
 		Contract:          a,

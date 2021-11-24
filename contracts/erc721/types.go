@@ -1,4 +1,4 @@
-package dns
+package erc721
 
 import (
 	"github.com/patractlabs/go-patract/api"
@@ -13,16 +13,18 @@ type (
 type (
 	AccountID = types.AccountID
 	Hash      = types.Hash
+	TokenId   = types.U32
+	Bool      = types.Bool
 )
 
-// API for dns
+// API for erc20
 type API struct {
 	*rpc.Contract
 
 	ContractAccountID types.AccountID
 }
 
-// New creates a new API for dns
+// New creates a new API for erc20
 func New(a *rpc.Contract, contractAccountID AccountID) *API {
 	return &API{
 		Contract:          a,

@@ -12,17 +12,22 @@ import (
 )
 
 func TestPrimitiveEncode(t *testing.T) {
-	raw := loadMetaData4Test(`
-  {
-    "types": [
-        {
-            "def": {
-                "primitive": "u128"
-            }
-        }
-    ]
-  }
-	`)
+	raw := loadMetaDataTest(`
+{
+	"V1": {
+		"types": [
+		{
+			"id": 0,
+			"type": {
+				"def": {
+					"primitive": "u128"
+				}
+			}
+		}
+		]
+	}
+}
+`)
 
 	def := metadata.NewTypeDef(&raw.V1.Types[0])
 

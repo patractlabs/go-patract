@@ -1,4 +1,4 @@
-package dns
+package flipper
 
 import (
 	"github.com/patractlabs/go-patract/api"
@@ -13,16 +13,17 @@ type (
 type (
 	AccountID = types.AccountID
 	Hash      = types.Hash
+	Bool      = types.Bool
 )
 
-// API for dns
+// API for flipper
 type API struct {
 	*rpc.Contract
 
 	ContractAccountID types.AccountID
 }
 
-// New creates a new API for dns
+// New creates a new API for flipper
 func New(a *rpc.Contract, contractAccountID AccountID) *API {
 	return &API{
 		Contract:          a,

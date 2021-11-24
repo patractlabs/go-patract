@@ -1,4 +1,4 @@
-package dns
+package multisig
 
 import (
 	"github.com/patractlabs/go-patract/api"
@@ -11,18 +11,19 @@ type (
 )
 
 type (
-	AccountID = types.AccountID
-	Hash      = types.Hash
+	AccountID     = types.AccountID
+	Balance       = types.Balance
+	TransactionId = types.U32
 )
 
-// API for dns
+// API for multisig
 type API struct {
 	*rpc.Contract
 
 	ContractAccountID types.AccountID
 }
 
-// New creates a new API for dns
+// New creates a new API for multisig
 func New(a *rpc.Contract, contractAccountID AccountID) *API {
 	return &API{
 		Contract:          a,

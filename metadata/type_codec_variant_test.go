@@ -10,83 +10,107 @@ import (
 )
 
 func TestDefVariantEncodeAndDecode(t *testing.T) {
-	raw := loadMetaData4Test(`
+	raw := loadMetaDataTest(`
 {
-    "types": [
-        {
-            "def": {
-                "primitive": "u8"
-            }
-        },
-        {
-            "def": {
-                "primitive": "u128"
-            }
-        },
-        {
-            "def": {
-                "primitive": "bool"
-            }
-        },
-        {
-            "def": {
-                "composite": {
-                    "fields": [
-                        {
-                            "name": "i1",
-                            "type": 2
-                        },
-                        {
-                            "name": "i2",
-                            "type": 2
-                        },
-                        {
-                            "name": "b1",
-                            "type": 3
-                        }
-                    ]
+    "V1": {
+        "types": [
+            {
+                "id": 0,
+                "type": {
+                    "def": {
+                        "primitive": "u8"
+                    }
                 }
             },
-            "path": [
-                "tester"
-            ]
-        },
-        {
-            "def": {
-                "array": {
-                    "len": 8,
-                    "type": 4
+            {
+                "id": 1,
+                "type": {
+                    "def": {
+                        "primitive": "u128"
+                    }
                 }
-            }
-        },
-        {
-            "def": {
-                "variant": {
-                    "variants": [
-                        {
-                            "name": "None"
-                        },
-                        {
+            },
+            {
+                "id": 2,
+                "type": {
+                    "def": {
+                        "primitive": "bool"
+                    }
+                }
+            },
+            {
+                "id": 3,
+                "type": {
+                    "def": {
+                        "composite": {
                             "fields": [
                                 {
-                                    "type": 5
+                                    "name": "i1",
+                                    "type": 1
+                                },
+                                {
+                                    "name": "i2",
+                                    "type": 1
+                                },
+                                {
+                                    "name": "b1",
+                                    "type": 2
                                 }
-                            ],
-                            "name": "Some"
+                            ]
                         }
+                    },
+                    "path": [
+                        "tester"
                     ]
                 }
             },
-            "params": [
-                6
-            ],
-            "path": [
-                "Option"
-            ]
-        }
-    ]
-}
-	`)
+            {
+                "id": 4,
+                "type": {
+                    "def": {
+                        "array": {
+                            "len": 8,
+                            "type": 3
+                        }
+                    }
+                }
+            },
+            {
+                "id": 8,
+                "type": {
+                    "def": {
+                        "variant": {
+                            "variants": [
+                                {
+                                    "index": 0,
+                                    "name": "None"
+                                },
+                                {
+                                    "fields": [
+                                        {
+                                            "type": 4
+                                        }
+                                    ],
+                                    "index": 1,
+                                    "name": "Some"
+                                }
+                            ]
+                        }
+                    },
+                    "params": [
+                        {
+                            "name": "T",
+                            "type": 5
+                        }
+                    ],
+                    "path": [
+                        "Option"
+                    ]
+                }
+            }
+        ]
+    }
+}`)
 
 	typeDefs := make([]metadata.DefCodec, 0, 16)
 	for _, ty := range raw.V1.Types {

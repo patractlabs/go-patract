@@ -1,4 +1,4 @@
-package dns
+package contract_transfer
 
 import (
 	"github.com/patractlabs/go-patract/api"
@@ -12,17 +12,18 @@ type (
 
 type (
 	AccountID = types.AccountID
+	Balance   = types.Balance
 	Hash      = types.Hash
 )
 
-// API for dns
+// API for contract-transfer
 type API struct {
 	*rpc.Contract
 
 	ContractAccountID types.AccountID
 }
 
-// New creates a new API for dns
+// New creates a new API for contract-transfer
 func New(a *rpc.Contract, contractAccountID AccountID) *API {
 	return &API{
 		Contract:          a,

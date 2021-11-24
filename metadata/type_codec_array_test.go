@@ -11,74 +11,96 @@ import (
 )
 
 func TestDefArrayEncodeAndDecode(t *testing.T) {
-	raw := loadMetaData4Test(`
+	raw := loadMetaDataTest(`
 {
-    "types": [
-        {
-            "def": {
-                "primitive": "u8"
-            }
-        },
-        {
-            "def": {
-                "primitive": "u128"
-            }
-        },
-        {
-            "def": {
-                "primitive": "bool"
-            }
-        },
-        {
-            "def": {
-                "composite": {
-                    "fields": [
-                        {
-                            "name": "i1",
-                            "type": 2
-                        },
-                        {
-                            "name": "i2",
-                            "type": 2
-                        },
-                        {
-                            "name": "b1",
-                            "type": 3
+    "V1": {
+        "types": [
+            {
+                "id": 0,
+                "type": {
+                    "def": {
+                        "primitive": "u8"
+                    }
+                }
+            },
+            {
+                "id": 1,
+                "type": {
+                    "def": {
+                        "primitive": "u128"
+                    }
+                }
+            },
+            {
+                "id": 2,
+                "type": {
+                    "def": {
+                        "primitive": "bool"
+                    }
+                }
+            },
+            {
+                "id": 3,
+                "type": {
+                    "def": {
+                        "composite": {
+                            "fields": [
+                                {
+                                    "name": "i1",
+                                    "type": 1
+                                },
+                                {
+                                    "name": "i2",
+                                    "type": 1
+                                },
+                                {
+                                    "name": "b1",
+                                    "type": 2
+                                }
+                            ]
                         }
+                    },
+                    "path": [
+                        "tester"
                     ]
                 }
             },
-            "path": [
-                "tester"
-            ]
-        },
-        {
-            "def": {
-                "array": {
-                    "len": 8,
-                    "type": 1
+            {
+                "id": 4,
+                "type": {
+                    "def": {
+                        "array": {
+                            "len": 8,
+                            "type": 0
+                        }
+                    }
+                }
+            },
+            {
+                "id": 5,
+                "type": {
+                    "def": {
+                        "array": {
+                            "len": 8,
+                            "type": 1
+                        }
+                    }
+                }
+            },
+            {
+                "id": 6,
+                "type": {
+                    "def": {
+                        "array": {
+                            "len": 8,
+                            "type": 3
+                        }
+                    }
                 }
             }
-        },
-        {
-            "def": {
-                "array": {
-                    "len": 8,
-                    "type": 2
-                }
-            }
-        },
-        {
-            "def": {
-                "array": {
-                    "len": 8,
-                    "type": 4
-                }
-            }
-        }
-    ]
-}
-	`)
+        ]
+    }
+}`)
 
 	typeDefs := make([]metadata.DefCodec, 0, 16)
 	for _, ty := range raw.V1.Types {

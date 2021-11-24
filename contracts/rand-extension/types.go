@@ -1,4 +1,4 @@
-package dns
+package rand_extension
 
 import (
 	"github.com/patractlabs/go-patract/api"
@@ -12,17 +12,19 @@ type (
 
 type (
 	AccountID = types.AccountID
+	Balance   = types.Balance
 	Hash      = types.Hash
+	VecU8     = []types.U8
 )
 
-// API for dns
+// API for rand-extension
 type API struct {
 	*rpc.Contract
 
 	ContractAccountID types.AccountID
 }
 
-// New creates a new API for dns
+// New creates a new API for rand-extension
 func New(a *rpc.Contract, contractAccountID AccountID) *API {
 	return &API{
 		Contract:          a,
