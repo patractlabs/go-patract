@@ -8,7 +8,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/centrifuge/go-substrate-rpc-client/v2/scale"
+	"github.com/centrifuge/go-substrate-rpc-client/v3/scale"
 
 	"github.com/patractlabs/go-patract/types"
 	"github.com/patractlabs/go-patract/utils/log"
@@ -75,7 +75,7 @@ func (c CodecContext) WithSS58Codec(ss58Codec *types.SS58Codec) CodecContext {
 
 // GetDefCodecByIndex get def codec by index
 func (c CodecContext) GetDefCodecByIndex(i int) DefCodec {
-	return c.typs[i-1]
+	return c.typs[i]
 }
 
 // GetSS58Codec get ss58 codec
@@ -120,7 +120,6 @@ func (d *defPrimitive) Encode(ctx CodecContext, value interface{}) error {
 	if tk != d.typ.Kind() {
 		return errors.Errorf("type not equal, expect %v, got %v", d.typ, tk)
 	}
-
 	return ctx.encoder.Encode(value)
 }
 
@@ -297,7 +296,6 @@ func (d *defArray) Encode(ctx CodecContext, value interface{}) error {
 	if tk != reflect.Array && tk != reflect.Slice {
 		return errors.Errorf("def array need value is array type by %v %v", tk, value)
 	}
-
 	defCodec := ctx.GetDefCodecByIndex(d.TypeIndex)
 
 	l := t.Len()
@@ -305,7 +303,7 @@ func (d *defArray) Encode(ctx CodecContext, value interface{}) error {
 		return errors.Errorf("value len larger than def by %d > %d", l, d.Len)
 	}
 
-	ctx.logger.Debug("encode array", "val", value, "tk", tk)
+	//ctx.logger.Debug("encode array", "val", value, "tk", tk)  // TODO: check it by delegator
 
 	for i := 0; i < l && i < d.Len; i++ {
 		if err := defCodec.Encode(ctx, t.Index(i).Interface()); err != nil {

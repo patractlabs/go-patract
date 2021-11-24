@@ -5,7 +5,7 @@ import (
 	"io/ioutil"
 	"testing"
 
-	"github.com/centrifuge/go-substrate-rpc-client/v2/signature"
+	"github.com/centrifuge/go-substrate-rpc-client/v3/signature"
 	"github.com/patractlabs/go-patract/contracts/erc20"
 	"github.com/patractlabs/go-patract/rpc"
 	"github.com/patractlabs/go-patract/test"
@@ -19,7 +19,6 @@ func TestTransfer(t *testing.T) {
 		require := require.New(t)
 
 		contractAccountID := initERC20(t, logger, env, signature.TestKeyringPairAlice)
-
 		rpcAPI, err := rpc.NewContractAPI(env.URL())
 		require.Nil(err)
 
@@ -33,9 +32,8 @@ func TestTransfer(t *testing.T) {
 
 		// transfer alice to bob
 		ctx := rpc.NewCtx(context.Background()).WithFrom(signature.TestKeyringPairAlice)
-		aliceTotal, err := erc20API.BalanceOf(ctx, test.AliceAccountID)
 
-		// check curr
+		aliceTotal, err := erc20API.BalanceOf(ctx, test.AliceAccountID)
 		require.Nil(err)
 		require.Equalf(*aliceTotal.Int, totalSupply, "alice should be total supply")
 

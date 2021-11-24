@@ -5,8 +5,8 @@ import (
 	"encoding/json"
 	"io/ioutil"
 
-	"github.com/centrifuge/go-substrate-rpc-client/v2/scale"
-	"github.com/centrifuge/go-substrate-rpc-client/v2/types"
+	"github.com/centrifuge/go-substrate-rpc-client/v3/scale"
+	"github.com/centrifuge/go-substrate-rpc-client/v3/types"
 	"github.com/patractlabs/go-patract/utils/log"
 	"github.com/pkg/errors"
 )
@@ -26,32 +26,32 @@ func New(bz []byte) (*Data, error) {
 		return nil, errors.Wrap(err, "unmarshal json")
 	}
 
-	res.Codecs = make([]DefCodec, 0, len(res.Raw.Types))
-	for idx := range res.Raw.Types {
-		res.Codecs = append(res.Codecs, NewTypeDef(&res.Raw.Types[idx]))
+	res.Codecs = make([]DefCodec, 0, len(res.Raw.V1.Types))
+
+	for idx := range res.Raw.V1.Types {
+		res.Codecs = append(res.Codecs, NewTypeDef(&res.Raw.V1.Types[idx]))
 	}
 
-	// parse datas
-	for i := 0; i < len(res.Raw.Spec.Constructors); i++ {
-		selectorStr := res.Raw.Spec.Constructors[i].Selector
+	for i := 0; i < len(res.Raw.V1.Spec.Constructors); i++ {
+		selectorStr := res.Raw.V1.Spec.Constructors[i].Selector
 
 		bz, err := types.HexDecodeString(selectorStr)
 		if err != nil {
 			return nil, errors.Wrapf(err, "decode str selector from %s", selectorStr)
 		}
 
-		res.Raw.Spec.Constructors[i].SelectorData = bz
+		res.Raw.V1.Spec.Constructors[i].SelectorData = bz
 	}
 
-	for i := 0; i < len(res.Raw.Spec.Messages); i++ {
-		selectorStr := res.Raw.Spec.Messages[i].Selector
+	for i := 0; i < len(res.Raw.V1.Spec.Messages); i++ {
+		selectorStr := res.Raw.V1.Spec.Messages[i].Selector
 
 		bz, err := types.HexDecodeString(selectorStr)
 		if err != nil {
 			return nil, errors.Wrapf(err, "decode str selector from %s", selectorStr)
 		}
 
-		res.Raw.Spec.Messages[i].SelectorData = bz
+		res.Raw.V1.Spec.Messages[i].SelectorData = bz
 	}
 
 	return res, nil
@@ -67,13 +67,20 @@ func NewFromFile(path string) (*Data, error) {
 	return New(bz)
 }
 
-func (d *Data) GetCodecByTypeIdx(i TypeIndex) (DefCodec, error) {
-	if len(d.Codecs) < i.Type {
+func (d *Data) GetCodecByArgRaw(i ArgRaw) (DefCodec, error) {
+	if len(d.Codecs) < i.Type.TypeIndex {
 		return nil, errors.Errorf("codec idx no found to %d, all len %d",
-			i.Type, len(d.Codecs))
+			i.Type.TypeIndex, len(d.Codecs))
 	}
+	return d.Codecs[i.Type.TypeIndex], nil
+}
 
-	return d.Codecs[i.Type-1], nil
+func (d *Data) GetCodecByTypeIdx(i TypeIndex) (DefCodec, error) {
+	if len(d.Codecs) < i.TypeIndex {
+		return nil, errors.Errorf("codec idx no found to %d, all len %d",
+			i.TypeIndex, len(d.Codecs))
+	}
+	return d.Codecs[i.TypeIndex], nil
 }
 
 // NewCtxForDecode new ctx for decoder

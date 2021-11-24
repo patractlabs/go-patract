@@ -1,6 +1,6 @@
 package types
 
-import "github.com/centrifuge/go-substrate-rpc-client/v2/scale"
+import "github.com/centrifuge/go-substrate-rpc-client/v3/scale"
 
 type Option struct {
 	hasValue bool

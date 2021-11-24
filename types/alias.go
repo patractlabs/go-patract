@@ -1,6 +1,6 @@
 package types
 
-import "github.com/centrifuge/go-substrate-rpc-client/v2/types"
+import "github.com/centrifuge/go-substrate-rpc-client/v3/types"
 
 const (
 	ExtrinsicVersion4 = types.ExtrinsicVersion4
@@ -11,10 +11,13 @@ var (
 )
 
 type (
+	U8  = types.U8
 	U32 = types.U32
 	U64 = types.U64
 	// U128 is an unsigned 128-bit integer, it is represented as a big.Int in Go.
 	U128 = types.U128
+	Bool = types.Bool
+	I32  = types.I32
 )
 
 var (

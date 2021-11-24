@@ -84,7 +84,7 @@ europa --dev --tmp
 use for external port:
 
 ```bash
-europa --dev --tmp  --ws-external
+europa --dev --tmp --ws-external
 ```
 
 We advise developers to use [jupiter](https://github.com/patractlabs/jupiter) for debugging their code.

@@ -13,6 +13,7 @@ import (
 type compositeField struct {
 	Name      string `json:"name"`
 	TypeIndex int    `json:"type"`
+	TypeName  string `json:"typeName"`
 }
 
 type defComposite struct {
@@ -33,7 +34,6 @@ func newDefComposite(raw json.RawMessage, path []string) *defComposite {
 
 func (d *defComposite) Encode(ctx CodecContext, value interface{}) error {
 	target := reflect.ValueOf(value)
-
 	for idx, field := range d.Fields {
 		ctx.logger.Debug("defComposite encode", "idx", idx, "field", field)
 
@@ -47,8 +47,8 @@ func (d *defComposite) Encode(ctx CodecContext, value interface{}) error {
 
 			if tv == field.Name {
 				ctx.logger.Debug("target", "field", tv, "v", target.Field(i))
-
 				def := ctx.GetDefCodecByIndex(field.TypeIndex)
+
 				if err := def.Encode(ctx, target.Field(i).Interface()); err != nil {
 					return errors.Wrapf(err,
 						"encode composite field %s %d", field.Name, i)
@@ -57,7 +57,6 @@ func (d *defComposite) Encode(ctx CodecContext, value interface{}) error {
 			}
 		}
 	}
-
 	return nil
 }
 

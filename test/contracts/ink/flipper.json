@@ -1,106 +1,110 @@
 {
-  "metadataVersion": "0.1.0",
   "source": {
-    "hash": "0x0f91ab17cd254fb8a00b22396e8c1be5067686469064216e242a13140d83248e",
-    "language": "ink! 3.0.0-rc2",
-    "compiler": "rustc 1.49.0-nightly"
+    "hash": "0x88af2390f1eb7c7adbf9bc726e454e94507995627e1e38d6df4d5071cc274849",
+    "language": "ink! 3.0.0-rc6",
+    "compiler": "rustc 1.58.0-nightly"
   },
   "contract": {
     "name": "flipper",
-    "version": "3.0.0-rc2",
+    "version": "3.0.0-rc6",
     "authors": [
       "Parity Technologies <admin@parity.io>"
     ]
   },
-  "spec": {
-    "constructors": [
-      {
-        "args": [
-          {
-            "name": "init_value",
-            "type": {
-              "displayName": [
-                "bool"
-              ],
-              "type": 1
-            }
-          }
-        ],
-        "docs": [
-          " Creates a new flipper smart contract initialized with the given value."
-        ],
-        "name": [
-          "new"
-        ],
-        "selector": "0xd183512b"
-      },
-      {
-        "args": [],
-        "docs": [
-          " Creates a new flipper smart contract initialized to `false`."
-        ],
-        "name": [
-          "default"
-        ],
-        "selector": "0x6a3712e2"
-      }
-    ],
-    "docs": [],
-    "events": [],
-    "messages": [
-      {
-        "args": [],
-        "docs": [
-          " Flips the current value of the Flipper's bool."
-        ],
-        "mutates": true,
-        "name": [
-          "flip"
-        ],
-        "payable": false,
-        "returnType": null,
-        "selector": "0xc096a5f3"
-      },
-      {
-        "args": [],
-        "docs": [
-          " Returns the current value of the Flipper's bool."
-        ],
-        "mutates": false,
-        "name": [
-          "get"
-        ],
-        "payable": false,
-        "returnType": {
-          "displayName": [
-            "bool"
-          ],
-          "type": 1
-        },
-        "selector": "0x1e5ca456"
-      }
-    ]
-  },
-  "storage": {
-    "struct": {
-      "fields": [
+  "V1": {
+    "spec": {
+      "constructors": [
         {
-          "layout": {
-            "cell": {
-              "key": "0x0000000000000000000000000000000000000000000000000000000000000000",
-              "ty": 1
+          "args": [
+            {
+              "name": "init_value",
+              "type": {
+                "displayName": [
+                  "bool"
+                ],
+                "type": 0
+              }
             }
+          ],
+          "docs": [
+            "Creates a new flipper smart contract initialized with the given value."
+          ],
+          "name": [
+            "new"
+          ],
+          "selector": "0x9bae9d5e"
+        },
+        {
+          "args": [],
+          "docs": [
+            "Creates a new flipper smart contract initialized to `false`."
+          ],
+          "name": [
+            "default"
+          ],
+          "selector": "0xed4b9d1b"
+        }
+      ],
+      "docs": [],
+      "events": [],
+      "messages": [
+        {
+          "args": [],
+          "docs": [
+            " Flips the current value of the Flipper's boolean."
+          ],
+          "mutates": true,
+          "name": [
+            "flip"
+          ],
+          "payable": false,
+          "returnType": null,
+          "selector": "0x633aa551"
+        },
+        {
+          "args": [],
+          "docs": [
+            " Returns the current value of the Flipper's boolean."
+          ],
+          "mutates": false,
+          "name": [
+            "get"
+          ],
+          "payable": false,
+          "returnType": {
+            "displayName": [
+              "bool"
+            ],
+            "type": 0
           },
-          "name": "value"
+          "selector": "0x2f865bd9"
         }
       ]
-    }
-  },
-  "types": [
-    {
-      "def": {
-        "primitive": "bool"
+    },
+    "storage": {
+      "struct": {
+        "fields": [
+          {
+            "layout": {
+              "cell": {
+                "key": "0x0000000000000000000000000000000000000000000000000000000000000000",
+                "ty": 0
+              }
+            },
+            "name": "value"
+          }
+        ]
       }
-    }
-  ]
+    },
+    "types": [
+      {
+        "id": 0,
+        "type": {
+          "def": {
+            "primitive": "bool"
+          }
+        }
+      }
+    ]
+  }
 }

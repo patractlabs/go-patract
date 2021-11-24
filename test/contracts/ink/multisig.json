@@ -1,0 +1,1650 @@
+{
+  "source": {
+    "hash": "0xd6c006d77fa36b29fca685445e5df47f02ae58758e1b9f5b72536861cf7bc202",
+    "language": "ink! 3.0.0-rc6",
+    "compiler": "rustc 1.58.0-nightly"
+  },
+  "contract": {
+    "name": "multisig",
+    "version": "3.0.0-rc5",
+    "authors": [
+      "Parity Technologies <admin@parity.io>"
+    ]
+  },
+  "V1": {
+    "spec": {
+      "constructors": [
+        {
+          "args": [
+            {
+              "name": "requirement",
+              "type": {
+                "displayName": [
+                  "u32"
+                ],
+                "type": 1
+              }
+            },
+            {
+              "name": "owners",
+              "type": {
+                "displayName": [
+                  "Vec"
+                ],
+                "type": 19
+              }
+            }
+          ],
+          "docs": [
+            "The only constructor of the contract.",
+            "",
+            "A list of owners must be supplied and a number of how many of them must",
+            "confirm a transaction. Duplicate owners are silently dropped.",
+            "",
+            "# Panics",
+            "",
+            "If `requirement` violates our invariant."
+          ],
+          "name": [
+            "new"
+          ],
+          "selector": "0x9bae9d5e"
+        }
+      ],
+      "docs": [],
+      "events": [
+        {
+          "args": [
+            {
+              "docs": [
+                " The transaction that was confirmed."
+              ],
+              "indexed": true,
+              "name": "transaction",
+              "type": {
+                "displayName": [
+                  "TransactionId"
+                ],
+                "type": 1
+              }
+            },
+            {
+              "docs": [
+                " The owner that sent the confirmation."
+              ],
+              "indexed": true,
+              "name": "from",
+              "type": {
+                "displayName": [
+                  "AccountId"
+                ],
+                "type": 4
+              }
+            },
+            {
+              "docs": [
+                " The confirmation status after this confirmation was applied."
+              ],
+              "indexed": true,
+              "name": "status",
+              "type": {
+                "displayName": [
+                  "ConfirmationStatus"
+                ],
+                "type": 21
+              }
+            }
+          ],
+          "docs": [
+            " Emitted when an owner confirms a transaction."
+          ],
+          "name": "Confirmation"
+        },
+        {
+          "args": [
+            {
+              "docs": [
+                " The transaction that was revoked."
+              ],
+              "indexed": true,
+              "name": "transaction",
+              "type": {
+                "displayName": [
+                  "TransactionId"
+                ],
+                "type": 1
+              }
+            },
+            {
+              "docs": [
+                " The owner that sent the revocation."
+              ],
+              "indexed": true,
+              "name": "from",
+              "type": {
+                "displayName": [
+                  "AccountId"
+                ],
+                "type": 4
+              }
+            }
+          ],
+          "docs": [
+            " Emitted when an owner revoked a confirmation."
+          ],
+          "name": "Revokation"
+        },
+        {
+          "args": [
+            {
+              "docs": [
+                " The transaction that was submitted."
+              ],
+              "indexed": true,
+              "name": "transaction",
+              "type": {
+                "displayName": [
+                  "TransactionId"
+                ],
+                "type": 1
+              }
+            }
+          ],
+          "docs": [
+            " Emitted when an owner submits a transaction."
+          ],
+          "name": "Submission"
+        },
+        {
+          "args": [
+            {
+              "docs": [
+                " The transaction that was canceled."
+              ],
+              "indexed": true,
+              "name": "transaction",
+              "type": {
+                "displayName": [
+                  "TransactionId"
+                ],
+                "type": 1
+              }
+            }
+          ],
+          "docs": [
+            " Emitted when a transaction was canceled."
+          ],
+          "name": "Cancelation"
+        },
+        {
+          "args": [
+            {
+              "docs": [
+                " The transaction that was executed."
+              ],
+              "indexed": true,
+              "name": "transaction",
+              "type": {
+                "displayName": [
+                  "TransactionId"
+                ],
+                "type": 1
+              }
+            },
+            {
+              "docs": [
+                " Indicates whether the transaction executed successfully. If so the `Ok` value holds",
+                " the output in bytes. The Option is `None` when the transaction was executed through",
+                " `invoke_transaction` rather than `evaluate_transaction`."
+              ],
+              "indexed": true,
+              "name": "result",
+              "type": {
+                "displayName": [
+                  "Result"
+                ],
+                "type": 25
+              }
+            }
+          ],
+          "docs": [
+            " Emitted when a transaction was executed."
+          ],
+          "name": "Execution"
+        },
+        {
+          "args": [
+            {
+              "docs": [
+                " The owner that was added."
+              ],
+              "indexed": true,
+              "name": "owner",
+              "type": {
+                "displayName": [
+                  "AccountId"
+                ],
+                "type": 4
+              }
+            }
+          ],
+          "docs": [
+            " Emitted when an owner is added to the wallet."
+          ],
+          "name": "OwnerAddition"
+        },
+        {
+          "args": [
+            {
+              "docs": [
+                " The owner that was removed."
+              ],
+              "indexed": true,
+              "name": "owner",
+              "type": {
+                "displayName": [
+                  "AccountId"
+                ],
+                "type": 4
+              }
+            }
+          ],
+          "docs": [
+            " Emitted when an owner is removed from the wallet."
+          ],
+          "name": "OwnerRemoval"
+        },
+        {
+          "args": [
+            {
+              "docs": [
+                " The new requirement value."
+              ],
+              "indexed": false,
+              "name": "new_requirement",
+              "type": {
+                "displayName": [
+                  "u32"
+                ],
+                "type": 1
+              }
+            }
+          ],
+          "docs": [
+            " Emitted when the requirement changed."
+          ],
+          "name": "RequirementChange"
+        }
+      ],
+      "messages": [
+        {
+          "args": [
+            {
+              "name": "new_owner",
+              "type": {
+                "displayName": [
+                  "AccountId"
+                ],
+                "type": 4
+              }
+            }
+          ],
+          "docs": [
+            " Add a new owner to the contract.",
+            "",
+            " Only callable by the wallet itself.",
+            "",
+            " # Panics",
+            "",
+            " If the owner already exists.",
+            "",
+            " # Examples",
+            "",
+            " Since this message must be send by the wallet itself it has to be build as a",
+            " `Transaction` and dispatched through `submit_transaction` and `invoke_transaction`:",
+            " ```no_run",
+            " use ink_env::{DefaultEnvironment as Env, AccountId, call::{CallParams, Selector}, test::CallData};",
+            " use multisig::{Transaction, ConfirmationStatus};",
+            "",
+            " // address of an existing `Multisig` contract",
+            " let wallet_id: AccountId = [7u8; 32].into();",
+            "",
+            " // first create the transaction that adds `alice` through `add_owner`",
+            " let alice: AccountId = [1u8; 32].into();",
+            " let mut call = CallData::new(Selector::new([166, 229, 27, 154])); // add_owner",
+            " call.push_arg(&alice);",
+            " let transaction = Transaction {",
+            "     callee: wallet_id,",
+            "     selector: call.selector().to_bytes(),",
+            "     input: call.params().to_owned(),",
+            "     transferred_value: 0,",
+            "     gas_limit: 0",
+            " };",
+            "",
+            " // submit the transaction for confirmation",
+            " let mut submit = CallParams::<Env, _, _>::eval(",
+            "     wallet_id,",
+            "     Selector::new([86, 244, 13, 223]) // submit_transaction",
+            " );",
+            " let (id, _): (u32, ConfirmationStatus)  = submit.push_arg(&transaction)",
+            "     .fire()",
+            "     .expect(\"submit_transaction won't panic.\");",
+            "",
+            " // wait until all required owners have confirmed and then execute the transaction",
+            " let mut invoke = CallParams::<Env, _, ()>::invoke(",
+            "     wallet_id,",
+            "     Selector::new([185, 50, 225, 236]) // invoke_transaction",
+            " );",
+            " invoke.push_arg(&id).fire();",
+            " ```"
+          ],
+          "mutates": true,
+          "name": [
+            "add_owner"
+          ],
+          "payable": false,
+          "returnType": null,
+          "selector": "0xad6d4358"
+        },
+        {
+          "args": [
+            {
+              "name": "owner",
+              "type": {
+                "displayName": [
+                  "AccountId"
+                ],
+                "type": 4
+              }
+            }
+          ],
+          "docs": [
+            " Remove an owner from the contract.",
+            "",
+            " Only callable by the wallet itself. If by doing this the amount of owners",
+            " would be smaller than the requirement it is adjusted to be exactly the",
+            " number of owners.",
+            "",
+            " # Panics",
+            "",
+            " If `owner` is no owner of the wallet."
+          ],
+          "mutates": true,
+          "name": [
+            "remove_owner"
+          ],
+          "payable": false,
+          "returnType": null,
+          "selector": "0xfdfe3353"
+        },
+        {
+          "args": [
+            {
+              "name": "old_owner",
+              "type": {
+                "displayName": [
+                  "AccountId"
+                ],
+                "type": 4
+              }
+            },
+            {
+              "name": "new_owner",
+              "type": {
+                "displayName": [
+                  "AccountId"
+                ],
+                "type": 4
+              }
+            }
+          ],
+          "docs": [
+            " Replace an owner from the contract with a new one.",
+            "",
+            " Only callable by the wallet itself.",
+            "",
+            " # Panics",
+            "",
+            " If `old_owner` is no owner or if `new_owner` already is one."
+          ],
+          "mutates": true,
+          "name": [
+            "replace_owner"
+          ],
+          "payable": false,
+          "returnType": null,
+          "selector": "0x7834854f"
+        },
+        {
+          "args": [
+            {
+              "name": "new_requirement",
+              "type": {
+                "displayName": [
+                  "u32"
+                ],
+                "type": 1
+              }
+            }
+          ],
+          "docs": [
+            " Change the requirement to a new value.",
+            "",
+            " Only callable by the wallet itself.",
+            "",
+            " # Panics",
+            "",
+            " If the `new_requirement` violates our invariant."
+          ],
+          "mutates": true,
+          "name": [
+            "change_requirement"
+          ],
+          "payable": false,
+          "returnType": null,
+          "selector": "0x9448dea5"
+        },
+        {
+          "args": [
+            {
+              "name": "transaction",
+              "type": {
+                "displayName": [
+                  "Transaction"
+                ],
+                "type": 13
+              }
+            }
+          ],
+          "docs": [
+            " Add a new transaction candidate to the contract.",
+            "",
+            " This also confirms the transaction for the caller. This can be called by any owner."
+          ],
+          "mutates": true,
+          "name": [
+            "submit_transaction"
+          ],
+          "payable": false,
+          "returnType": {
+            "displayName": [],
+            "type": 20
+          },
+          "selector": "0x37d395a9"
+        },
+        {
+          "args": [
+            {
+              "name": "trans_id",
+              "type": {
+                "displayName": [
+                  "TransactionId"
+                ],
+                "type": 1
+              }
+            }
+          ],
+          "docs": [
+            " Remove a transaction from the contract.",
+            " Only callable by the wallet itself.",
+            "",
+            " # Panics",
+            "",
+            " If `trans_id` is no valid transaction id."
+          ],
+          "mutates": true,
+          "name": [
+            "cancel_transaction"
+          ],
+          "payable": false,
+          "returnType": null,
+          "selector": "0x6614b0a8"
+        },
+        {
+          "args": [
+            {
+              "name": "trans_id",
+              "type": {
+                "displayName": [
+                  "TransactionId"
+                ],
+                "type": 1
+              }
+            }
+          ],
+          "docs": [
+            " Confirm a transaction for the sender that was submitted by any owner.",
+            "",
+            " This can be called by any owner.",
+            "",
+            " # Panics",
+            "",
+            " If `trans_id` is no valid transaction id."
+          ],
+          "mutates": true,
+          "name": [
+            "confirm_transaction"
+          ],
+          "payable": false,
+          "returnType": {
+            "displayName": [
+              "ConfirmationStatus"
+            ],
+            "type": 21
+          },
+          "selector": "0x41996bf0"
+        },
+        {
+          "args": [
+            {
+              "name": "trans_id",
+              "type": {
+                "displayName": [
+                  "TransactionId"
+                ],
+                "type": 1
+              }
+            }
+          ],
+          "docs": [
+            " Revoke the senders confirmation.",
+            "",
+            " This can be called by any owner.",
+            "",
+            " # Panics",
+            "",
+            " If `trans_id` is no valid transaction id."
+          ],
+          "mutates": true,
+          "name": [
+            "revoke_confirmation"
+          ],
+          "payable": false,
+          "returnType": null,
+          "selector": "0xa871d5a0"
+        },
+        {
+          "args": [
+            {
+              "name": "trans_id",
+              "type": {
+                "displayName": [
+                  "TransactionId"
+                ],
+                "type": 1
+              }
+            }
+          ],
+          "docs": [
+            " Invoke a confirmed execution without getting its output.",
+            "",
+            " If the transaction which is invoked transfers value, this value has",
+            " to be sent as payment with this call. The method will fail otherwise,",
+            " and the transaction would then be reverted.",
+            "",
+            " Its return value indicates whether the called transaction was successful.",
+            " This can be called by anyone."
+          ],
+          "mutates": true,
+          "name": [
+            "invoke_transaction"
+          ],
+          "payable": true,
+          "returnType": {
+            "displayName": [
+              "Result"
+            ],
+            "type": 22
+          },
+          "selector": "0x3cd4b36d"
+        },
+        {
+          "args": [
+            {
+              "name": "trans_id",
+              "type": {
+                "displayName": [
+                  "TransactionId"
+                ],
+                "type": 1
+              }
+            }
+          ],
+          "docs": [
+            " Evaluate a confirmed execution and return its output as bytes.",
+            "",
+            " Its return value indicates whether the called transaction was successful and contains",
+            " its output when successful.",
+            " This can be called by anyone."
+          ],
+          "mutates": true,
+          "name": [
+            "eval_transaction"
+          ],
+          "payable": true,
+          "returnType": {
+            "displayName": [
+              "Result"
+            ],
+            "type": 24
+          },
+          "selector": "0xda9878fb"
+        }
+      ]
+    },
+    "storage": {
+      "struct": {
+        "fields": [
+          {
+            "layout": {
+              "struct": {
+                "fields": [
+                  {
+                    "layout": {
+                      "struct": {
+                        "fields": [
+                          {
+                            "layout": {
+                              "cell": {
+                                "key": "0x0000000000000000000000000000000000000000000000000000000000000000",
+                                "ty": 0
+                              }
+                            },
+                            "name": "header"
+                          },
+                          {
+                            "layout": {
+                              "struct": {
+                                "fields": [
+                                  {
+                                    "layout": {
+                                      "cell": {
+                                        "key": "0x0100000000000000000000000000000000000000000000000000000000000000",
+                                        "ty": 1
+                                      }
+                                    },
+                                    "name": "len"
+                                  },
+                                  {
+                                    "layout": {
+                                      "array": {
+                                        "cellsPerElem": 1,
+                                        "layout": {
+                                          "cell": {
+                                            "key": "0x0100000001000000000000000000000000000000000000000000000000000000",
+                                            "ty": 2
+                                          }
+                                        },
+                                        "len": 4294967295,
+                                        "offset": "0x0200000000000000000000000000000000000000000000000000000000000000"
+                                      }
+                                    },
+                                    "name": "elems"
+                                  }
+                                ]
+                              }
+                            },
+                            "name": "entries"
+                          }
+                        ]
+                      }
+                    },
+                    "name": "keys"
+                  },
+                  {
+                    "layout": {
+                      "hash": {
+                        "layout": {
+                          "cell": {
+                            "key": "0x0200000001000000000000000000000000000000000000000000000000000000",
+                            "ty": 8
+                          }
+                        },
+                        "offset": "0x0100000001000000000000000000000000000000000000000000000000000000",
+                        "strategy": {
+                          "hasher": "Blake2x256",
+                          "postfix": "",
+                          "prefix": "0x696e6b20686173686d6170"
+                        }
+                      }
+                    },
+                    "name": "values"
+                  }
+                ]
+              }
+            },
+            "name": "confirmations"
+          },
+          {
+            "layout": {
+              "struct": {
+                "fields": [
+                  {
+                    "layout": {
+                      "struct": {
+                        "fields": [
+                          {
+                            "layout": {
+                              "cell": {
+                                "key": "0x0200000001000000000000000000000000000000000000000000000000000000",
+                                "ty": 0
+                              }
+                            },
+                            "name": "header"
+                          },
+                          {
+                            "layout": {
+                              "struct": {
+                                "fields": [
+                                  {
+                                    "layout": {
+                                      "cell": {
+                                        "key": "0x0300000001000000000000000000000000000000000000000000000000000000",
+                                        "ty": 1
+                                      }
+                                    },
+                                    "name": "len"
+                                  },
+                                  {
+                                    "layout": {
+                                      "array": {
+                                        "cellsPerElem": 1,
+                                        "layout": {
+                                          "cell": {
+                                            "key": "0x0300000002000000000000000000000000000000000000000000000000000000",
+                                            "ty": 10
+                                          }
+                                        },
+                                        "len": 4294967295,
+                                        "offset": "0x0400000001000000000000000000000000000000000000000000000000000000"
+                                      }
+                                    },
+                                    "name": "elems"
+                                  }
+                                ]
+                              }
+                            },
+                            "name": "entries"
+                          }
+                        ]
+                      }
+                    },
+                    "name": "keys"
+                  },
+                  {
+                    "layout": {
+                      "hash": {
+                        "layout": {
+                          "cell": {
+                            "key": "0x0400000002000000000000000000000000000000000000000000000000000000",
+                            "ty": 11
+                          }
+                        },
+                        "offset": "0x0300000002000000000000000000000000000000000000000000000000000000",
+                        "strategy": {
+                          "hasher": "Blake2x256",
+                          "postfix": "",
+                          "prefix": "0x696e6b20686173686d6170"
+                        }
+                      }
+                    },
+                    "name": "values"
+                  }
+                ]
+              }
+            },
+            "name": "confirmation_count"
+          },
+          {
+            "layout": {
+              "struct": {
+                "fields": [
+                  {
+                    "layout": {
+                      "cell": {
+                        "key": "0x0400000002000000000000000000000000000000000000000000000000000000",
+                        "ty": 0
+                      }
+                    },
+                    "name": "header"
+                  },
+                  {
+                    "layout": {
+                      "struct": {
+                        "fields": [
+                          {
+                            "layout": {
+                              "cell": {
+                                "key": "0x0500000002000000000000000000000000000000000000000000000000000000",
+                                "ty": 1
+                              }
+                            },
+                            "name": "len"
+                          },
+                          {
+                            "layout": {
+                              "array": {
+                                "cellsPerElem": 1,
+                                "layout": {
+                                  "cell": {
+                                    "key": "0x0500000003000000000000000000000000000000000000000000000000000000",
+                                    "ty": 12
+                                  }
+                                },
+                                "len": 4294967295,
+                                "offset": "0x0600000002000000000000000000000000000000000000000000000000000000"
+                              }
+                            },
+                            "name": "elems"
+                          }
+                        ]
+                      }
+                    },
+                    "name": "entries"
+                  }
+                ]
+              }
+            },
+            "name": "transactions"
+          },
+          {
+            "layout": {
+              "struct": {
+                "fields": [
+                  {
+                    "layout": {
+                      "cell": {
+                        "key": "0x0500000003000000000000000000000000000000000000000000000000000000",
+                        "ty": 1
+                      }
+                    },
+                    "name": "len"
+                  },
+                  {
+                    "layout": {
+                      "array": {
+                        "cellsPerElem": 1,
+                        "layout": {
+                          "cell": {
+                            "key": "0x0500000004000000000000000000000000000000000000000000000000000000",
+                            "ty": 4
+                          }
+                        },
+                        "len": 4294967295,
+                        "offset": "0x0600000003000000000000000000000000000000000000000000000000000000"
+                      }
+                    },
+                    "name": "elems"
+                  }
+                ]
+              }
+            },
+            "name": "owners"
+          },
+          {
+            "layout": {
+              "struct": {
+                "fields": [
+                  {
+                    "layout": {
+                      "struct": {
+                        "fields": [
+                          {
+                            "layout": {
+                              "cell": {
+                                "key": "0x0500000004000000000000000000000000000000000000000000000000000000",
+                                "ty": 0
+                              }
+                            },
+                            "name": "header"
+                          },
+                          {
+                            "layout": {
+                              "struct": {
+                                "fields": [
+                                  {
+                                    "layout": {
+                                      "cell": {
+                                        "key": "0x0600000004000000000000000000000000000000000000000000000000000000",
+                                        "ty": 1
+                                      }
+                                    },
+                                    "name": "len"
+                                  },
+                                  {
+                                    "layout": {
+                                      "array": {
+                                        "cellsPerElem": 1,
+                                        "layout": {
+                                          "cell": {
+                                            "key": "0x0600000005000000000000000000000000000000000000000000000000000000",
+                                            "ty": 18
+                                          }
+                                        },
+                                        "len": 4294967295,
+                                        "offset": "0x0700000004000000000000000000000000000000000000000000000000000000"
+                                      }
+                                    },
+                                    "name": "elems"
+                                  }
+                                ]
+                              }
+                            },
+                            "name": "entries"
+                          }
+                        ]
+                      }
+                    },
+                    "name": "keys"
+                  },
+                  {
+                    "layout": {
+                      "hash": {
+                        "layout": {
+                          "cell": {
+                            "key": "0x0700000005000000000000000000000000000000000000000000000000000000",
+                            "ty": 8
+                          }
+                        },
+                        "offset": "0x0600000005000000000000000000000000000000000000000000000000000000",
+                        "strategy": {
+                          "hasher": "Blake2x256",
+                          "postfix": "",
+                          "prefix": "0x696e6b20686173686d6170"
+                        }
+                      }
+                    },
+                    "name": "values"
+                  }
+                ]
+              }
+            },
+            "name": "is_owner"
+          },
+          {
+            "layout": {
+              "cell": {
+                "key": "0x0700000005000000000000000000000000000000000000000000000000000000",
+                "ty": 1
+              }
+            },
+            "name": "requirement"
+          }
+        ]
+      }
+    },
+    "types": [
+      {
+        "id": 0,
+        "type": {
+          "def": {
+            "composite": {
+              "fields": [
+                {
+                  "name": "last_vacant",
+                  "type": 1,
+                  "typeName": "Index"
+                },
+                {
+                  "name": "len",
+                  "type": 1,
+                  "typeName": "u32"
+                },
+                {
+                  "name": "len_entries",
+                  "type": 1,
+                  "typeName": "u32"
+                }
+              ]
+            }
+          },
+          "path": [
+            "ink_storage",
+            "collections",
+            "stash",
+            "Header"
+          ]
+        }
+      },
+      {
+        "id": 1,
+        "type": {
+          "def": {
+            "primitive": "u32"
+          }
+        }
+      },
+      {
+        "id": 2,
+        "type": {
+          "def": {
+            "variant": {
+              "variants": [
+                {
+                  "fields": [
+                    {
+                      "type": 7,
+                      "typeName": "VacantEntry"
+                    }
+                  ],
+                  "index": 0,
+                  "name": "Vacant"
+                },
+                {
+                  "fields": [
+                    {
+                      "type": 3,
+                      "typeName": "T"
+                    }
+                  ],
+                  "index": 1,
+                  "name": "Occupied"
+                }
+              ]
+            }
+          },
+          "params": [
+            {
+              "name": "T",
+              "type": 3
+            }
+          ],
+          "path": [
+            "ink_storage",
+            "collections",
+            "stash",
+            "Entry"
+          ]
+        }
+      },
+      {
+        "id": 3,
+        "type": {
+          "def": {
+            "tuple": [
+              1,
+              4
+            ]
+          }
+        }
+      },
+      {
+        "id": 4,
+        "type": {
+          "def": {
+            "composite": {
+              "fields": [
+                {
+                  "type": 5,
+                  "typeName": "[u8; 32]"
+                }
+              ]
+            }
+          },
+          "path": [
+            "ink_env",
+            "types",
+            "AccountId"
+          ]
+        }
+      },
+      {
+        "id": 5,
+        "type": {
+          "def": {
+            "array": {
+              "len": 32,
+              "type": 6
+            }
+          }
+        }
+      },
+      {
+        "id": 6,
+        "type": {
+          "def": {
+            "primitive": "u8"
+          }
+        }
+      },
+      {
+        "id": 7,
+        "type": {
+          "def": {
+            "composite": {
+              "fields": [
+                {
+                  "name": "next",
+                  "type": 1,
+                  "typeName": "Index"
+                },
+                {
+                  "name": "prev",
+                  "type": 1,
+                  "typeName": "Index"
+                }
+              ]
+            }
+          },
+          "path": [
+            "ink_storage",
+            "collections",
+            "stash",
+            "VacantEntry"
+          ]
+        }
+      },
+      {
+        "id": 8,
+        "type": {
+          "def": {
+            "composite": {
+              "fields": [
+                {
+                  "name": "value",
+                  "type": 9,
+                  "typeName": "V"
+                },
+                {
+                  "name": "key_index",
+                  "type": 1,
+                  "typeName": "KeyIndex"
+                }
+              ]
+            }
+          },
+          "params": [
+            {
+              "name": "V",
+              "type": 9
+            }
+          ],
+          "path": [
+            "ink_storage",
+            "collections",
+            "hashmap",
+            "ValueEntry"
+          ]
+        }
+      },
+      {
+        "id": 9,
+        "type": {
+          "def": {
+            "tuple": []
+          }
+        }
+      },
+      {
+        "id": 10,
+        "type": {
+          "def": {
+            "variant": {
+              "variants": [
+                {
+                  "fields": [
+                    {
+                      "type": 7,
+                      "typeName": "VacantEntry"
+                    }
+                  ],
+                  "index": 0,
+                  "name": "Vacant"
+                },
+                {
+                  "fields": [
+                    {
+                      "type": 1,
+                      "typeName": "T"
+                    }
+                  ],
+                  "index": 1,
+                  "name": "Occupied"
+                }
+              ]
+            }
+          },
+          "params": [
+            {
+              "name": "T",
+              "type": 1
+            }
+          ],
+          "path": [
+            "ink_storage",
+            "collections",
+            "stash",
+            "Entry"
+          ]
+        }
+      },
+      {
+        "id": 11,
+        "type": {
+          "def": {
+            "composite": {
+              "fields": [
+                {
+                  "name": "value",
+                  "type": 1,
+                  "typeName": "V"
+                },
+                {
+                  "name": "key_index",
+                  "type": 1,
+                  "typeName": "KeyIndex"
+                }
+              ]
+            }
+          },
+          "params": [
+            {
+              "name": "V",
+              "type": 1
+            }
+          ],
+          "path": [
+            "ink_storage",
+            "collections",
+            "hashmap",
+            "ValueEntry"
+          ]
+        }
+      },
+      {
+        "id": 12,
+        "type": {
+          "def": {
+            "variant": {
+              "variants": [
+                {
+                  "fields": [
+                    {
+                      "type": 7,
+                      "typeName": "VacantEntry"
+                    }
+                  ],
+                  "index": 0,
+                  "name": "Vacant"
+                },
+                {
+                  "fields": [
+                    {
+                      "type": 13,
+                      "typeName": "T"
+                    }
+                  ],
+                  "index": 1,
+                  "name": "Occupied"
+                }
+              ]
+            }
+          },
+          "params": [
+            {
+              "name": "T",
+              "type": 13
+            }
+          ],
+          "path": [
+            "ink_storage",
+            "collections",
+            "stash",
+            "Entry"
+          ]
+        }
+      },
+      {
+        "id": 13,
+        "type": {
+          "def": {
+            "composite": {
+              "fields": [
+                {
+                  "name": "callee",
+                  "type": 4,
+                  "typeName": "AccountId"
+                },
+                {
+                  "name": "selector",
+                  "type": 14,
+                  "typeName": "[u8; 4]"
+                },
+                {
+                  "name": "input",
+                  "type": 15,
+                  "typeName": "Vec<u8>"
+                },
+                {
+                  "name": "transferred_value",
+                  "type": 16,
+                  "typeName": "Balance"
+                },
+                {
+                  "name": "gas_limit",
+                  "type": 17,
+                  "typeName": "u64"
+                }
+              ]
+            }
+          },
+          "path": [
+            "multisig",
+            "multisig",
+            "Transaction"
+          ]
+        }
+      },
+      {
+        "id": 14,
+        "type": {
+          "def": {
+            "array": {
+              "len": 4,
+              "type": 6
+            }
+          }
+        }
+      },
+      {
+        "id": 15,
+        "type": {
+          "def": {
+            "sequence": {
+              "type": 6
+            }
+          }
+        }
+      },
+      {
+        "id": 16,
+        "type": {
+          "def": {
+            "primitive": "u128"
+          }
+        }
+      },
+      {
+        "id": 17,
+        "type": {
+          "def": {
+            "primitive": "u64"
+          }
+        }
+      },
+      {
+        "id": 18,
+        "type": {
+          "def": {
+            "variant": {
+              "variants": [
+                {
+                  "fields": [
+                    {
+                      "type": 7,
+                      "typeName": "VacantEntry"
+                    }
+                  ],
+                  "index": 0,
+                  "name": "Vacant"
+                },
+                {
+                  "fields": [
+                    {
+                      "type": 4,
+                      "typeName": "T"
+                    }
+                  ],
+                  "index": 1,
+                  "name": "Occupied"
+                }
+              ]
+            }
+          },
+          "params": [
+            {
+              "name": "T",
+              "type": 4
+            }
+          ],
+          "path": [
+            "ink_storage",
+            "collections",
+            "stash",
+            "Entry"
+          ]
+        }
+      },
+      {
+        "id": 19,
+        "type": {
+          "def": {
+            "sequence": {
+              "type": 4
+            }
+          }
+        }
+      },
+      {
+        "id": 20,
+        "type": {
+          "def": {
+            "tuple": [
+              1,
+              21
+            ]
+          }
+        }
+      },
+      {
+        "id": 21,
+        "type": {
+          "def": {
+            "variant": {
+              "variants": [
+                {
+                  "index": 0,
+                  "name": "Confirmed"
+                },
+                {
+                  "fields": [
+                    {
+                      "type": 1,
+                      "typeName": "u32"
+                    }
+                  ],
+                  "index": 1,
+                  "name": "ConfirmationsNeeded"
+                }
+              ]
+            }
+          },
+          "path": [
+            "multisig",
+            "multisig",
+            "ConfirmationStatus"
+          ]
+        }
+      },
+      {
+        "id": 22,
+        "type": {
+          "def": {
+            "variant": {
+              "variants": [
+                {
+                  "fields": [
+                    {
+                      "type": 9
+                    }
+                  ],
+                  "index": 0,
+                  "name": "Ok"
+                },
+                {
+                  "fields": [
+                    {
+                      "type": 23
+                    }
+                  ],
+                  "index": 1,
+                  "name": "Err"
+                }
+              ]
+            }
+          },
+          "params": [
+            {
+              "name": "T",
+              "type": 9
+            },
+            {
+              "name": "E",
+              "type": 23
+            }
+          ],
+          "path": [
+            "Result"
+          ]
+        }
+      },
+      {
+        "id": 23,
+        "type": {
+          "def": {
+            "variant": {
+              "variants": [
+                {
+                  "index": 0,
+                  "name": "TransactionFailed"
+                }
+              ]
+            }
+          },
+          "path": [
+            "multisig",
+            "multisig",
+            "Error"
+          ]
+        }
+      },
+      {
+        "id": 24,
+        "type": {
+          "def": {
+            "variant": {
+              "variants": [
+                {
+                  "fields": [
+                    {
+                      "type": 15
+                    }
+                  ],
+                  "index": 0,
+                  "name": "Ok"
+                },
+                {
+                  "fields": [
+                    {
+                      "type": 23
+                    }
+                  ],
+                  "index": 1,
+                  "name": "Err"
+                }
+              ]
+            }
+          },
+          "params": [
+            {
+              "name": "T",
+              "type": 15
+            },
+            {
+              "name": "E",
+              "type": 23
+            }
+          ],
+          "path": [
+            "Result"
+          ]
+        }
+      },
+      {
+        "id": 25,
+        "type": {
+          "def": {
+            "variant": {
+              "variants": [
+                {
+                  "fields": [
+                    {
+                      "type": 26
+                    }
+                  ],
+                  "index": 0,
+                  "name": "Ok"
+                },
+                {
+                  "fields": [
+                    {
+                      "type": 23
+                    }
+                  ],
+                  "index": 1,
+                  "name": "Err"
+                }
+              ]
+            }
+          },
+          "params": [
+            {
+              "name": "T",
+              "type": 26
+            },
+            {
+              "name": "E",
+              "type": 23
+            }
+          ],
+          "path": [
+            "Result"
+          ]
+        }
+      },
+      {
+        "id": 26,
+        "type": {
+          "def": {
+            "variant": {
+              "variants": [
+                {
+                  "index": 0,
+                  "name": "None"
+                },
+                {
+                  "fields": [
+                    {
+                      "type": 15
+                    }
+                  ],
+                  "index": 1,
+                  "name": "Some"
+                }
+              ]
+            }
+          },
+          "params": [
+            {
+              "name": "T",
+              "type": 15
+            }
+          ],
+          "path": [
+            "Option"
+          ]
+        }
+      }
+    ]
+  }
+}

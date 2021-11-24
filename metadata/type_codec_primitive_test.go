@@ -5,26 +5,31 @@ import (
 	"math/big"
 	"testing"
 
-	"github.com/centrifuge/go-substrate-rpc-client/v2/scale"
-	"github.com/centrifuge/go-substrate-rpc-client/v2/types"
+	"github.com/centrifuge/go-substrate-rpc-client/v3/scale"
+	"github.com/centrifuge/go-substrate-rpc-client/v3/types"
 	"github.com/patractlabs/go-patract/metadata"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestPrimitiveEncode(t *testing.T) {
-	raw := loadMetaData4Test(`
-  {
-    "types": [
-        {
-            "def": {
-                "primitive": "u128"
-            }
-        }
-    ]
-  }
-	`)
+	raw := loadMetaDataTest(`
+{
+	"V1": {
+		"types": [
+		{
+			"id": 0,
+			"type": {
+				"def": {
+					"primitive": "u128"
+				}
+			}
+		}
+		]
+	}
+}
+`)
 
-	def := metadata.NewTypeDef(&raw.Types[0])
+	def := metadata.NewTypeDef(&raw.V1.Types[0])
 
 	bz := bytes.NewBuffer(make([]byte, 0, 64))
 

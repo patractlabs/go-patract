@@ -6,7 +6,7 @@ import (
 	"math/big"
 	"testing"
 
-	"github.com/centrifuge/go-substrate-rpc-client/v2/signature"
+	"github.com/centrifuge/go-substrate-rpc-client/v3/signature"
 	"github.com/patractlabs/go-patract/api"
 	"github.com/patractlabs/go-patract/rpc"
 	"github.com/patractlabs/go-patract/test"
@@ -58,6 +58,7 @@ func initERC20(t *testing.T, logger log.Logger, env test.Env, authKey signature.
 		contracts.CodeHashERC20,
 		codeBytes,
 		instantiateSalt,
+		[]string{"new"},
 		types.NewU128(totalSupply),
 	)
 	require.Nil(err)

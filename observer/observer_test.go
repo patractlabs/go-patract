@@ -6,7 +6,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/centrifuge/go-substrate-rpc-client/v2/types"
+	"github.com/centrifuge/go-substrate-rpc-client/v3/types"
 	"github.com/patractlabs/go-patract/contracts/erc20"
 	"github.com/patractlabs/go-patract/metadata"
 	"github.com/patractlabs/go-patract/observer"
@@ -45,14 +45,14 @@ func TestWatch(t *testing.T) {
 			switch typ {
 			case 0:
 				var transfer erc20.EventTransfer
-				err := metaData.Spec.Events.DecodeEvt(metaData.NewCtxForDecode(data).WithLogger(l), &transfer)
+				err := metaData.V1.Spec.Events.DecodeEvt(metaData.NewCtxForDecode(data).WithLogger(l), &transfer)
 				if err != nil {
 					logger.Error("evt decode transfer error", "err", err, "height", height)
 				}
 				logger.Info("transfer event", "evt", transfer)
 			case 1:
 				var approve erc20.EventApproval
-				err := metaData.Spec.Events.DecodeEvt(metaData.NewCtxForDecode(data).WithLogger(l), &approve)
+				err := metaData.V1.Spec.Events.DecodeEvt(metaData.NewCtxForDecode(data).WithLogger(l), &approve)
 				if err != nil {
 					logger.Error("evt decode approve error", "err", err, "height", height)
 				}

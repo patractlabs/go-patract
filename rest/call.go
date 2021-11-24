@@ -111,7 +111,7 @@ func (r *Router) messages(path string) {
 	for name, metadate := range r.metadatas {
 		path4Contract := path + "/" + name + "/"
 
-		for _, message := range metadate.Spec.Messages {
+		for _, message := range metadate.V1.Spec.Messages {
 			path4Message := path4Contract + "exec/"
 			if !message.Mutates {
 				path4Message = path4Contract + "read/"
