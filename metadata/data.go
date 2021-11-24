@@ -70,7 +70,7 @@ func NewFromFile(path string) (*Data, error) {
 func (d *Data) GetCodecByArgRaw(i ArgRaw) (DefCodec, error) {
 	if len(d.Codecs) < i.Type.TypeIndex {
 		return nil, errors.Errorf("codec idx no found to %d, all len %d",
-			i.Type, len(d.Codecs))
+			i.Type.TypeIndex, len(d.Codecs))
 	}
 	return d.Codecs[i.Type.TypeIndex], nil
 }

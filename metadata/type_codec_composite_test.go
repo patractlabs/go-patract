@@ -14,7 +14,7 @@ import (
 )
 
 func TestCompositeEncodeDecode(t *testing.T) {
-	raw := loadMetaData4Test(`
+	raw := loadMetaDataTest(`
 {
 	"V1": {
 		"types": [
@@ -42,15 +42,15 @@ func TestCompositeEncodeDecode(t *testing.T) {
 					"fields": [
 						{
 							"name": "i1",
-							"type": 1
+							"type": 0
 						},
 						{
 							"name": "i2",
-							"type": 1
+							"type": 0
 						},
 						{
 							"name": "b1",
-							"type": 2
+							"type": 1
 						}
 					]
 				}

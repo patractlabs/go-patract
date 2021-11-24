@@ -19,7 +19,7 @@ type testCompos struct {
 	B1 types.Bool `scale:"b1"`
 }
 
-func loadMetaData4Test(str string) metadata.Raw {
+func loadMetaDataTest(str string) metadata.Raw {
 	res := metadata.Raw{}
 
 	if err := json.Unmarshal([]byte(str), &res); err != nil {
